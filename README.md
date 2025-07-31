@@ -28,81 +28,304 @@ A Model Context Protocol (MCP) server for generating AntiCMS v3 JSON component t
 | `post_related` | Configure related post settings | ✅ Active |
 | `table` | Tabular data with custom columns | ✅ Active |
 
-## Installation
+## 🚀 MCP Installation & Configuration
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd Anticms-MCP
-```
+### 1. Claude Desktop
 
-2. Install dependencies:
-```bash
-npm install
-```
+Add to your `claude_desktop_config.json`:
 
-3. Make the script executable:
-```bash
-chmod +x index.js
-```
-
-## Usage
-
-### Running the Server
-
-Start the MCP server:
-```bash
-npm start
-# or
-node index.js
-```
-
-### Available Tools
-
-#### 1. `generate_template`
-Generate a complete AntiCMS v3 template with multiple sections.
-
-**Parameters:**
-- `name` (string, required): Template identifier (snake_case)
-- `label` (string, required): Human-readable template name
-- `sections` (array, required): Section types to include: ['hero', 'features', 'contact', 'gallery']
-- `description` (string): Template description
-- `is_content` (boolean): Whether this is a content template (default: false)
-- `multilanguage` (boolean): Enable multilanguage support (default: true)
-- `is_multiple` (boolean): Allow multiple instances (default: false)
-- `include_cta` (boolean): Include call-to-action in hero section (default: false)
-- `max_features` (number): Maximum number of features (default: 6)
-- `max_gallery_images` (number): Maximum number of gallery images (default: 12)
-
-**Example:**
 ```json
 {
-  "name": "company_about",
-  "label": "About Company Page",
-  "description": "Template for company about page with hero and features",
-  "sections": ["hero", "features", "contact"],
-  "include_cta": true,
-  "max_features": 4
+  "mcpServers": {
+    "anticms": {
+      "command": "npx",
+      "args": ["@tobidsn/anticms-mcp@latest"]
+    }
+  }
 }
 ```
 
-#### 2. `generate_custom_field`
-Generate a custom field with specific type and attributes.
+### 2. Cursor IDE
 
-**Parameters:**
-- `name` (string, required): Field identifier (snake_case)
-- `label` (string, required): Human-readable field label
-- `field_type` (string, required): AntiCMS v3 field type
-- `multilanguage` (boolean): Enable multilanguage support (default: false)
-- `attributes` (object): Field-specific attributes
+Add to your MCP configuration:
 
-**Example:**
+```json
+{
+  "mcp": {
+    "servers": {
+      "anticms-generator": {
+        "command": "npx",
+        "args": ["@tobidsn/anticms-mcp@latest"]
+      }
+    }
+  }
+}
+```
+
+### 3. Multiple MCP Servers
+
+```json
+{
+  "mcpServers": {
+    "anticms": {
+      "command": "npx",
+      "args": ["@tobidsn/anticms-mcp@latest"]
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@latest", "/path/to/allowed/files"]
+    }
+  }
+}
+```
+
+### 4. Direct Usage
+
+```bash
+# Use with npx (no installation needed)
+npx @tobidsn/anticms-mcp@latest
+
+# Or install globally
+npm install -g @tobidsn/anticms-mcp
+anticms-mcp
+```
+
+## 📝 Usage Examples
+
+### Template Generation Prompts
+
+#### Basic Landing Page
+```
+Create an AntiCMS v3 template for a landing page called "product_landing" with a hero section, features section, and contact section. Include a call-to-action button in the hero section.
+```
+
+#### Company About Page
+```
+Generate an AntiCMS v3 template named "company_about" for an About Us page. I need:
+- Hero section with CTA
+- Features section (max 4 features)
+- Contact section
+- Gallery section (max 8 images)
+Make it multilanguage enabled.
+```
+
+#### Blog Post Template
+```
+Create a blog post template called "blog_article" with:
+- Hero section (no CTA needed)
+- Contact section for author info
+Set it as a content template that allows multiple instances.
+```
+
+### Custom Field Generation Prompts
+
+#### Company Logo Field
+```
+Create a custom field for company logo upload. Name it "company_logo", make it a media field that only accepts images with resolution between 200x100 and 400x200 pixels.
+```
+
+#### Product Price Field
+```
+Generate a custom field called "product_price" as an input field for numbers. Make it required with placeholder "Enter price in USD".
+```
+
+#### Team Member Repeater
+```
+Create a repeater field named "team_members" for a team section. Each team member should have:
+- Name (text input, multilanguage, required)
+- Position (text input, multilanguage)
+- Bio (textarea, multilanguage, max 300 characters)
+- Photo (media field for images)
+Set minimum 1 and maximum 10 team members.
+```
+
+### Validation Prompts
+
+#### Validate Template
+```
+Please validate this AntiCMS template JSON structure for any errors:
+[paste your JSON here]
+```
+
+#### Check Compliance
+```
+I have an existing template JSON. Can you check if it follows the AntiCMS v3 schema correctly and point out any issues?
+```
+
+### Information Requests
+
+#### Field Types Reference
+```
+Show me all available AntiCMS v3 field types and their attributes.
+```
+
+#### Field Type Details
+```
+What attributes are available for the media field type in AntiCMS v3?
+```
+
+## 🎯 Advanced Use Cases
+
+### E-commerce Product Template
+```
+Create an AntiCMS template for "ecommerce_product" with:
+- Hero section (no CTA)
+- Features section for product specifications (max 8 features)
+- Gallery section for product images (max 15 images)
+- Contact section for support info
+Make it a content template that allows multiple instances and enable multilanguage support.
+```
+
+### Event Page Template
+```
+Generate a template called "event_page" for events with:
+- Hero section with registration CTA
+- Features section for event highlights (max 5 features)
+Set description as "Template for event landing pages with registration"
+```
+
+### Portfolio Project Template
+```
+Create a portfolio template "portfolio_project" with:
+- Hero section (include CTA for "View Live Site")
+- Gallery section (max 20 images for project screenshots)
+- Features section for project details (max 6 features)
+```
+
+### Custom News Article Field
+```
+Create a custom field setup for news articles:
+1. Article title (text input, multilanguage, required, max 100 chars)
+2. Article excerpt (textarea, multilanguage, max 200 chars)
+3. Featured image (media field, images only, min 800x400, max 1200x600)
+4. Article tags (repeater with text inputs for each tag, max 10 tags)
+```
+
+## 🔄 Complete Workflow Examples
+
+### Corporate Website Setup
+```
+I'm building a corporate website. Create these templates:
+1. Homepage template with hero, features, and contact sections
+2. About page template with hero (with CTA), features (max 4), and contact
+3. Services template with hero (with CTA), features (max 6), and gallery (max 8)
+
+Name them "homepage", "about_page", and "services_page" respectively.
+```
+
+### Validation Workflow
+```
+First, show me all available field types. Then create a custom field for testimonials (repeater with name, position, company, testimonial text, and photo). Finally, validate this existing template I have: [JSON]
+```
+
+## 📋 Generated JSON Examples
+
+### Example 1: Landing Page Template
+```json
+{
+  "name": "product_landing",
+  "label": "Product Landing Page",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Template for product landing pages with hero, features, and contact sections",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "is_required": true,
+            "placeholder": "Enter main title",
+            "maxLength": 100
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "max": 200,
+            "placeholder": "Enter subtitle"
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Call to Action",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Button Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button text"
+                }
+              },
+              {
+                "name": "url",
+                "label": "URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Example 2: Custom Media Field
 ```json
 {
   "name": "company_logo",
   "label": "Company Logo",
-  "field_type": "media",
-  "attributes": {
+  "field": "media",
+  "attribute": {
     "accept": ["image"],
     "resolution": {
       "minWidth": 200,
@@ -114,106 +337,74 @@ Generate a custom field with specific type and attributes.
 }
 ```
 
-#### 3. `validate_template`
-Validate an AntiCMS v3 template JSON structure.
-
-**Parameters:**
-- `template_json` (object, required): The template JSON to validate
-
-#### 4. `list_field_types`
-List all supported AntiCMS v3 field types with their attributes.
-
-## Examples
-
-### Generated Hero Section
+### Example 3: Team Members Repeater
 ```json
 {
-  "keyName": "hero_section",
-  "label": "Hero Section",
-  "section": "1",
-  "fields": [
-    {
-      "name": "status",
-      "label": "Status",
-      "field": "toggle",
-      "attribute": {
-        "caption": "Enable or disable the hero section",
-        "defaultValue": true
-      }
-    },
-    {
-      "name": "title",
-      "label": "Title",
-      "field": "input",
-      "multilanguage": true,
-      "attribute": {
-        "type": "text",
-        "is_required": true,
-        "placeholder": "Enter main title",
-        "maxLength": 100
-      }
-    },
-    {
-      "name": "background_image",
-      "label": "Background Image",
-      "field": "media",
-      "attribute": {
-        "accept": ["image"],
-        "resolution": {
-          "minWidth": 1200,
-          "maxWidth": 1920,
-          "minHeight": 600,
-          "maxHeight": 1080
+  "name": "team_members",
+  "label": "Team Members",
+  "field": "repeater",
+  "attribute": {
+    "min": 1,
+    "max": 10,
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "field": "input",
+        "multilanguage": true,
+        "attribute": {
+          "type": "text",
+          "is_required": true,
+          "placeholder": "Team member name"
+        }
+      },
+      {
+        "name": "position",
+        "label": "Position",
+        "field": "input",
+        "multilanguage": true,
+        "attribute": {
+          "type": "text",
+          "placeholder": "Job title"
+        }
+      },
+      {
+        "name": "bio",
+        "label": "Bio",
+        "field": "textarea",
+        "multilanguage": true,
+        "attribute": {
+          "rows": 4,
+          "max": 300,
+          "placeholder": "Short bio"
+        }
+      },
+      {
+        "name": "photo",
+        "label": "Photo",
+        "field": "media",
+        "attribute": {
+          "accept": ["image"]
         }
       }
-    }
-  ]
+    ]
+  }
 }
 ```
 
-### Complete Template Example
-```json
-{
-  "name": "landing_page",
-  "label": "Landing Page",
-  "is_content": false,
-  "multilanguage": true,
-  "is_multiple": false,
-  "description": "Template for Landing Page",
-  "components": [
-    {
-      "keyName": "hero_section",
-      "label": "Hero Section",
-      "section": "1",
-      "fields": [...]
-    },
-    {
-      "keyName": "features_section",
-      "label": "Features Section",
-      "section": "2",
-      "fields": [...]
-    }
-  ]
-}
-```
-
-## File Structure
-
-```
-Anticms-MCP/
-├── index.js              # Main MCP server implementation
-├── package.json          # Node.js dependencies and metadata
-├── README.md             # This file
-└── .cursor/
-    └── docs/
-        └── project.mdc    # Schema documentation
-```
-
-## AntiCMS v3 File Locations
+## 📂 File Storage Locations
 
 Generated templates should be saved to:
 - **Page Templates**: `storage/app/json/pages/`
 - **Post Templates**: `storage/app/json/posts/`
+
+## 💡 Tips for Better Prompts
+
+1. **Be Specific**: Include exact field names, limits, and requirements
+2. **Mention Multilanguage**: Specify if you need multilanguage support
+3. **Set Constraints**: Include min/max values, character limits, image resolutions
+4. **Describe Purpose**: Explain what the template/field will be used for
+5. **Request Validation**: Always ask for validation if you're unsure about structure
 
 ## Development
 
