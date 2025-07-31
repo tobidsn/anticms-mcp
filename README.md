@@ -37,7 +37,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "anticms": {
+    "anticms-mcp": {
       "command": "npx",
       "args": ["@tobidsn/anticms-mcp@latest"]
     }
@@ -51,39 +51,16 @@ Add to your MCP configuration:
 
 ```json
 {
-  "mcp": {
-    "servers": {
-      "anticms-generator": {
-        "command": "npx",
-        "args": ["@tobidsn/anticms-mcp@latest"]
-      }
-    }
-  }
-}
-```
-
-### 3. Multiple MCP Servers
-
-```json
-{
   "mcpServers": {
-    "anticms": {
+    "anticms-mcp": {
       "command": "npx",
       "args": ["@tobidsn/anticms-mcp@latest"]
-    },
-    "browsermcp": {
-      "command": "npx",
-      "args": ["@browsermcp/mcp@latest"]
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem@latest", "/path/to/allowed/files"]
     }
   }
 }
 ```
 
-### 4. Direct Usage
+### 3. Direct Usage
 
 ```bash
 # Use with npx (no installation needed)
