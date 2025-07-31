@@ -1,0 +1,278 @@
+
+---
+title: AntiCMS v3 Custom Fields Schema
+description: JSON structure and flow for defining custom fields in AntiCMS v3 templates
+globs:
+alwaysApply: false
+---
+
+# 📦 AntiCMS v3 Custom Fields Schema Documentation
+
+This documentation defines the standard structure for creating and managing **custom field templates in JSON** for AntiCMS v3 pages and posts. This schema is used by the MCP Server to generate valid JSON components.
+
+---
+
+## 📁 Template Structure Overview
+
+Each AntiCMS v3 template JSON contains:
+
+- `name`: Unique identifier for the template
+- `label`: Human-readable name
+- `is_content`: Whether this template is for main content or a component
+- `multilanguage`: Enable multilanguage support
+- `is_multiple`: Allow multiple pages of this template
+- `description`: Description of the template
+- `components`: Array of sections, each with its own fields
+
+```json
+{
+  "name": "templateName",
+  "label": "Template Label",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Template description",
+  "components": [ ... ]
+}
+```
+
+---
+
+## 🧩 Component Structure
+
+Each component in the `components` array includes:
+
+| Key       | Type     | Required | Description                    |
+|-----------|----------|----------|--------------------------------|
+| `keyName` | `string` | ✅        | Component identifier           |
+| `label`   | `string` | ✅        | Label shown in UI              |
+| `section` | `string` | ✅        | Section number/identifier      |
+| `fields`  | `array`  | ✅        | Array of field definitions     |
+
+---
+
+## 🔑 Field Definition
+
+Each field in the `fields` array includes:
+
+| Key            | Type      | Required | Description                            |
+|----------------|-----------|----------|----------------------------------------|
+| `name`         | `string`  | ✅        | Field identifier (used in code)        |
+| `label`        | `string`  | ✅        | Label shown in UI                      |
+| `field`        | `string`  | ✅        | Field type (see below)                 |
+| `multilanguage`| `boolean` | ❌        | Whether it supports multiple languages |
+| `attribute`    | `object`  | ❌        | Field-specific properties and validation|
+
+---
+
+## 🧩 Standard Field Types
+
+| Field Type      | Description                              | Status     |
+|-----------------|------------------------------------------|------------|
+| `input`         | Single-line text, number, email, URL    | ✅ Active  |
+| `textarea`      | Multi-line text input                    | ✅ Active  |
+| `texteditor`    | WYSIWYG editor (full/simple)            | ✅ Active  |
+| `select`        | Dropdown selector with options           | ✅ Active  |
+| `toggle`        | Boolean on/off switch                    | ✅ Active  |
+| `media`         | Upload images, videos, audio, documents  | ✅ Active  |
+| `repeater`      | Repeatable group of fields (array)      | ✅ Active  |
+| `group`         | Non-repeatable group of fields (object) | ✅ Active  |
+| `relationship`  | Reference other posts by type/status    | ✅ Active  |
+| `post_object`   | Select one or more posts as objects      | ✅ Active  |
+| `post_related`  | Configure related post settings          | ✅ Active  |
+| `table`         | Tabular data with custom columns         | ✅ Active  |
+| `file`          | File upload (deprecated - use media)     | ⚠️ Deprecated |
+| `image`         | Image upload (deprecated - use media)    | ⚠️ Deprecated |
+
+---
+
+## 🔧 Common Attribute Properties
+
+### Input Field Attributes
+| Property       | Type      | Description                              |
+|----------------|-----------|------------------------------------------|
+| `type`         | `string`  | Input type: text, number, email, url    |
+| `is_required`  | `boolean` | Whether the field is required            |
+| `placeholder`  | `string`  | Placeholder text                         |
+| `defaultValue` | `any`     | Default value                            |
+| `maxLength`    | `number`  | Maximum characters                       |
+| `minLength`    | `number`  | Minimum characters                       |
+
+### Media Field Attributes
+| Property     | Type    | Description                               |
+|--------------|---------|-------------------------------------------|
+| `accept`     | `array` | Accepted types: ["image", "video", "audio", "document"] |
+| `resolution` | `object`| Image resolution constraints              |
+
+### Select Field Attributes
+| Property     | Type    | Description                               |
+|--------------|---------|-------------------------------------------|
+| `options`    | `array` | Array of option objects with label/value |
+| `placeholder`| `string`| Placeholder text                          |
+
+### Repeater/Group Attributes
+| Property | Type    | Description                               |
+|----------|---------|-------------------------------------------|
+| `fields` | `array` | Array of nested field definitions         |
+| `min`    | `number`| Minimum items (repeater only)            |
+| `max`    | `number`| Maximum items (repeater only)            |
+
+---
+
+## 📘 Example: About Page Template
+
+```json
+{
+  "name": "about",
+  "label": "About",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Template containing all components used on the About Page",
+  "components": [
+    {
+      "keyName": "section_1",
+      "label": "Hero Section",
+      "section": "1",
+  "fields": [
+    {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the banner section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+      "type": "text",
+            "is_required": true,
+            "placeholder": "Enter the main title",
+            "maxLength": 100
+          }
+    },
+    {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 5,
+            "max": 500,
+            "placeholder": "Enter description",
+            "is_required": false
+          }
+    },
+    {
+          "name": "background_image",
+      "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            }
+          }
+    },
+    {
+          "name": "features",
+          "label": "Features",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 6,
+      "fields": [
+        {
+                "name": "feature_title",
+                "label": "Feature Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "is_required": true,
+                  "placeholder": "Feature name"
+                }
+              },
+              {
+                "name": "feature_icon",
+                "label": "Feature Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 🔁 Template Flow Diagram
+
+```
+Template
+ ├── name (identifier)
+ ├── label (display name)
+ ├── is_content (boolean)
+ ├── multilanguage (boolean)
+ ├── is_multiple (boolean)
+ ├── description
+ └── components []
+      ├── keyName
+      ├── label
+      ├── section
+      └── fields []
+           ├── name
+           ├── label
+           ├── field (type)
+           ├── multilanguage (optional)
+           └── attribute {}
+                ├── field-specific properties
+                └── validation rules
+```
+
+---
+
+## 📂 File Storage Locations
+
+- **Page Templates**: `storage/app/json/pages/`
+- **Post Templates**: `storage/app/json/posts/`
+
+---
+
+## ✅ Best Practices for MCP Server
+
+- Use consistent `name` naming (e.g. `snake_case`)
+- Set `multilanguage: true` for content that needs translation
+- Group related fields using `group` or `repeater`
+- Use appropriate field types (`media` instead of deprecated `file`/`image`)
+- Set sensible validation rules in `attribute` objects
+- Provide helpful `placeholder` and `caption` text
+- Use `min`/`max` constraints for repeaters and character limits
+- Test generated JSON against AntiCMS v3 validation
+
+---
+
+## 🛠️ MCP Server Development Notes
+
+When developing the MCP Server for creating JSON components:
+
+1. **Validation**: Ensure generated JSON follows this exact schema
+2. **Field Types**: Only use the supported field types listed above
+3. **Required Fields**: Always include required properties for each field type
+4. **Attribute Structure**: Each field type has specific attribute requirements
+5. **Nesting**: Support proper nesting for `group` and `repeater` fields
+6. **File Paths**: Generate appropriate file names and paths for storage
