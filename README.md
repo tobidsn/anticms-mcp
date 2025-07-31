@@ -60,7 +60,26 @@ Add to your MCP configuration:
 }
 ```
 
-### 3. Direct Usage
+### 3. VSCode
+
+Add to your MCP configuration:
+
+```bash
+touch .vscode/mcp.json
+```
+
+```json
+{
+  "servers": {
+    "anticms-mcp": {
+      "command": "npx",
+      "args": ["@tobidsn/anticms-mcp@latest"]
+    }
+  }
+}
+```
+
+### 4. Direct Usage
 
 ```bash
 # Use with npx (no installation needed)
@@ -70,7 +89,8 @@ npx @tobidsn/anticms-mcp@latest
 npm install -g @tobidsn/anticms-mcp
 anticms-mcp
 ```
-### 4. Local Usage
+
+### 5. Local Usage
 
 ```json
 "anticms-mcp": {
