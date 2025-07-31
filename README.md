@@ -70,10 +70,16 @@ npx @tobidsn/anticms-mcp@latest
 npm install -g @tobidsn/anticms-mcp
 anticms-mcp
 ```
+### 4. Local Usage
 
-## 📝 Usage Examples
-
-### Template Generation Prompts
+```json
+"anticms-mcp": {
+  "command": "node",
+  "args": [
+    "/folder/user/location/Anticms-MCP/index.js"
+  ]
+}
+```
 
 #### Basic Landing Page
 ```
