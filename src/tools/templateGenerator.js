@@ -1,4 +1,5 @@
-import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
+// Import fetch for API calls
+import fetch from 'node-fetch';
 
 // AntiCMS v3 Field Type Definitions
 export const FIELD_TYPES = {
@@ -549,6 +550,263 @@ export async function listFieldTypes(args) {
     ]
   };
 } 
+
+/**
+ * Generate a single section component
+ * @param {object} args - Section generation arguments
+ * @returns {object} - Generated section component
+ */
+export async function generateSection(args) {
+  const {
+    section_type,
+    key_name,
+    label,
+    position,
+    options = {}
+  } = args;
+
+  let section;
+
+  switch (section_type) {
+    case 'hero':
+      section = AntiCMSComponentGenerator.generateHeroSection({
+        includeCTA: options.include_cta || false
+      });
+      break;
+    
+    case 'features':
+      section = AntiCMSComponentGenerator.generateFeaturesSection({
+        maxFeatures: options.max_features || 6
+      });
+      break;
+    
+    case 'contact':
+      section = AntiCMSComponentGenerator.generateContactSection();
+      break;
+    
+    case 'gallery':
+      section = AntiCMSComponentGenerator.generateGallerySection({
+        maxImages: options.max_gallery_images || 12
+      });
+      break;
+    
+    default:
+      throw new Error(`Unsupported section type: ${section_type}`);
+  }
+
+  // Override keyName and label if provided
+  if (key_name) {
+    section.keyName = key_name;
+  }
+  
+  if (label) {
+    section.label = label;
+  }
+
+  // Set position if provided
+  if (position) {
+    section.section = String(position);
+  }
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: `Generated ${section_type} section "${section.label}".\n\nJSON:\n\n${JSON.stringify(section, null, 2)}`
+      }
+    ]
+  };
+}
+
+/**
+ * Assign section to template file
+ * @param {object} args - Assignment arguments
+ * @returns {object} - Assignment result
+ */
+export async function assignSectionToTemplate(args) {
+  const {
+    template_file,
+    section_json,
+    position
+  } = args;
+
+  // Import fs module for file operations
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    // Read the template file
+    const templatePath = path.join(process.cwd(), 'data', 'pages', `${template_file}.json`);
+    const templateContent = await fs.readFile(templatePath, 'utf8');
+    const template = JSON.parse(templateContent);
+
+    // Parse the section JSON
+    const section = typeof section_json === 'string' ? JSON.parse(section_json) : section_json;
+
+    // Set position if provided
+    if (position) {
+      section.section = String(position);
+    }
+
+    // Add section to components array
+    if (!template.components) {
+      template.components = [];
+    }
+
+    template.components.push(section);
+
+    // Sort components by section number
+    template.components.sort((a, b) => {
+      const sectionA = parseInt(a.section) || 0;
+      const sectionB = parseInt(b.section) || 0;
+      return sectionA - sectionB;
+    });
+
+    // Write back to file
+    await fs.writeFile(templatePath, JSON.stringify(template, null, 2));
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Successfully assigned section "${section.label}" to template "${template_file}.json" at position ${section.section}.\n\nUpdated template now has ${template.components.length} components.`
+        }
+      ]
+    };
+  } catch (error) {
+    throw new Error(`Failed to assign section to template: ${error.message}`);
+  }
+}
+
+/**
+ * Fetch all pages from AntiCMS API
+ * @param {object} args - API arguments
+ * @returns {object} - API response with pages list
+ */
+export async function getAllPages(args) {
+  const {
+    api_url,
+    api_key,
+    use_header = true,
+    ignore_ssl = false
+  } = args;
+
+  // Validate required parameters
+  if (!api_url) {
+    throw new Error('API URL is required');
+  }
+  
+  if (!api_key) {
+    throw new Error('API key is required');
+  }
+
+  try {
+    // Construct the URL
+    const baseUrl = api_url.endsWith('/') ? api_url.slice(0, -1) : api_url;
+    let url = `${baseUrl}/api/admin/pages`;
+    
+    // Add API key as query parameter if not using header
+    if (!use_header) {
+      url += `?api_key=${encodeURIComponent(api_key)}`;
+    }
+
+    // Prepare headers
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+
+    // Add API key to header if using header authentication
+    if (use_header) {
+      headers['X-API-Key'] = api_key;
+    }
+
+    console.error(`[MCP] Fetching pages from: ${url}`);
+    console.error(`[MCP] Using header auth: ${use_header}`);
+
+    // Prepare fetch options
+    const fetchOptions = {
+      method: 'GET',
+      headers
+    };
+
+    // Add SSL ignore option for development/test domains
+    if (ignore_ssl) {
+      // Import https module for Node.js specific options
+      const https = await import('https');
+      fetchOptions.agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+      console.error(`[MCP] SSL certificate verification disabled for development`);
+    }
+
+    // Make the API request
+    const response = await fetch(url, fetchOptions);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    // Validate response structure
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid response format from API');
+    }
+
+    // Format the response for display
+    let resultText = '';
+    
+    if (data.success) {
+      resultText = `✅ Successfully retrieved ${data.data?.length || 0} pages from AntiCMS API\n\n`;
+      
+      if (data.message) {
+        resultText += `**Message**: ${data.message}\n\n`;
+      }
+
+      if (data.data && Array.isArray(data.data)) {
+        resultText += `**Pages Found:**\n`;
+        data.data.forEach((page, index) => {
+          resultText += `${index + 1}. **${page.name}**\n`;
+          resultText += `   - Path: ${page.path}\n`;
+          resultText += `   - URL: ${page.url}\n\n`;
+        });
+      }
+
+      resultText += `**Raw API Response:**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
+    } else {
+      resultText = `❌ API request failed\n\n`;
+      resultText += `**Error**: ${data.message || 'Unknown error'}\n\n`;
+      resultText += `**Raw API Response:**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
+    }
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: resultText
+        }
+      ]
+    };
+
+  } catch (error) {
+    console.error(`[MCP] getAllPages error:`, error);
+    
+    let errorMessage = error.message;
+    if (error.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE') {
+      errorMessage += '\n\n💡 **Tip**: For development/test domains with self-signed certificates, you can set `ignore_ssl: true` in the tool parameters.';
+    }
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `❌ Failed to fetch pages from AntiCMS API\n\n**Error**: ${errorMessage}\n\n**API URL**: ${api_url}\n**Using Header Auth**: ${use_header}`
+        }
+      ]
+    };
+  }
+}
 
 /**
  * Get random inspirational quotes from famous figures

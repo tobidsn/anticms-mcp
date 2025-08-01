@@ -2100,8 +2100,7 @@ node index.js --port 3000 --host localhost --base-url https://antiplayground-v3.
       ],
       "env": {
         "ANTICMS_ADMIN_URL": "https://antiplayground-v3.test",
-        "ANTICMS_ADMIN_API_KEY": "your-api-key",
-        "ANTICMS_ADMIN_API_SECRET": "your-secret"
+        "ANTICMS_ADMIN_API_KEY": "your-api-key"
       }
     }
   }

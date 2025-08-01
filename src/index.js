@@ -5,10 +5,6 @@ import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  ErrorCode,
-  McpError,
-} from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 
 // Import tools and definitions
@@ -18,8 +14,11 @@ import {
   validateTemplate,
   listFieldTypes,
   getRandomQuote,
+  generateSection,
+  assignSectionToTemplate,
+  getAllPages,
 } from './tools/templateGenerator.js';
-import { TOOL_DEFINITIONS } from './tools/definitions.js';
+import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
 import { registerResources } from './tools/resources.js';
 import { registerPrompts } from './tools/prompts.js';
 
@@ -154,6 +153,113 @@ class AntiCMSServer {
         }
       }
     );
+
+    // Register generate_section tool
+    this.server.registerTool(
+      'generate_section',
+      {
+        title: 'Generate Section',
+        description: 'Generate a single section component for AntiCMS v3 template',
+        inputSchema: {
+          section_type: z.enum(['hero', 'features', 'contact', 'gallery']).describe('Type of section to generate'),
+          key_name: z.string().optional().describe('Custom key name for the section'),
+          label: z.string().optional().describe('Custom label for the section'),
+          position: z.number().optional().describe('Position/section number'),
+          options: z.object({
+            include_cta: z.boolean().optional().describe('Include call-to-action in hero section'),
+            max_features: z.number().optional().describe('Maximum number of features'),
+            max_gallery_images: z.number().optional().describe('Maximum number of gallery images')
+          }).optional().describe('Section-specific options')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_section called with args:`, args);
+        try {
+          const result = await generateSection(args);
+          console.error(`[MCP] generate_section completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_section error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register assign_section_to_template tool
+    this.server.registerTool(
+      'assign_section_to_template',
+      {
+        title: 'Assign Section to Template',
+        description: 'Assign a generated section to a template file with position',
+        inputSchema: {
+          template_file: z.string().describe('Template file name (without .json extension)'),
+          section_json: z.string().describe('Section JSON string to assign'),
+          position: z.number().optional().describe('Position/section number to assign')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] assign_section_to_template called with args:`, args);
+        try {
+          const result = await assignSectionToTemplate(args);
+          console.error(`[MCP] assign_section_to_template completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] assign_section_to_template error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register get_all_pages tool
+    this.server.registerTool(
+      'get_all_pages',
+      {
+        title: 'Get All Pages',
+        description: 'Fetch all pages from AntiCMS API (supports ANTICMS_ADMIN_URL and ANTICMS_ADMIN_API_KEY HTTP headers)',
+        inputSchema: {
+          api_url: z.string().optional().describe('AntiCMS API base URL (default from ANTICMS_ADMIN_URL env or HTTP header)'),
+          api_key: z.string().optional().describe('API key for authentication (default from ANTICMS_ADMIN_API_KEY env or HTTP header)'),
+          use_header: z.boolean().optional().default(true).describe('Use HTTP headers (true) or query parameter (false)'),
+          ignore_ssl: z.boolean().optional().default(false).describe('Ignore SSL certificate errors for development/test domains')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] get_all_pages called with args:`, args);
+        try {
+          // Extract API key and URL using the new context-aware functions
+          const apiKey = extractApiKey(args);
+          const apiUrl = extractApiUrl(args);
+          
+          const finalArgs = {
+            api_url: apiUrl,
+            api_key: apiKey,
+            use_header: args.use_header !== undefined ? args.use_header : true,
+            ignore_ssl: args.ignore_ssl !== undefined ? args.ignore_ssl : false
+          };
+
+          // Validate that we have required parameters
+          if (!finalArgs.api_url) {
+            const errorMsg = 'API URL is required. Please provide api_url parameter, set ANTICMS_ADMIN_URL environment variable, or use ANTICMS_ADMIN_URL HTTP header.';
+            console.error(`[MCP] get_all_pages error: ${errorMsg}`);
+            throw new Error(errorMsg);
+          }
+          
+          if (!finalArgs.api_key) {
+            const errorMsg = 'API key is required. Please provide api_key parameter, set ANTICMS_ADMIN_API_KEY environment variable, or use ANTICMS_ADMIN_API_KEY HTTP header.';
+            console.error(`[MCP] get_all_pages error: ${errorMsg}`);
+            throw new Error(errorMsg);
+          }
+          
+          console.error(`[MCP] get_all_pages final args:`, finalArgs);
+          const result = await getAllPages(finalArgs);
+          console.error(`[MCP] get_all_pages completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] get_all_pages error:`, error);
+          throw error;
+        }
+      }
+    );
   }
 
   /**
@@ -173,7 +279,7 @@ class AntiCMSServer {
     app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Session-Id, mcp-session-id');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Session-Id, mcp-session-id, X-API-Key, ANTICMS_ADMIN_URL, ANTICMS_ADMIN_API_KEY');
       res.header('Access-Control-Expose-Headers', 'Mcp-Session-Id');
       
       if (req.method === 'OPTIONS') {
@@ -223,6 +329,17 @@ class AntiCMSServer {
         console.error(`[MCP] Processing POST request: ${JSON.stringify(req.body, null, 2)}`);
         
         const sessionId = req.headers['mcp-session-id'];
+        
+        // Check if this is a tool call that needs API context
+        const isToolCall = req.body.method === 'tools/call';
+        const toolName = req.body.params?.name;
+        
+        if (isToolCall && toolName && needsApiContext(toolName)) {
+          // Set API context with headers for API tools only
+          setApiContext(req.headers, sessionId);
+          console.error(`[MCP] API context set for tool: ${toolName}`);
+        }
+        
         let transport;
 
         if (sessionId && transports[sessionId]) {
