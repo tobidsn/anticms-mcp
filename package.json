@@ -31,13 +31,13 @@
   ],
   "author": "AntiCMS Team",
   "license": "MIT",
-  "homepage": "https://github.com/tobidsn/cms-mcp-server#readme",
+  "homepage": "https://github.com/tobidsn/anticms-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tobidsn/cms-mcp-server.git"
+    "url": "git+https://github.com/tobidsn/anticms-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/tobidsn/cms-mcp-server/issues"
+    "url": "https://github.com/tobidsn/anticms-mcp/issues"
   },
   "publishConfig": {
     "access": "public"
