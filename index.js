@@ -647,8 +647,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+const transport = new StdioServerTransport();
+await server.connect(transport);
   console.error('AntiCMS v3 JSON Generator MCP Server running on stdio');
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@tobidsn/anticms-mcp",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "MCP Server for generating AntiCMS v3 JSON component templates with validation and field type support",
   "main": "index.js",
   "type": "module",
@@ -31,13 +31,13 @@
   ],
   "author": "AntiCMS Team",
   "license": "MIT",
-  "homepage": "https://github.com/tobidsn/anticms-mcp#readme",
+  "homepage": "https://github.com/tobidsn/cms-mcp-server#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tobidsn/anticms-mcp.git"
+    "url": "git+https://github.com/tobidsn/cms-mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/tobidsn/anticms-mcp/issues"
+    "url": "https://github.com/tobidsn/cms-mcp-server/issues"
   },
   "publishConfig": {
     "access": "public"
