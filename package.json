@@ -1,6 +1,6 @@
 {
   "name": "@tobidsn/anticms-mcp",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "MCP Server for generating AntiCMS v3 JSON component templates with validation and field type support",
   "main": "index.js",
   "type": "module",
