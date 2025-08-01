@@ -220,6 +220,16 @@ I'm building a corporate website. Create these templates:
 Name them "homepage", "about_page", and "services_page" respectively.
 ```
 
+## Using Rules / Instructions
+
+```
+Generate an AntiCMS v3 template named
+"info"
+based on project.instuctions.md
+using AntiCMS MCP
+create file in folder json/pages
+```
+
 ### Validation Workflow
 ```
 First, show me all available field types. Then create a custom field for testimonials (repeater with name, position, company, testimonial text, and photo). Finally, validate this existing template I have: [JSON]
