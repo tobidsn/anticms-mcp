@@ -1,0 +1,125 @@
+[
+    {
+        "keyName": "detail",
+        "label": "Detail",
+        "section": "1",
+        "fields": [
+            {
+                "name": "status",
+                "label": "Status",
+                "field": "toggle",
+                "attribute": {
+                    "caption": "Enable or disable the banner image",
+                    "defaultValue": true,
+                    "value": null
+                }
+            },
+            {
+                "field": "repeater",
+                "name": "slider",
+                "label": "Slider",
+                "attribute": {
+                    "min": 1,
+                    "max": 2,
+                    "fields": [
+                        {
+                            "field": "input",
+                            "name": "title",
+                            "label": "Title",
+                            "multilanguage": true,
+                            "attribute": {
+                                "is_required": true,
+                                "type": "text",
+                                "placeholder": "Enter title of the image slider"
+                            }
+                        },
+                        {
+                            "name": "description",
+                            "label": "Description",
+                            "field": "textarea",
+                            "multilanguage": true,
+                            "attribute": {
+                                "rows": 3,
+                                "cols": 3,
+                                "max": 200,
+                                "is_required": false,
+                                "placeholder": "Enter title of the banner",
+                                "caption": "Short description of the banner",
+                                "defaultValue": ""
+                            }
+                        },
+                        {
+                            "name": "small_image",
+                            "label": "Small Image",
+                            "field": "media",
+                            "multilanguage": true,
+                            "attribute": {
+                                "caption": "Resolution 300px x 221px",
+                                "accept": ["image"],
+                                "fileSize": 512,
+                                "convertToWebp": true,
+                                "resolution": {
+                                    "minWidth": 3,
+                                    "maxWidth": 300,
+                                    "minHeight": 2.21,
+                                    "maxHeight": 221
+                                }
+                            }
+                        },
+                        {
+                            "field": "repeater",
+                            "name": "images",
+                            "label": "Images",
+                            "attribute": {
+                                "min": 1,
+                                "max": 5,
+                                "fields": [
+                                    {
+                                        "field": "input",
+                                        "name": "small_debug_title",
+                                        "label": "Small Title",
+                                        "multilanguage": false,
+                                        "attribute": {
+                                            "is_required": true,
+                                            "type": "text",
+                                            "placeholder": "Enter title of the image slider"
+                                        }
+                                    },
+                                    {
+                                        "field": "input",
+                                        "name": "debug_title",
+                                        "label": "Title",
+                                        "multilanguage": true,
+                                        "attribute": {
+                                            "is_required": true,
+                                            "type": "text",
+                                            "placeholder": "Enter title of the image slider"
+                                        }
+                                    },
+                                    {
+                                        "name": "debug_small_image",
+                                        "label": "Small Image",
+                                        "field": "media",
+                                        "multilanguage": true,
+                                        "attribute": {
+                                            "caption": "Resolution 300px x 221px",
+                                            "accept": ["image"],
+                                            "fileSize": 512,
+                                            "convertToWebp": true,
+                                            "resolution": {
+                                                "minWidth": 3,
+                                                "maxWidth": 300,
+                                                "minHeight": 2.21,
+                                                "maxHeight": 221
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

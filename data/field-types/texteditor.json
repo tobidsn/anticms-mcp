@@ -1,0 +1,165 @@
+{
+  "name": "texteditor",
+  "label": "Text Editor Field",
+  "description": "Text Editor fields provide a WYSIWYG interface for rich text content. You can choose between a full or simple toolbar, set multilanguage, and use placeholders.",
+  "field_type": "texteditor",
+  "examples": [
+    {
+      "name": "full_text_editor",
+      "label": "Full Text Editor",
+      "description": "Rich text editor with full toolbar options",
+      "field": {
+        "name": "content",
+        "label": "Content",
+        "field": "texteditor",
+        "multilanguage": true,
+        "attribute": {
+          "type": "full",
+          "rows": 10,
+          "cols": 10,
+          "is_required": false,
+          "placeholder": "Input the testimonial of the our track record section",
+          "caption": "Short description of the testimonial",
+          "defaultValue": "",
+          "value": null,
+          "max": 255
+        }
+      }
+    },
+    {
+      "name": "simple_text_editor",
+      "label": "Simple Text Editor",
+      "description": "Rich text editor with only bold, italic, and underline buttons",
+      "field": {
+        "name": "content",
+        "label": "Content",
+        "field": "texteditor",
+        "multilanguage": true,
+        "attribute": {
+          "type": "simple",
+          "rows": 3,
+          "cols": 30,
+          "is_required": false,
+          "placeholder": "Input the testimonial of the our track record section",
+          "caption": "Short description of the testimonial",
+          "defaultValue": "",
+          "value": null,
+          "max": 255
+        }
+      }
+    },
+    {
+      "name": "large_text_editor",
+      "label": "Large Text Editor",
+      "description": "Large text editor for long content",
+      "field": {
+        "name": "article_content",
+        "label": "Article Content",
+        "field": "texteditor",
+        "multilanguage": true,
+        "attribute": {
+          "type": "full",
+          "rows": 20,
+          "cols": 80,
+          "is_required": true,
+          "placeholder": "Write your article content here...",
+          "caption": "Full article content with rich formatting",
+          "defaultValue": "",
+          "value": null,
+          "max": 5000
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "content"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Content"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'texteditor' for text editor)",
+        "required": true,
+        "example": "texteditor"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": true
+      }
+    },
+    "attribute_properties": {
+      "type": {
+        "type": "string",
+        "description": "Editor type ('full' or 'simple')",
+        "required": true,
+        "options": ["full", "simple"],
+        "example": "full"
+      },
+      "rows": {
+        "type": "number",
+        "description": "Number of visible text lines",
+        "required": false,
+        "example": 10
+      },
+      "cols": {
+        "type": "number",
+        "description": "Number of visible columns",
+        "required": false,
+        "example": 10
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum number of characters",
+        "required": false,
+        "example": 255
+      },
+      "min": {
+        "type": "number",
+        "description": "Minimum number of characters",
+        "required": false,
+        "example": 1
+      },
+      "placeholder": {
+        "type": "string",
+        "description": "Placeholder text for the editor",
+        "required": false,
+        "example": "Enter content"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": true
+      },
+      "defaultValue": {
+        "type": "string",
+        "description": "Default value for the editor",
+        "required": false,
+        "example": ""
+      },
+      "value": {
+        "type": "string",
+        "description": "Current value (set by system, not template)",
+        "required": false,
+        "example": null
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Short description"
+      }
+    }
+  }
+} 

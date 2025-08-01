@@ -1,0 +1,137 @@
+{
+  "name": "field_types_index",
+  "label": "Field Types Index",
+  "description": "Complete index of all available field types in AntiCMS v3",
+  "field_types": [
+    {
+      "name": "input",
+      "label": "Input Field",
+      "description": "Input fields are used for short text, numbers, emails, URLs, and more.",
+      "file": "input.json",
+      "deprecated": false
+    },
+    {
+      "name": "textarea",
+      "label": "Textarea Field",
+      "description": "Textarea fields are used for multi-line text input.",
+      "file": "textarea.json",
+      "deprecated": false
+    },
+    {
+      "name": "texteditor",
+      "label": "Text Editor Field",
+      "description": "Text Editor fields provide a WYSIWYG interface for rich text content.",
+      "file": "texteditor.json",
+      "deprecated": false
+    },
+    {
+      "name": "select",
+      "label": "Select Field",
+      "description": "Select fields provide a dropdown for choosing from predefined options.",
+      "file": "select.json",
+      "deprecated": false
+    },
+    {
+      "name": "toggle",
+      "label": "Toggle Field",
+      "description": "Toggle fields are used for boolean (on/off) switches.",
+      "file": "toggle.json",
+      "deprecated": false
+    },
+    {
+      "name": "media",
+      "label": "Media Field",
+      "description": "Media fields are used for uploading images, videos, audio, or documents.",
+      "file": "media.json",
+      "deprecated": false
+    },
+    {
+      "name": "file",
+      "label": "File Field",
+      "description": "File fields are used for uploading assets (deprecated - use Media Field instead).",
+      "file": "file.json",
+      "deprecated": true
+    },
+    {
+      "name": "image",
+      "label": "Image Field",
+      "description": "Image fields are used for uploading images (deprecated - use Media Field instead).",
+      "file": "image.json",
+      "deprecated": true
+    },
+    {
+      "name": "repeater",
+      "label": "Repeater Field",
+      "description": "Repeater fields allow you to define repeatable groups of fields.",
+      "file": "repeater.json",
+      "deprecated": false
+    },
+    {
+      "name": "group",
+      "label": "Group Field",
+      "description": "Group fields allow you to define a single, non-repeatable group of related fields.",
+      "file": "group.json",
+      "deprecated": false
+    },
+    {
+      "name": "relationship",
+      "label": "Relationship Field",
+      "description": "Relationship fields reference other posts by type, status, category, or search.",
+      "file": "relationship.json",
+      "deprecated": false
+    },
+    {
+      "name": "post_object",
+      "label": "Post Object Field",
+      "description": "Post Object fields allow you to select one or more posts as objects.",
+      "file": "post_object.json",
+      "deprecated": false
+    },
+    {
+      "name": "post_related",
+      "label": "Post Related Field",
+      "description": "Post Related fields configure related post settings.",
+      "file": "post_related.json",
+      "deprecated": false
+    },
+    {
+      "name": "table",
+      "label": "Table Field",
+      "description": "Table fields allow you to define tabular data with custom columns.",
+      "file": "table.json",
+      "deprecated": false
+    }
+  ],
+  "categories": {
+    "basic_fields": [
+      "input",
+      "textarea",
+      "texteditor",
+      "select",
+      "toggle"
+    ],
+    "media_fields": [
+      "media",
+      "file",
+      "image"
+    ],
+    "complex_fields": [
+      "repeater",
+      "group",
+      "table"
+    ],
+    "relationship_fields": [
+      "relationship",
+      "post_object",
+      "post_related"
+    ]
+  },
+  "deprecated_fields": [
+    "file",
+    "image"
+  ],
+  "recommended_replacements": {
+    "file": "media",
+    "image": "media"
+  }
+} 

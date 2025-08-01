@@ -1,0 +1,101 @@
+{
+  "name": "post_related",
+  "label": "Post Related Field",
+  "description": "Post Related fields configure related post settings, such as API prefix and captions.",
+  "field_type": "post_related",
+  "examples": [
+    {
+      "name": "basic_post_related",
+      "label": "Basic Post Related",
+      "description": "Simple post related configuration",
+      "field": {
+        "name": "post_related",
+        "label": "Post Related",
+        "field": "post_related",
+        "attribute": {
+          "is_required": false,
+          "caption": "Setting the related post",
+          "api_prefix": "/api/v1/"
+        }
+      }
+    },
+    {
+      "name": "custom_api_post_related",
+      "label": "Custom API Post Related",
+      "description": "Post related with custom API prefix",
+      "field": {
+        "name": "related_content",
+        "label": "Related Content",
+        "field": "post_related",
+        "attribute": {
+          "is_required": false,
+          "caption": "Configure related content settings",
+          "api_prefix": "/api/v2/content/"
+        }
+      }
+    },
+    {
+      "name": "required_post_related",
+      "label": "Required Post Related",
+      "description": "Required post related field",
+      "field": {
+        "name": "featured_related",
+        "label": "Featured Related",
+        "field": "post_related",
+        "attribute": {
+          "is_required": true,
+          "caption": "Required related post configuration",
+          "api_prefix": "/api/v1/posts/"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "post_related"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Post Related"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'post_related' for post related)",
+        "required": true,
+        "example": "post_related"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "api_prefix": {
+        "type": "string",
+        "description": "API prefix for related post requests",
+        "required": false,
+        "example": "/api/v1/"
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Setting the related post"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": false
+      }
+    }
+  }
+} 

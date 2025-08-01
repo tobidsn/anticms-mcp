@@ -1,0 +1,148 @@
+{
+    "name": "home",
+    "label": "Home",
+    "is_content": false,
+    "multilanguage": true,
+    "is_multiple": false,
+    "description": "Template containing all components used on the Home Page",
+    "components": [
+      {
+        "keyName": "section_hero",
+        "label": "Section Hero",
+        "section": "1",
+        "block": "Hero",
+        "fields": [
+          {
+            "name": "status",
+            "label": "Enable Section",
+            "field": "toggle",
+            "attribute": {
+              "defaultValue": true,
+              "caption": "Enable or disable the hero section"
+            }
+          },
+          {
+            "name": "smallTitle",
+            "label": "Small Title",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Enter small title",
+              "defaultValue": "Premium Home Services",
+              "maxLength": 50,
+              "minLength": 1,
+              "caption": "Small title displayed above main title"
+            }
+          },
+          {
+            "name": "mainTitle",
+            "label": "Main Title",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "is_required": true,
+              "placeholder": "Enter main title",
+              "defaultValue": "Need improvement or repair your home? we can help!",
+              "maxLength": 200,
+              "minLength": 1,
+              "caption": "Main hero title"
+            }
+          },
+          {
+            "name": "description",
+            "label": "Description",
+            "field": "texteditor",
+            "multilanguage": true,
+            "attribute": {
+              "type": "simple",
+              "rows": 5,
+              "cols": 50,
+              "is_required": false,
+              "placeholder": "Enter description",
+              "caption": "Hero description text",
+              "defaultValue": "Your premier destination for top-notch smart home service and repair. Professional maintenance, repairs, and improvements for your home."
+            }
+          },
+          {
+            "name": "ctaButtonText",
+            "label": "CTA Button Text",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Enter button text",
+              "defaultValue": "Call Us Now",
+              "maxLength": 30,
+              "caption": "Call to action button text"
+            }
+          },
+          {
+            "name": "highlights",
+            "label": "Highlights",
+            "field": "repeater",
+            "attribute": {
+              "min": 1,
+              "max": 5,
+              "caption": "Hero highlight items",
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Highlight Text",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "is_required": true,
+                    "placeholder": "Enter highlight text",
+                    "maxLength": 50,
+                    "caption": "Use \\n for line breaks"
+                  }
+                },
+                {
+                  "name": "delay",
+                  "label": "Animation Delay",
+                  "field": "input",
+                  "attribute": {
+                    "type": "number",
+                    "is_required": false,
+                    "placeholder": "Enter delay in seconds",
+                    "defaultValue": 1,
+                    "min": 0,
+                    "max": 5,
+                    "step": 0.1,
+                    "caption": "Animation delay in seconds"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "leftImage",
+            "label": "Left Image",
+            "field": "media",
+            "attribute": {
+              "accept": [
+                "image"
+              ],
+              "caption": "Left hero image"
+            }
+          },
+          {
+            "name": "rightImage",
+            "label": "Right Image",
+            "field": "media",
+            "attribute": {
+              "accept": [
+                "image"
+              ],
+              "caption": "Right hero image"
+            }
+          }
+        ]
+      }
+    ]
+}

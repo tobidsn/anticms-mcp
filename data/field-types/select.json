@@ -1,0 +1,156 @@
+{
+  "name": "select",
+  "label": "Select Field",
+  "description": "Select fields provide a dropdown for choosing from predefined options. You can enable multilanguage, set a placeholder, and define a default value.",
+  "field_type": "select",
+  "examples": [
+    {
+      "name": "status_select",
+      "label": "Status Select",
+      "description": "Basic select field for status options",
+      "field": {
+        "field": "select",
+        "name": "status",
+        "label": "Status",
+        "multilanguage": true,
+        "attribute": {
+          "options": [
+            { "label": "Active", "value": "active" },
+            { "label": "Inactive", "value": "inactive" }
+          ],
+          "is_required": true,
+          "placeholder": "",
+          "caption": "",
+          "defaultValue": "active"
+        }
+      }
+    },
+    {
+      "name": "category_select",
+      "label": "Category Select",
+      "description": "Select field for content categories",
+      "field": {
+        "name": "category",
+        "label": "Category",
+        "field": "select",
+        "multilanguage": true,
+        "attribute": {
+          "options": [
+            { "label": "Technology", "value": "tech" },
+            { "label": "Business", "value": "business" },
+            { "label": "Lifestyle", "value": "lifestyle" },
+            { "label": "Sports", "value": "sports" }
+          ],
+          "is_required": true,
+          "placeholder": "Select category",
+          "caption": "Choose the content category",
+          "defaultValue": "tech"
+        }
+      }
+    },
+    {
+      "name": "priority_select",
+      "label": "Priority Select",
+      "description": "Select field with priority levels",
+      "field": {
+        "name": "priority",
+        "label": "Priority",
+        "field": "select",
+        "attribute": {
+          "options": [
+            { "label": "Low", "value": "low" },
+            { "label": "Medium", "value": "medium" },
+            { "label": "High", "value": "high" },
+            { "label": "Critical", "value": "critical" }
+          ],
+          "is_required": false,
+          "placeholder": "Select priority",
+          "caption": "Set the priority level",
+          "defaultValue": "medium"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "status"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Status"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'select' for select)",
+        "required": true,
+        "example": "select"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": true
+      }
+    },
+    "attribute_properties": {
+      "options": {
+        "type": "array",
+        "description": "Array of selectable options",
+        "required": true,
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "Display label for the option"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value stored when option is selected"
+            }
+          }
+        },
+        "example": [
+          { "label": "Active", "value": "active" },
+          { "label": "Inactive", "value": "inactive" }
+        ]
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": true
+      },
+      "placeholder": {
+        "type": "string",
+        "description": "Placeholder text for the select",
+        "required": false,
+        "example": "Select status"
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Choose status"
+      },
+      "defaultValue": {
+        "type": "string",
+        "description": "Default value for the select",
+        "required": false,
+        "example": "active"
+      },
+      "value": {
+        "type": "string",
+        "description": "Current value (set by system, not template)",
+        "required": false,
+        "example": null
+      }
+    }
+  }
+} 

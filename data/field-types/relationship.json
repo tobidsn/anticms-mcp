@@ -1,0 +1,171 @@
+{
+  "name": "relationship",
+  "label": "Relationship Field",
+  "description": "Relationship fields reference other posts by type, status, category, or search. You can set filters and limits.",
+  "field_type": "relationship",
+  "examples": [
+    {
+      "name": "basic_relationship",
+      "label": "Basic Relationship",
+      "description": "Simple relationship with post type filter",
+      "field": {
+        "name": "relationship",
+        "label": "Relationship",
+        "field": "relationship",
+        "attribute": {
+          "is_required": false,
+          "caption": "Select the relationship",
+          "filter": {
+            "post_type": [
+              "event",
+              "post"
+            ],
+            "post_status": "publish"
+          },
+          "min": 1,
+          "max": 4,
+          "api_url": "/api/v1/posts/relationship?ids="
+        }
+      }
+    },
+    {
+      "name": "category_relationship",
+      "label": "Category Relationship",
+      "description": "Relationship filtered by specific categories",
+      "field": {
+        "name": "related_posts",
+        "label": "Related Posts",
+        "field": "relationship",
+        "attribute": {
+          "is_required": false,
+          "caption": "Select related posts",
+          "filter": {
+            "post_type": ["news"],
+            "post_status": "publish",
+            "post_category": [
+              "technology",
+              "business"
+            ]
+          },
+          "min": 1,
+          "max": 10,
+          "api_url": "/api/v1/posts/relationship?ids="
+        }
+      }
+    },
+    {
+      "name": "single_relationship",
+      "label": "Single Relationship",
+      "description": "Relationship for single post selection",
+      "field": {
+        "name": "featured_post",
+        "label": "Featured Post",
+        "field": "relationship",
+        "attribute": {
+          "is_required": true,
+          "caption": "Select a featured post",
+          "filter": {
+            "post_type": ["post"],
+            "post_status": "publish"
+          },
+          "min": 1,
+          "max": 1,
+          "api_url": "/api/v1/posts/relationship?ids="
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "relationship"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Relationship"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'relationship' for relationship)",
+        "required": true,
+        "example": "relationship"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "filter": {
+        "type": "object",
+        "description": "Filter object for post type, status, category",
+        "required": false,
+        "properties": {
+          "post_type": {
+            "type": "array",
+            "description": "Post types to include",
+            "items": {
+              "type": "string"
+            },
+            "example": ["event", "post"]
+          },
+          "post_status": {
+            "type": "string",
+            "description": "Post status filter",
+            "example": "publish"
+          },
+          "post_category": {
+            "type": "array",
+            "description": "Post categories to include",
+            "items": {
+              "type": "string"
+            },
+            "example": ["category_1", "category_2"]
+          }
+        },
+        "example": {
+          "post_type": ["event", "post"],
+          "post_status": "publish",
+          "post_category": ["category_1", "category_2"]
+        }
+      },
+      "min": {
+        "type": "number",
+        "description": "Minimum number of related items",
+        "required": false,
+        "example": 1
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum number of related items",
+        "required": false,
+        "example": 4
+      },
+      "api_url": {
+        "type": "string",
+        "description": "API endpoint for fetching relationships",
+        "required": false,
+        "example": "/api/v1/posts/relationship?ids="
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Select the relationship"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": false
+      }
+    }
+  }
+} 

@@ -1,0 +1,184 @@
+{
+  "name": "input",
+  "label": "Input Field",
+  "description": "Input fields are used for short text, numbers, emails, URLs, and more. You can specify the type, placeholder, and multilanguage support.",
+  "field_type": "input",
+  "examples": [
+    {
+      "name": "text_input",
+      "label": "Text Input (with multilanguage)",
+      "description": "Basic text input with multilanguage support",
+      "field": {
+        "name": "title",
+        "label": "Title",
+        "field": "input",
+        "multilanguage": true,
+        "attribute": {
+          "type": "text",
+          "is_required": false,
+          "placeholder": "Input the small title of the banner",
+          "defaultValue": "",
+          "value": null,
+          "maxLength": 50,
+          "minLength": 1
+        }
+      }
+    },
+    {
+      "name": "email_input",
+      "label": "Email Input",
+      "description": "Email input with validation",
+      "field": {
+        "name": "email",
+        "label": "Email",
+        "field": "input",
+        "attribute": {
+          "type": "email",
+          "is_required": true,
+          "placeholder": "Input the email",
+          "defaultValue": "",
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "url_input",
+      "label": "URL Input",
+      "description": "URL input with validation",
+      "field": {
+        "name": "website",
+        "label": "Website",
+        "field": "input",
+        "attribute": {
+          "type": "url",
+          "is_required": false,
+          "placeholder": "https://example.com",
+          "defaultValue": "",
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "number_input",
+      "label": "Number Input",
+      "description": "Number input with min/max constraints",
+      "field": {
+        "name": "quantity",
+        "label": "Quantity",
+        "field": "input",
+        "attribute": {
+          "type": "number",
+          "is_required": true,
+          "placeholder": "Enter quantity",
+          "defaultValue": "1",
+          "min": 1,
+          "max": 100,
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "phone_input",
+      "label": "Phone Input",
+      "description": "Phone number input",
+      "field": {
+        "name": "phone",
+        "label": "Phone Number",
+        "field": "input",
+        "attribute": {
+          "type": "text",
+          "is_required": true,
+          "placeholder": "(555) 123-4567",
+          "defaultValue": "",
+          "value": null,
+          "maxLength": 20
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "title"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Title"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'input' for input)",
+        "required": true,
+        "example": "input"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": true
+      }
+    },
+    "attribute_properties": {
+      "type": {
+        "type": "string",
+        "description": "Input type (text, number, email, url, etc.)",
+        "required": true,
+        "options": ["text", "number", "email", "url", "tel", "password"],
+        "example": "text"
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum value (for number inputs)",
+        "required": false,
+        "example": 100
+      },
+      "maxLength": {
+        "type": "number",
+        "description": "Maximum number of characters",
+        "required": false,
+        "example": 50
+      },
+      "min": {
+        "type": "number",
+        "description": "Minimum value (for number inputs)",
+        "required": false,
+        "example": 1
+      },
+      "minLength": {
+        "type": "number",
+        "description": "Minimum number of characters",
+        "required": false,
+        "example": 3
+      },
+      "placeholder": {
+        "type": "string",
+        "description": "Placeholder text for the input",
+        "required": false,
+        "example": "Enter your name"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": true
+      },
+      "defaultValue": {
+        "type": "string",
+        "description": "Default value for the input",
+        "required": false,
+        "example": ""
+      },
+      "value": {
+        "type": "string",
+        "description": "Current value (set by system, not template)",
+        "required": false,
+        "example": null
+      }
+    }
+  }
+} 

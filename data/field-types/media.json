@@ -1,0 +1,143 @@
+{
+  "name": "media",
+  "label": "Media Field",
+  "description": "Media fields are used for uploading images, videos, audio, or documents. You can restrict accepted types and set resolution constraints.",
+  "field_type": "media",
+  "examples": [
+    {
+      "name": "image_upload",
+      "label": "Image Upload",
+      "description": "Image upload with resolution constraints",
+      "field": {
+        "name": "image",
+        "label": "Image",
+        "field": "media",
+        "attribute": {
+          "accept": ["image"],
+          "resolution": {
+            "minWidth": 3,
+            "maxWidth": 300,
+            "minHeight": 2.21,
+            "maxHeight": 221
+          }
+        }
+      }
+    },
+    {
+      "name": "general_media",
+      "label": "General Media",
+      "description": "General media upload accepting multiple types",
+      "field": {
+        "name": "attachment",
+        "label": "Attachment",
+        "field": "media",
+        "attribute": {
+          "accept": ["image", "video", "audio", "document"]
+        }
+      }
+    },
+    {
+      "name": "video_upload",
+      "label": "Video Upload",
+      "description": "Video upload with specific constraints",
+      "field": {
+        "name": "video",
+        "label": "Video",
+        "field": "media",
+        "attribute": {
+          "accept": ["video"],
+          "caption": "Upload video files only"
+        }
+      }
+    },
+    {
+      "name": "document_upload",
+      "label": "Document Upload",
+      "description": "Document upload for files",
+      "field": {
+        "name": "document",
+        "label": "Document",
+        "field": "media",
+        "attribute": {
+          "accept": ["document"],
+          "caption": "Upload PDF, Word, or other documents"
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "image"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Image"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'media' for media)",
+        "required": true,
+        "example": "media"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "accept": {
+        "type": "array",
+        "description": "Array of accepted file types",
+        "required": false,
+        "items": {
+          "type": "string",
+          "enum": ["image", "video", "audio", "document"]
+        },
+        "example": ["image", "video", "audio", "document"]
+      },
+      "resolution": {
+        "type": "object",
+        "description": "Image resolution constraints (min/max width/height), not required",
+        "required": false,
+        "properties": {
+          "minWidth": {
+            "type": "number",
+            "description": "Minimum width in pixels"
+          },
+          "maxWidth": {
+            "type": "number",
+            "description": "Maximum width in pixels"
+          },
+          "minHeight": {
+            "type": "number",
+            "description": "Minimum height in pixels"
+          },
+          "maxHeight": {
+            "type": "number",
+            "description": "Maximum height in pixels"
+          }
+        },
+        "example": {
+          "minWidth": 3,
+          "maxWidth": 300,
+          "minHeight": 2.21,
+          "maxHeight": 221
+        }
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Upload image max. size 500kb"
+      }
+    }
+  }
+} 

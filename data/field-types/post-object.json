@@ -1,0 +1,140 @@
+{
+  "name": "post_object",
+  "label": "Post Object Field",
+  "description": "Post Object fields allow you to select one or more posts as objects. You can filter by post type and status, and enable multiple selection.",
+  "field_type": "post_object",
+  "examples": [
+    {
+      "name": "basic_post_object",
+      "label": "Basic Post Object",
+      "description": "Simple post object with multiple selection",
+      "field": {
+        "name": "post_object",
+        "label": "Post Object",
+        "field": "post_object",
+        "attribute": {
+          "is_required": false,
+          "caption": "Select posts",
+          "filter": {
+            "post_type": [
+              "event",
+              "page"
+            ],
+            "post_status": "publish"
+          },
+          "multiple": true
+        }
+      }
+    },
+    {
+      "name": "single_post_object",
+      "label": "Single Post Object",
+      "description": "Post object for single selection",
+      "field": {
+        "name": "featured_page",
+        "label": "Featured Page",
+        "field": "post_object",
+        "attribute": {
+          "is_required": true,
+          "caption": "Select a featured page",
+          "filter": {
+            "post_type": ["page"],
+            "post_status": "publish"
+          },
+          "multiple": false
+        }
+      }
+    },
+    {
+      "name": "event_post_object",
+      "label": "Event Post Object",
+      "description": "Post object for event selection",
+      "field": {
+        "name": "related_events",
+        "label": "Related Events",
+        "field": "post_object",
+        "attribute": {
+          "is_required": false,
+          "caption": "Select related events",
+          "filter": {
+            "post_type": ["event"],
+            "post_status": "publish"
+          },
+          "multiple": true
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "post_object"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Post Object"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'post_object' for post object)",
+        "required": true,
+        "example": "post_object"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "filter": {
+        "type": "object",
+        "description": "Filter object for post type, status, etc.",
+        "required": false,
+        "properties": {
+          "post_type": {
+            "type": "array",
+            "description": "Post types to include",
+            "items": {
+              "type": "string"
+            },
+            "example": ["event", "post"]
+          },
+          "post_status": {
+            "type": "string",
+            "description": "Post status filter",
+            "example": "publish"
+          }
+        },
+        "example": {
+          "post_type": ["event", "page"],
+          "post_status": "publish"
+        }
+      },
+      "multiple": {
+        "type": "boolean",
+        "description": "Allow multiple selection",
+        "required": false,
+        "example": true
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Select posts"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": false
+      }
+    }
+  }
+} 

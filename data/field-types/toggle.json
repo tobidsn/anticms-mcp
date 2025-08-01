@@ -1,0 +1,101 @@
+{
+  "name": "toggle",
+  "label": "Toggle Field",
+  "description": "Toggle fields are used for boolean (on/off) switches. You can set captions and default values.",
+  "field_type": "toggle",
+  "examples": [
+    {
+      "name": "status_toggle",
+      "label": "Status Toggle",
+      "description": "Basic toggle for enabling/disabling sections",
+      "field": {
+        "name": "status",
+        "label": "Status",
+        "field": "toggle",
+        "attribute": {
+          "caption": "Enable or disable the video section",
+          "defaultValue": true,
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "feature_toggle",
+      "label": "Feature Toggle",
+      "description": "Toggle for enabling features",
+      "field": {
+        "name": "show_gallery",
+        "label": "Show Gallery",
+        "field": "toggle",
+        "attribute": {
+          "caption": "Enable or disable the image gallery",
+          "defaultValue": false,
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "setting_toggle",
+      "label": "Setting Toggle",
+      "description": "Toggle for user settings",
+      "field": {
+        "name": "notifications",
+        "label": "Email Notifications",
+        "field": "toggle",
+        "attribute": {
+          "caption": "Receive email notifications",
+          "defaultValue": true,
+          "value": null
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "status"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Status"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'toggle' for toggle)",
+        "required": true,
+        "example": "toggle"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Enable or disable"
+      },
+      "defaultValue": {
+        "type": "boolean",
+        "description": "Default value for the toggle",
+        "required": false,
+        "example": true
+      },
+      "value": {
+        "type": "boolean",
+        "description": "Current value (set by system, not template)",
+        "required": false,
+        "example": null
+      }
+    }
+  }
+} 

@@ -1,0 +1,188 @@
+{
+  "name": "group",
+  "label": "Group Field",
+  "description": "Group fields allow you to define a single, non-repeatable group of related fields, such as a button with a label and link. This is useful for logically grouping fields that belong together without allowing multiple instances.",
+  "field_type": "group",
+  "examples": [
+    {
+      "name": "button_group",
+      "label": "Button Group",
+      "description": "Group for button with label and link",
+      "field": {
+        "field": "group",
+        "name": "button_group",
+        "label": "Button Group",
+        "attribute": {
+          "fields": [
+            {
+              "field": "input",
+              "name": "label",
+              "label": "Label",
+              "multilanguage": true,
+              "attribute": {
+                "is_required": false,
+                "type": "text",
+                "placeholder": "Button Label",
+                "defaultValue": "",
+                "value": null
+              }
+            },
+            {
+              "field": "input",
+              "name": "link",
+              "label": "Link",
+              "multilanguage": true,
+              "attribute": {
+                "type": "url",
+                "is_required": false,
+                "placeholder": "Enter link",
+                "defaultValue": "#",
+                "value": null
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "contact_group",
+      "label": "Contact Group",
+      "description": "Group for contact information",
+      "field": {
+        "field": "group",
+        "name": "contact_info",
+        "label": "Contact Information",
+        "attribute": {
+          "fields": [
+            {
+              "name": "email",
+              "label": "Email",
+              "field": "input",
+              "attribute": {
+                "type": "email",
+                "placeholder": "contact@example.com"
+              }
+            },
+            {
+              "name": "phone",
+              "label": "Phone",
+              "field": "input",
+              "attribute": {
+                "type": "text",
+                "placeholder": "+1 (555) 123-4567"
+              }
+            },
+            {
+              "name": "address",
+              "label": "Address",
+              "field": "textarea",
+              "multilanguage": true,
+              "attribute": {
+                "rows": 3,
+                "placeholder": "Company address"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "social_media_group",
+      "label": "Social Media Group",
+      "description": "Group for social media links",
+      "field": {
+        "field": "group",
+        "name": "social_media",
+        "label": "Social Media Links",
+        "attribute": {
+          "caption": "Enter social media links",
+          "fields": [
+            {
+              "name": "facebook",
+              "label": "Facebook",
+              "field": "input",
+              "attribute": {
+                "type": "url",
+                "placeholder": "https://facebook.com/..."
+              }
+            },
+            {
+              "name": "twitter",
+              "label": "Twitter",
+              "field": "input",
+              "attribute": {
+                "type": "url",
+                "placeholder": "https://twitter.com/..."
+              }
+            },
+            {
+              "name": "linkedin",
+              "label": "LinkedIn",
+              "field": "input",
+              "attribute": {
+                "type": "url",
+                "placeholder": "https://linkedin.com/..."
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "button_group"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Button Group"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'group' for group)",
+        "required": true,
+        "example": "group"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "fields": {
+        "type": "array",
+        "description": "Array of field definitions to group",
+        "required": true,
+        "items": {
+          "type": "object",
+          "description": "Field definition object"
+        },
+        "example": [
+          {
+            "field": "input",
+            "name": "label",
+            "label": "Label",
+            "attribute": {
+              "type": "text",
+              "placeholder": "Button Label"
+            }
+          }
+        ]
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Enter button details"
+      }
+    }
+  }
+} 

@@ -1,0 +1,2253 @@
+# AntiCMS MCP: Streamable HTTP Transport Implementation
+
+This document outlines how to convert the AntiCMS MCP server from **Stdio Transport** to **Streamable HTTP Transport** using the [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/README.md#streamable-http).
+
+## 🚀 Overview
+
+**Streamable HTTP Transport** is the modern transport method for MCP servers, offering:
+- **Better scalability** - Multiple concurrent connections
+- **Web-based access** - HTTP clients/browsers can connect
+- **Health monitoring** - Built-in health check endpoints
+- **CORS support** - Web application integration
+- **Load balancing** - Reverse proxy compatibility
+- **Session management** - Stateful connections with resumability
+
+## 📋 Current State
+
+Your AntiCMS MCP currently uses:
+```javascript
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+
+// Current implementation
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+## 🔄 Migration Steps
+
+### 1. **Update Dependencies**
+
+```json
+{
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "zod": "^3.22.4",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
+```
+
+### 2. **Replace Transport Imports**
+
+```javascript
+// OLD: Stdio transport
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+
+// NEW: Streamable HTTP transport
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import express from 'express';
+import cors from 'cors';
+import { randomUUID } from 'node:crypto';
+```
+
+### 3. **Add Configuration Parser**
+
+```javascript
+// Parse command line arguments for HTTP transport
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const config = {
+    port: 3000,
+    host: 'localhost',
+    baseUrl: null,
+    apiKey: null,
+    apiSecret: null,
+    enableCors: true,
+    enableDnsRebindingProtection: false
+  };
+  
+  for (let i = 0; i < args.length; i += 2) {
+    switch (args[i]) {
+      case '--port':
+        config.port = parseInt(args[i + 1]);
+        break;
+      case '--host':
+        config.host = args[i + 1];
+        break;
+      case '--base-url':
+        config.baseUrl = args[i + 1];
+        break;
+      case '--api-key':
+        config.apiKey = args[i + 1];
+        break;
+      case '--api-secret':
+        config.apiSecret = args[i + 1];
+        break;
+      case '--enable-cors':
+        config.enableCors = args[i + 1] === 'true';
+        break;
+      case '--enable-dns-protection':
+        config.enableDnsRebindingProtection = args[i + 1] === 'true';
+        break;
+    }
+  }
+  
+  return config;
+}
+
+const CONFIG = parseArgs();
+```
+
+### 4. **Create HTTP Server with Session Management**
+
+```javascript
+// Create Express app
+const app = express();
+app.use(express.json());
+
+// Enable CORS for browser clients
+if (CONFIG.enableCors) {
+  app.use(cors({
+    origin: '*', // Configure appropriately for production
+    exposedHeaders: ['Mcp-Session-Id'],
+    allowedHeaders: ['Content-Type', 'mcp-session-id'],
+  }));
+}
+
+// Map to store transports by session ID
+const transports = {};
+
+// Handle POST requests for client-to-server communication
+app.post('/mcp', async (req, res) => {
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
+  let transport;
+
+  if (sessionId && transports[sessionId]) {
+    // Reuse existing transport
+    transport = transports[sessionId];
+  } else if (!sessionId && isInitializeRequest(req.body)) {
+    // New initialization request
+    transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+      onSessionInitialized: (sessionId) => {
+        transports[sessionId] = transport;
+      },
+      enableDnsRebindingProtection: CONFIG.enableDnsRebindingProtection,
+      allowedHosts: CONFIG.enableDnsRebindingProtection ? ['127.0.0.1', 'localhost'] : undefined,
+    });
+
+    // Clean up transport when closed
+    transport.onclose = () => {
+      if (transport.sessionId) {
+        delete transports[transport.sessionId];
+      }
+    };
+
+    await server.connect(transport);
+  } else {
+    res.status(400).json({
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: 'Bad Request: No valid session ID provided',
+      },
+      id: null,
+    });
+    return;
+  }
+
+  await transport.handleRequest(req, res, req.body);
+});
+
+// Handle GET requests for server-to-client notifications via SSE
+app.get('/mcp', async (req, res) => {
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
+  if (!sessionId || !transports[sessionId]) {
+    res.status(400).send('Invalid or missing session ID');
+    return;
+  }
+  
+  const transport = transports[sessionId];
+  await transport.handleRequest(req, res);
+});
+
+// Handle DELETE requests for session termination
+app.delete('/mcp', async (req, res) => {
+  const sessionId = req.headers['mcp-session-id'] as string | undefined;
+  if (!sessionId || !transports[sessionId]) {
+    res.status(400).send('Invalid or missing session ID');
+    return;
+  }
+  
+  const transport = transports[sessionId];
+  await transport.handleRequest(req, res);
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'anticms-mcp',
+    version: '1.0.0',
+    transport: 'streamable-http',
+    sessions: Object.keys(transports).length
+  });
+});
+
+// API info endpoint
+app.get('/', (req, res) => {
+  res.json({
+    name: 'AntiCMS v3 MCP Server',
+    version: '1.0.0',
+    transport: 'streamable-http',
+    endpoints: {
+      mcp: '/mcp',
+      health: '/health'
+    },
+    capabilities: server.capabilities
+  });
+});
+```
+
+### 5. **Update Main Function**
+
+```javascript
+// Start HTTP server
+async function main() {
+  const httpServer = app.listen(CONFIG.port, CONFIG.host, () => {
+    console.error(`AntiCMS v3 MCP Server running on http://${CONFIG.host}:${CONFIG.port}`);
+    console.error(`MCP endpoint: http://${CONFIG.host}:${CONFIG.port}/mcp`);
+    console.error(`Health check: http://${CONFIG.host}:${CONFIG.port}/health`);
+  });
+  
+  // Graceful shutdown
+  process.on('SIGINT', () => {
+    console.error('Shutting down HTTP server...');
+    httpServer.close(() => {
+      process.exit(0);
+    });
+  });
+}
+```
+
+## 📚 MCP Resources Implementation
+
+**Resources** are a core component of the MCP specification that allow servers to expose data to LLMs. Resources can be static files, dynamic content, or structured data that clients can read and potentially modify.
+
+### **JSON Content in Resources**
+
+Ya, dalam MCP Resources Anda bisa menyediakan **JSON content** untuk memberikan contoh real project. Berikut adalah implementasinya:
+
+#### **1. Real Project Template Examples**
+
+```javascript
+// Register AntiCMS template resources with real JSON examples
+server.registerResource(
+  "template-example",
+  new ResourceTemplate("anticms://examples/{projectType}", {
+    list: async () => {
+      return [
+        { name: "ecommerce-landing", title: "E-commerce Landing Page" },
+        { name: "company-website", title: "Company Website" },
+        { name: "blog-platform", title: "Blog Platform" },
+        { name: "portfolio-site", title: "Portfolio Website" }
+      ];
+    }
+  }),
+  {
+    title: "AntiCMS Real Project Examples",
+    description: "Complete AntiCMS v3 templates for real projects"
+  },
+  async (uri, { projectType }) => {
+    const examples = {
+      "ecommerce-landing": {
+        name: "ecommerce_landing",
+        label: "E-commerce Landing Page",
+        description: "Complete e-commerce landing page template with product showcase",
+        is_content: false,
+        multilanguage: true,
+        is_multiple: false,
+        components: [
+          {
+            keyName: "hero_section",
+            label: "Hero Section",
+            section: "1",
+            fields: [
+              {
+                name: "status",
+                label: "Status",
+                field: "toggle",
+                attribute: {
+                  caption: "Enable or disable the hero section",
+                  defaultValue: true
+                }
+              },
+              {
+                name: "title",
+                label: "Title",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  is_required: true,
+                  placeholder: "Enter main title",
+                  maxLength: 100
+                }
+              },
+              {
+                name: "subtitle",
+                label: "Subtitle",
+                field: "textarea",
+                multilanguage: true,
+                attribute: {
+                  rows: 3,
+                  max: 200,
+                  placeholder: "Enter subtitle"
+                }
+              },
+              {
+                name: "cta_button",
+                label: "Call to Action",
+                field: "group",
+                attribute: {
+                  fields: [
+                    {
+                      name: "label",
+                      label: "Button Label",
+                      field: "input",
+                      multilanguage: true,
+                      attribute: {
+                        type: "text",
+                        placeholder: "Shop Now"
+                      }
+                    },
+                    {
+                      name: "url",
+                      label: "URL",
+                      field: "input",
+                      attribute: {
+                        type: "url",
+                        placeholder: "/products"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            keyName: "product_showcase",
+            label: "Product Showcase",
+            section: "2",
+            fields: [
+              {
+                name: "section_title",
+                label: "Section Title",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  placeholder: "Featured Products"
+                }
+              },
+              {
+                name: "products",
+                label: "Products",
+                field: "repeater",
+                attribute: {
+                  min: 1,
+                  max: 6,
+                  fields: [
+                    {
+                      name: "product_name",
+                      label: "Product Name",
+                      field: "input",
+                      multilanguage: true,
+                      attribute: {
+                        type: "text",
+                        is_required: true,
+                        placeholder: "Product name"
+                      }
+                    },
+                    {
+                      name: "product_image",
+                      label: "Product Image",
+                      field: "media",
+                      attribute: {
+                        accept: ["image"]
+                      }
+                    },
+                    {
+                      name: "price",
+                      label: "Price",
+                      field: "input",
+                      attribute: {
+                        type: "number",
+                        placeholder: "99.99"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "company-website": {
+        name: "company_website",
+        label: "Company Website",
+        description: "Professional company website template",
+        is_content: false,
+        multilanguage: true,
+        is_multiple: false,
+        components: [
+          {
+            keyName: "hero_section",
+            label: "Hero Section",
+            section: "1",
+            fields: [
+              {
+                name: "company_logo",
+                label: "Company Logo",
+                field: "media",
+                attribute: {
+                  accept: ["image"]
+                }
+              },
+              {
+                name: "hero_title",
+                label: "Hero Title",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  is_required: true,
+                  placeholder: "Welcome to Our Company"
+                }
+              },
+              {
+                name: "hero_description",
+                label: "Hero Description",
+                field: "textarea",
+                multilanguage: true,
+                attribute: {
+                  rows: 4,
+                  placeholder: "Brief company description"
+                }
+              }
+            ]
+          },
+          {
+            keyName: "about_section",
+            label: "About Section",
+            section: "2",
+            fields: [
+              {
+                name: "about_title",
+                label: "About Title",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  placeholder: "About Us"
+                }
+              },
+              {
+                name: "about_content",
+                label: "About Content",
+                field: "texteditor",
+                multilanguage: true,
+                attribute: {
+                  type: "full"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const example = examples[projectType];
+    if (!example) {
+      throw new Error(`Unknown project type: ${projectType}`);
+    }
+
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(example, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+#### **2. Field Configuration Examples**
+
+```javascript
+// Register field configuration examples
+server.registerResource(
+  "field-examples",
+  new ResourceTemplate("anticms://field-examples/{fieldType}", {
+    list: async () => {
+      return [
+        { name: "input", title: "Input Field Examples" },
+        { name: "textarea", title: "Textarea Field Examples" },
+        { name: "media", title: "Media Field Examples" },
+        { name: "repeater", title: "Repeater Field Examples" },
+        { name: "group", title: "Group Field Examples" }
+      ];
+    }
+  }),
+  {
+    title: "AntiCMS Field Examples",
+    description: "Real examples of AntiCMS field configurations"
+  },
+  async (uri, { fieldType }) => {
+    const fieldExamples = {
+      "input": {
+        "basic_text": {
+          name: "title",
+          label: "Title",
+          field: "input",
+          attribute: {
+            type: "text",
+            is_required: true,
+            placeholder: "Enter title",
+            maxLength: 100
+          }
+        },
+        "email_field": {
+          name: "email",
+          label: "Email Address",
+          field: "input",
+          attribute: {
+            type: "email",
+            is_required: true,
+            placeholder: "user@example.com"
+          }
+        },
+        "number_field": {
+          name: "price",
+          label: "Price",
+          field: "input",
+          attribute: {
+            type: "number",
+            placeholder: "0.00",
+            min: 0
+          }
+        }
+      },
+      "textarea": {
+        "description": {
+          name: "description",
+          label: "Description",
+          field: "textarea",
+          multilanguage: true,
+          attribute: {
+            rows: 4,
+            max: 500,
+            placeholder: "Enter description"
+          }
+        },
+        "long_content": {
+          name: "content",
+          label: "Content",
+          field: "textarea",
+          multilanguage: true,
+          attribute: {
+            rows: 8,
+            max: 2000,
+            placeholder: "Enter detailed content"
+          }
+        }
+      },
+      "media": {
+        "image_upload": {
+          name: "featured_image",
+          label: "Featured Image",
+          field: "media",
+          attribute: {
+            accept: ["image"],
+            resolution: {
+              minWidth: 800,
+              maxWidth: 1920,
+              minHeight: 600,
+              maxHeight: 1080
+            }
+          }
+        },
+        "document_upload": {
+          name: "document",
+          label: "Document",
+          field: "media",
+          attribute: {
+            accept: ["document"]
+          }
+        }
+      },
+      "repeater": {
+        "team_members": {
+          name: "team_members",
+          label: "Team Members",
+          field: "repeater",
+          attribute: {
+            min: 1,
+            max: 10,
+            fields: [
+              {
+                name: "name",
+                label: "Name",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  is_required: true,
+                  placeholder: "Full name"
+                }
+              },
+              {
+                name: "position",
+                label: "Position",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  placeholder: "Job title"
+                }
+              },
+              {
+                name: "photo",
+                label: "Photo",
+                field: "media",
+                attribute: {
+                  accept: ["image"]
+                }
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    const examples = fieldExamples[fieldType];
+    if (!examples) {
+      throw new Error(`Unknown field type: ${fieldType}`);
+    }
+
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(examples, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+#### **3. Complete Project Examples**
+
+```javascript
+// Register complete project examples
+server.registerResource(
+  "project-examples",
+  new ResourceTemplate("anticms://projects/{projectName}", {
+    list: async () => {
+      return [
+        { name: "restaurant-website", title: "Restaurant Website" },
+        { name: "real-estate-agency", title: "Real Estate Agency" },
+        { name: "law-firm", title: "Law Firm Website" },
+        { name: "fitness-center", title: "Fitness Center" }
+      ];
+    }
+  }),
+  {
+    title: "Complete AntiCMS Projects",
+    description: "Full project templates with all components and fields"
+  },
+  async (uri, { projectName }) => {
+    const projects = {
+      "restaurant-website": {
+        name: "restaurant_website",
+        label: "Restaurant Website",
+        description: "Complete restaurant website with menu, reservations, and gallery",
+        is_content: false,
+        multilanguage: true,
+        is_multiple: false,
+        components: [
+          {
+            keyName: "hero_section",
+            label: "Hero Section",
+            section: "1",
+            fields: [
+              {
+                name: "restaurant_name",
+                label: "Restaurant Name",
+                field: "input",
+                multilanguage: true,
+                attribute: {
+                  type: "text",
+                  is_required: true,
+                  placeholder: "Restaurant Name"
+                }
+              },
+              {
+                name: "hero_image",
+                label: "Hero Image",
+                field: "media",
+                attribute: {
+                  accept: ["image"]
+                }
+              },
+              {
+                name: "tagline",
+                label: "Tagline",
+                field: "textarea",
+                multilanguage: true,
+                attribute: {
+                  rows: 2,
+                  placeholder: "Restaurant tagline"
+                }
+              }
+            ]
+          },
+          {
+            keyName: "menu_section",
+            label: "Menu Section",
+            section: "2",
+            fields: [
+              {
+                name: "menu_categories",
+                label: "Menu Categories",
+                field: "repeater",
+                attribute: {
+                  min: 1,
+                  max: 10,
+                  fields: [
+                    {
+                      name: "category_name",
+                      label: "Category Name",
+                      field: "input",
+                      multilanguage: true,
+                      attribute: {
+                        type: "text",
+                        is_required: true,
+                        placeholder: "Appetizers"
+                      }
+                    },
+                    {
+                      name: "menu_items",
+                      label: "Menu Items",
+                      field: "repeater",
+                      attribute: {
+                        min: 1,
+                        max: 20,
+                        fields: [
+                          {
+                            name: "item_name",
+                            label: "Item Name",
+                            field: "input",
+                            multilanguage: true,
+                            attribute: {
+                              type: "text",
+                              is_required: true
+                            }
+                          },
+                          {
+                            name: "item_description",
+                            label: "Description",
+                            field: "textarea",
+                            multilanguage: true,
+                            attribute: {
+                              rows: 2
+                            }
+                          },
+                          {
+                            name: "item_price",
+                            label: "Price",
+                            field: "input",
+                            attribute: {
+                              type: "number",
+                              placeholder: "0.00"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const project = projects[projectName];
+    if (!project) {
+      throw new Error(`Unknown project: ${projectName}`);
+    }
+
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(project, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+### **Resource Types**
+
+#### 1. **Static Resources**
+```javascript
+// Register a static resource (fixed content)
+server.registerResource(
+  "config",
+  "config://app",
+  {
+    title: "Application Config",
+    description: "Application configuration data",
+    mimeType: "text/plain"
+  },
+  async (uri) => ({
+    contents: [{
+      uri: uri.href,
+      text: "App configuration here"
+    }]
+  })
+);
+```
+
+#### 2. **Dynamic Resources with Parameters**
+```javascript
+// Register a dynamic resource that accepts parameters
+server.registerResource(
+  "user-profile",
+  new ResourceTemplate("users://{userId}/profile", { list: undefined }),
+  {
+    title: "User Profile",
+    description: "User profile information"
+  },
+  async (uri, { userId }) => ({
+    contents: [{
+      uri: uri.href,
+      text: `Profile data for user ${userId}`
+    }]
+  })
+);
+```
+
+#### 3. **Context-Aware Resources**
+```javascript
+// Resources with intelligent completions based on context
+server.registerResource(
+  "repository",
+  new ResourceTemplate("github://repos/{owner}/{repo}", {
+    list: undefined,
+    complete: {
+      // Provide intelligent completions based on previously resolved parameters
+      repo: (value, context) => {
+        if (context?.arguments?.["owner"] === "org1") {
+          return ["project1", "project2", "project3"].filter(r => r.startsWith(value));
+        }
+        return ["default-repo"].filter(r => r.startsWith(value));
+      }
+    }
+  }),
+  {
+    title: "GitHub Repository",
+    description: "Repository information"
+  },
+  async (uri, { owner, repo }) => ({
+    contents: [{
+      uri: uri.href,
+      text: `Repository: ${owner}/${repo}`
+    }]
+  })
+);
+```
+
+### **AntiCMS-Specific Resources**
+
+#### **Template Resources**
+```javascript
+// Register AntiCMS template resources
+server.registerResource(
+  "template",
+  new ResourceTemplate("anticms://templates/{templateId}", {
+    list: async () => {
+      // Return list of available templates
+      return [
+        { name: "landing-page", title: "Landing Page Template" },
+        { name: "blog-post", title: "Blog Post Template" },
+        { name: "product-page", title: "Product Page Template" }
+      ];
+    }
+  }),
+  {
+    title: "AntiCMS Template",
+    description: "Template configuration and structure"
+  },
+  async (uri, { templateId }) => {
+    // Fetch template from AntiCMS API
+    const template = await fetchTemplateFromCMS(templateId);
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(template, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+#### **Page Resources**
+```javascript
+// Register page resources
+server.registerResource(
+  "page",
+  new ResourceTemplate("anticms://pages/{pageId}", {
+    list: async () => {
+      // Return list of pages from AntiCMS
+      const pages = await fetchPagesFromCMS();
+      return pages.map(page => ({
+        name: page.id,
+        title: page.title,
+        description: page.description
+      }));
+    }
+  }),
+  {
+    title: "AntiCMS Page",
+    description: "Page content and metadata"
+  },
+  async (uri, { pageId }) => {
+    const page = await fetchPageFromCMS(pageId);
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(page, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+#### **Field Type Resources**
+```javascript
+// Register field type documentation resources
+server.registerResource(
+  "field-type",
+  new ResourceTemplate("anticms://field-types/{fieldType}", {
+    list: async () => {
+      return Object.keys(FIELD_TYPES).map(type => ({
+        name: type,
+        title: `${type.charAt(0).toUpperCase() + type.slice(1)} Field Type`,
+        description: `AntiCMS ${type} field type documentation`
+      }));
+    }
+  }),
+  {
+    title: "AntiCMS Field Type",
+    description: "Field type documentation and examples"
+  },
+  async (uri, { fieldType }) => {
+    const fieldConfig = FIELD_TYPES[fieldType];
+    if (!fieldConfig) {
+      throw new Error(`Unknown field type: ${fieldType}`);
+    }
+    
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(fieldConfig, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+```
+
+### **Resource Links in Tools**
+
+Tools can return `ResourceLink` objects instead of embedding full content:
+
+```javascript
+server.registerTool(
+  "list-templates",
+  {
+    title: "List Templates",
+    description: "List available AntiCMS templates",
+    inputSchema: { category: z.string().optional() }
+  },
+  async ({ category }) => ({
+    content: [
+      { type: "text", text: `Available templates${category ? ` in ${category}` : ''}:` },
+      // ResourceLinks let tools return references without full content
+      {
+        type: "resource_link",
+        uri: "anticms://templates/landing-page",
+        name: "landing-page",
+        mimeType: "application/json",
+        description: 'Landing page template with hero section'
+      },
+      {
+        type: "resource_link",
+        uri: "anticms://templates/blog-post",
+        name: "blog-post",
+        mimeType: "application/json",
+        description: 'Blog post template with content sections'
+      }
+    ]
+  })
+);
+```
+
+### **Resource Notifications**
+
+Enable notifications when resources change:
+
+```javascript
+// Enable notification debouncing for resources
+const server = new McpServer(
+  {
+    name: "anticms-mcp",
+    version: "1.0.0"
+  },
+  {
+    debouncedNotificationMethods: [
+      'notifications/resources/list_changed'
+    ]
+  }
+);
+
+// Notify clients when templates are updated
+function notifyTemplateUpdate(templateId) {
+  server.notify({
+    method: 'notifications/resources/list_changed',
+    params: {
+      resources: [{
+        uri: `anticms://templates/${templateId}`,
+        name: templateId,
+        title: `Updated ${templateId} template`
+      }]
+    }
+  });
+}
+```
+
+### **Resource Completion**
+
+Implement argument completion for resources:
+
+```javascript
+// Client-side completion request
+const result = await client.complete({
+  ref: {
+    type: "ref/resource",
+    uri: "anticms://templates/{templateId}"
+  },
+  argument: {
+    name: "templateId",
+    value: "land" // User typed "land"
+  },
+  context: {
+    arguments: {
+      // Previously resolved arguments
+    }
+  }
+});
+
+// Server-side completion handler
+server.registerResource(
+  "template",
+  new ResourceTemplate("anticms://templates/{templateId}", {
+    list: undefined,
+    complete: {
+      templateId: (value, context) => {
+        // Return templates that start with the typed value
+        return ["landing-page", "landing-v2"].filter(t => t.startsWith(value));
+      }
+    }
+  }),
+  // ... rest of resource implementation
+);
+```
+
+## 🎯 MCP Prompts Implementation
+
+**Prompts** are predefined templates that LLMs can use to generate consistent and high-quality AntiCMS templates. They provide structured guidance and examples for template creation.
+
+### **Prompt Registration**
+
+```javascript
+import { PromptTemplate } from '@modelcontextprotocol/sdk/server/prompts.js';
+
+// Register AntiCMS prompt templates
+server.registerPrompt(
+  "create-landing-page",
+  new PromptTemplate(
+    "Create an AntiCMS v3 template for a landing page called '{templateName}' with the following sections: {sections}. Include a call-to-action button in the hero section.",
+    {
+      templateName: "The name of the template (e.g., 'product_landing')",
+      sections: "Comma-separated list of sections (e.g., 'hero, features, contact')"
+    }
+  ),
+  {
+    title: "Create Landing Page Template",
+    description: "Generate a complete landing page template with specified sections"
+  }
+);
+
+server.registerPrompt(
+  "create-field",
+  new PromptTemplate(
+    "Create a custom AntiCMS field called '{fieldName}' of type '{fieldType}'. Requirements: {requirements}",
+    {
+      fieldName: "Name of the field (e.g., 'product_price')",
+      fieldType: "Type of field (e.g., 'input', 'textarea', 'media')",
+      requirements: "Specific requirements for the field"
+    }
+  ),
+  {
+    title: "Create Custom Field",
+    description: "Generate a custom field with specific requirements"
+  }
+);
+
+server.registerPrompt(
+  "validate-template",
+  new PromptTemplate(
+    "Validate this AntiCMS template and provide suggestions for improvement: {templateJson}",
+    {
+      templateJson: "The JSON template to validate"
+    }
+  ),
+  {
+    title: "Validate Template",
+    description: "Validate an existing template and suggest improvements"
+  }
+);
+```
+
+### **Advanced Prompt Templates**
+
+#### **Template Creation Prompts**
+```javascript
+// Landing page template prompt
+server.registerPrompt(
+  "landing-page-template",
+  new PromptTemplate(
+    `Create an AntiCMS v3 template named "{templateName}" for a landing page with the following structure:
+
+Sections to include: {sections}
+
+Requirements:
+- Template name: {templateName}
+- Label: {label}
+- Description: {description}
+- Multilanguage: {multilanguage}
+- Multiple instances: {isMultiple}
+
+Field requirements:
+{fieldRequirements}
+
+Generate a complete JSON template that follows AntiCMS v3 schema and best practices.`,
+    {
+      templateName: "The template name (snake_case)",
+      label: "Human-readable label",
+      description: "Template description",
+      multilanguage: "true/false for multilanguage support",
+      isMultiple: "true/false for multiple instances",
+      sections: "Comma-separated list of sections",
+      fieldRequirements: "Specific field requirements for each section"
+    }
+  ),
+  {
+    title: "Landing Page Template Generator",
+    description: "Generate complete landing page templates with custom sections and fields"
+  }
+);
+
+// Blog post template prompt
+server.registerPrompt(
+  "blog-post-template",
+  new PromptTemplate(
+    `Create an AntiCMS v3 blog post template with the following specifications:
+
+Template name: {templateName}
+Content type: Blog post
+Sections: {sections}
+
+Required fields:
+- Title (input, multilanguage, required)
+- Content (texteditor, multilanguage, required)
+- Featured image (media, image only)
+- Author (input, multilanguage)
+- Publish date (input, date type)
+- Tags (repeater with tag input)
+
+Optional sections:
+{optionalSections}
+
+Generate a complete JSON template that follows AntiCMS v3 schema.`,
+    {
+      templateName: "The template name (e.g., 'blog_post')",
+      sections: "Required sections (e.g., 'hero, content, author')",
+      optionalSections: "Optional sections to include"
+    }
+  ),
+  {
+    title: "Blog Post Template Generator",
+    description: "Generate blog post templates with standard blog fields"
+  }
+);
+```
+
+#### **Field Creation Prompts**
+```javascript
+// Media field prompt
+server.registerPrompt(
+  "media-field",
+  new PromptTemplate(
+    `Create a media field for AntiCMS v3 with the following specifications:
+
+Field name: {fieldName}
+Label: {label}
+Accepted types: {acceptedTypes}
+Resolution requirements: {resolution}
+File size limit: {maxSize}
+Multiple files: {multiple}
+
+Generate a complete field configuration that follows AntiCMS v3 media field schema.`,
+    {
+      fieldName: "Field name (snake_case)",
+      label: "Human-readable label",
+      acceptedTypes: "Array of accepted types (e.g., ['image', 'video'])",
+      resolution: "Resolution requirements (e.g., 'minWidth: 800, maxWidth: 1920')",
+      maxSize: "Maximum file size in bytes",
+      multiple: "true/false for multiple file selection"
+    }
+  ),
+  {
+    title: "Media Field Generator",
+    description: "Generate media field configurations with specific requirements"
+  }
+);
+
+// Repeater field prompt
+server.registerPrompt(
+  "repeater-field",
+  new PromptTemplate(
+    `Create a repeater field for AntiCMS v3 with the following specifications:
+
+Field name: {fieldName}
+Label: {label}
+Min items: {minItems}
+Max items: {maxItems}
+Sub-fields: {subFields}
+
+Generate a complete repeater field configuration with all sub-fields properly defined.`,
+    {
+      fieldName: "Field name (snake_case)",
+      label: "Human-readable label",
+      minItems: "Minimum number of items",
+      maxItems: "Maximum number of items",
+      subFields: "Array of sub-field configurations"
+    }
+  ),
+  {
+    title: "Repeater Field Generator",
+    description: "Generate repeater field configurations with custom sub-fields"
+  }
+);
+```
+
+#### **Validation and Improvement Prompts**
+```javascript
+// Template validation prompt
+server.registerPrompt(
+  "template-validator",
+  new PromptTemplate(
+    `Analyze and validate this AntiCMS v3 template:
+
+Template JSON:
+{templateJson}
+
+Please provide:
+1. Validation status (valid/invalid)
+2. List of errors (if any)
+3. Suggestions for improvement
+4. Best practices recommendations
+5. Performance optimizations
+
+Focus on:
+- Schema compliance
+- Naming conventions
+- Field configurations
+- Multilanguage setup
+- Validation rules`,
+    {
+      templateJson: "The JSON template to validate"
+    }
+  ),
+  {
+    title: "Template Validator",
+    description: "Validate templates and provide improvement suggestions"
+  }
+);
+
+// Best practices prompt
+server.registerPrompt(
+  "best-practices-checker",
+  new PromptTemplate(
+    `Review this AntiCMS v3 template against best practices:
+
+Template: {templateJson}
+
+Check for:
+1. Naming conventions (snake_case)
+2. Required field validation
+3. Multilanguage configuration
+4. Field type appropriateness
+5. Component organization
+6. Performance considerations
+
+Provide specific recommendations for improvement.`,
+    {
+      templateJson: "The JSON template to review"
+    }
+  ),
+  {
+    title: "Best Practices Checker",
+    description: "Review templates against AntiCMS best practices"
+  }
+);
+```
+
+### **Prompt Categories**
+
+#### **1. Template Creation Prompts**
+```javascript
+const templatePrompts = [
+  "landing-page-template",
+  "blog-post-template", 
+  "about-page-template",
+  "contact-page-template",
+  "product-page-template",
+  "ecommerce-template"
+];
+```
+
+#### **2. Field Creation Prompts**
+```javascript
+const fieldPrompts = [
+  "input-field",
+  "textarea-field",
+  "media-field",
+  "repeater-field",
+  "group-field",
+  "select-field",
+  "toggle-field"
+];
+```
+
+#### **3. Validation Prompts**
+```javascript
+const validationPrompts = [
+  "template-validator",
+  "best-practices-checker",
+  "schema-validator",
+  "performance-optimizer"
+];
+```
+
+### **Prompt Usage Examples**
+
+#### **Client-Side Usage**
+```javascript
+// Get available prompts
+const prompts = await client.listPrompts();
+console.log('Available prompts:', prompts);
+
+// Use a prompt with arguments
+const result = await client.getPrompt({
+  name: "create-landing-page",
+  arguments: {
+    templateName: "product_landing",
+    sections: "hero, features, testimonials, contact"
+  }
+});
+
+console.log('Generated prompt:', result.prompt);
+```
+
+#### **LLM Workflow with Prompts**
+```javascript
+// LLM can use prompts to generate consistent templates
+const landingPagePrompt = await client.getPrompt({
+  name: "landing-page-template",
+  arguments: {
+    templateName: "company_landing",
+    label: "Company Landing Page",
+    description: "Professional company landing page",
+    multilanguage: "true",
+    isMultiple: "false",
+    sections: "hero, features, about, contact",
+    fieldRequirements: "Hero with CTA, 3 features, contact form"
+  }
+});
+
+// LLM uses the prompt to generate template
+const generatedTemplate = await generateTemplateFromPrompt(landingPagePrompt.prompt);
+```
+
+### **Prompt Management Tools**
+
+#### **Create Prompt Tool**
+```javascript
+server.registerTool(
+  "create-prompt",
+  {
+    title: "Create Custom Prompt",
+    description: "Create a new custom prompt template",
+    inputSchema: {
+      promptName: z.string().describe("Name of the prompt"),
+      promptTemplate: z.string().describe("Prompt template with placeholders"),
+      arguments: z.object({}).describe("Argument definitions"),
+      title: z.string().describe("Prompt title"),
+      description: z.string().describe("Prompt description")
+    }
+  },
+  async ({ promptName, promptTemplate, arguments, title, description }) => {
+    // Register the new prompt
+    server.registerPrompt(
+      promptName,
+      new PromptTemplate(promptTemplate, arguments),
+      { title, description }
+    );
+    
+    return {
+      content: [{
+        type: "text",
+        text: `Prompt "${promptName}" created successfully`
+      }]
+    };
+  }
+);
+```
+
+#### **List Prompts Tool**
+```javascript
+server.registerTool(
+  "list-prompts",
+  {
+    title: "List Available Prompts",
+    description: "List all available prompt templates",
+    inputSchema: {
+      category: z.enum(['templates', 'fields', 'validation']).optional().describe("Filter by category")
+    }
+  },
+  async ({ category }) => {
+    const prompts = await server.listPrompts();
+    
+    const filteredPrompts = category 
+      ? prompts.filter(p => p.name.includes(category))
+      : prompts;
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Available prompts (${filteredPrompts.length} total):`
+        },
+        ...filteredPrompts.map(prompt => ({
+          type: "text",
+          text: `- ${prompt.name}: ${prompt.title}`
+        }))
+      ]
+    };
+  }
+);
+```
+
+### **Prompt Best Practices**
+
+1. **Clear Placeholders** - Use descriptive placeholder names
+2. **Structured Output** - Guide LLMs to produce consistent results
+3. **Validation Hints** - Include validation requirements in prompts
+4. **Examples** - Provide examples in prompt descriptions
+5. **Categorization** - Organize prompts by purpose
+6. **Reusability** - Make prompts flexible and reusable
+
+### **Benefits of MCP Prompts**
+
+- ✅ **Consistency** - Standardized template generation
+- ✅ **Quality** - Pre-defined best practices
+- ✅ **Efficiency** - Faster template creation
+- ✅ **Learning** - LLMs learn from prompt examples
+- ✅ **Validation** - Built-in validation guidance
+- ✅ **Reusability** - Share prompts across projects
+
+### **Usage Examples**
+
+#### **Create Landing Page**
+```
+"Buat template AntiCMS untuk halaman contact berdasarkan template 'home' yang sudah ada. 
+Simpan sebagai file JSON di folder data/pages/"
+```
+
+#### **Learn Field Types**
+```
+"Tunjukkan contoh field 'media' dan buat field baru untuk upload gambar berdasarkan referensi tersebut."
+```
+
+#### **Follow Best Practices**
+```
+"Buat template baru yang mengikuti best practices dari file naming-conventions.json"
+```
+
+### **Resource Organization Best Practices**
+
+1. **Consistent Naming** - Use snake_case for all file names
+2. **Descriptive Names** - Make file names self-explanatory
+3. **Organized Folders** - Group related resources in appropriate folders
+4. **Documentation** - Include descriptions in JSON files
+5. **Validation** - Always validate resources before use
+6. **Versioning** - Use semantic versioning for resource updates
+
+This file-based approach makes MCP resources easily manageable and provides rich references for LLMs to learn from and build upon! 📁
+
+## 📁 File-Based MCP Resources
+
+**File-based resources** allow you to store MCP resources as JSON files in organized folders, making them easily manageable and version-controlled.
+
+### **Folder Structure**
+
+Create a `data` folder structure for organizing your resources:
+
+```
+Anticms-MCP/
+├── data/
+│   ├── pages/
+│   │   ├── home.json
+│   │   ├── about.json
+│   │   ├── contact.json
+│   │   └── services.json
+│   ├── posts/
+│   │   ├── blog-post.json
+│   │   ├── article.json
+│   │   └── news.json
+│   ├── templates/
+│   │   ├── landing-page.json
+│   │   ├── product-page.json
+│   │   └── ecommerce.json
+│   ├── field-types/
+│   │   ├── input.json
+│   │   ├── textarea.json
+│   │   ├── media.json
+│   │   └── repeater.json
+│   ├── examples/
+│   │   ├── restaurant-website.json
+│   │   ├── company-website.json
+│   │   └── portfolio-site.json
+│   └── best-practices/
+│       ├── naming-conventions.json
+│       ├── validation-rules.json
+│       └── field-guidelines.json
+```
+
+### **File-Based Resource Implementation**
+
+```javascript
+import { readFileSync, readdirSync, existsSync, writeFileSync, mkdirSync } from 'fs';
+import { join, extname } from 'path';
+
+// Load resources from data folder
+function loadResourcesFromDataFolder() {
+  const resourceTypes = ['pages', 'posts', 'templates', 'field-types', 'examples', 'best-practices'];
+  
+  resourceTypes.forEach(type => {
+    server.registerResource(
+      `${type}-resources`,
+      new ResourceTemplate(`anticms://${type}/{resourceName}`, {
+        list: async () => {
+          const dataDir = join(process.cwd(), 'data', type);
+          if (!existsSync(dataDir)) {
+            return [];
+          }
+          
+          return readdirSync(dataDir)
+            .filter(file => extname(file) === '.json')
+            .map(file => ({
+              name: file.replace('.json', ''),
+              title: file.replace('.json', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+              description: `AntiCMS ${type} resource: ${file}`
+            }));
+        }
+      }),
+      {
+        title: `AntiCMS ${type.charAt(0).toUpperCase() + type.slice(1)} Resources`,
+        description: `${type.charAt(0).toUpperCase() + type.slice(1)} resources stored as JSON files in data/${type}/`
+      },
+      async (uri, { resourceName }) => {
+        const filePath = join(process.cwd(), 'data', type, `${resourceName}.json`);
+        
+        if (!existsSync(filePath)) {
+          throw new Error(`${type} resource not found: ${resourceName}`);
+        }
+        
+        const content = readFileSync(filePath, 'utf8');
+        return {
+          contents: [{
+            uri: uri.href,
+            text: content,
+            mimeType: "application/json"
+          }]
+        };
+      }
+    );
+  });
+}
+
+// Initialize resources on server start
+loadResourcesFromDataFolder();
+```
+
+### **Example JSON Files**
+
+#### **`data/pages/home.json`**
+```json
+{
+  "name": "home",
+  "label": "Home Page",
+  "description": "Main homepage template with hero section and features",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "hero_title",
+          "label": "Hero Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "is_required": true,
+            "placeholder": "Welcome to our website"
+          }
+        },
+        {
+          "name": "hero_description",
+          "label": "Hero Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "Brief description of your company"
+          }
+        },
+        {
+          "name": "hero_image",
+          "label": "Hero Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "features_section",
+      "label": "Features Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "features_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Our Features"
+          }
+        },
+        {
+          "name": "features_list",
+          "label": "Features",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 6,
+            "fields": [
+              {
+                "name": "feature_title",
+                "label": "Feature Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "is_required": true,
+                  "placeholder": "Feature name"
+                }
+              },
+              {
+                "name": "feature_description",
+                "label": "Feature Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "placeholder": "Feature description"
+                }
+              },
+              {
+                "name": "feature_icon",
+                "label": "Feature Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### **`data/field-types/media.json`**
+```json
+{
+  "name": "media",
+  "label": "Media Field",
+  "description": "Upload images, videos, audio, or documents",
+  "field": "media",
+  "examples": [
+    {
+      "name": "featured_image",
+      "label": "Featured Image",
+      "field": "media",
+      "attribute": {
+        "accept": ["image"],
+        "resolution": {
+          "minWidth": 800,
+          "maxWidth": 1920,
+          "minHeight": 600,
+          "maxHeight": 1080
+        }
+      }
+    },
+    {
+      "name": "document_upload",
+      "label": "Document",
+      "field": "media",
+      "attribute": {
+        "accept": ["document"]
+      }
+    },
+    {
+      "name": "video_upload",
+      "label": "Video",
+      "field": "media",
+      "attribute": {
+        "accept": ["video"]
+      }
+    }
+  ],
+  "attributes": {
+    "accept": "Array of accepted file types: ['image', 'video', 'audio', 'document']",
+    "resolution": "Object with minWidth, maxWidth, minHeight, maxHeight",
+    "maxSize": "Maximum file size in bytes",
+    "multiple": "Boolean to allow multiple file selection"
+  }
+}
+```
+
+#### **`data/best-practices/naming-conventions.json`**
+```json
+{
+  "title": "AntiCMS Naming Conventions",
+  "description": "Best practices for naming fields and components",
+  "guidelines": {
+    "field_names": {
+      "pattern": "snake_case",
+      "examples": ["hero_title", "feature_description", "contact_email"],
+      "rules": [
+        "Use lowercase letters",
+        "Separate words with underscores",
+        "Be descriptive but concise",
+        "Avoid special characters except underscores"
+      ]
+    },
+    "component_names": {
+      "pattern": "snake_case",
+      "examples": ["hero_section", "features_section", "contact_form"],
+      "rules": [
+        "Use descriptive names that indicate purpose",
+        "End with '_section' for page sections",
+        "End with '_form' for form components"
+      ]
+    },
+    "template_names": {
+      "pattern": "snake_case",
+      "examples": ["home_page", "about_page", "blog_post"],
+      "rules": [
+        "Use descriptive names",
+        "End with '_page' for page templates",
+        "End with '_post' for post templates"
+      ]
+    }
+  },
+  "validation": {
+    "required_fields": "Always set is_required for important fields",
+    "multilanguage": "Enable multilanguage for content fields",
+    "placeholders": "Provide helpful placeholder text",
+    "validation": "Set appropriate validation rules"
+  }
+}
+```
+
+### **Resource Management Tools**
+
+#### **Create Resource File Tool**
+```javascript
+server.registerTool(
+  "create-resource-file",
+  {
+    title: "Create Resource File",
+    description: "Create a new AntiCMS resource and save it as a JSON file in the data folder",
+    inputSchema: {
+      resourceName: z.string().describe("Name of the resource (will be used as filename)"),
+      resourceType: z.enum(['pages', 'posts', 'templates', 'field-types', 'examples', 'best-practices']).describe("Type of resource"),
+      resourceData: z.object({}).describe("Resource JSON data")
+    }
+  },
+  async ({ resourceName, resourceType, resourceData }) => {
+    const dataDir = join(process.cwd(), 'data', resourceType);
+    const filePath = join(dataDir, `${resourceName}.json`);
+    
+    // Ensure directory exists
+    if (!existsSync(dataDir)) {
+      mkdirSync(dataDir, { recursive: true });
+    }
+    
+    // Write resource to file
+    writeFileSync(filePath, JSON.stringify(resourceData, null, 2));
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Resource "${resourceName}" created successfully at ${filePath}`
+        },
+        {
+          type: "resource_link",
+          uri: `anticms://${resourceType}/${resourceName}`,
+          name: resourceName,
+          mimeType: "application/json",
+          description: `Newly created ${resourceType} resource`
+        }
+      ]
+    };
+  }
+);
+```
+
+#### **Validate Resource File Tool**
+```javascript
+server.registerTool(
+  "validate-resource-file",
+  {
+    title: "Validate Resource File",
+    description: "Validate an existing resource JSON file",
+    inputSchema: {
+      resourceName: z.string().describe("Name of the resource file"),
+      resourceType: z.enum(['pages', 'posts', 'templates', 'field-types', 'examples', 'best-practices']).describe("Type of resource")
+    }
+  },
+  async ({ resourceName, resourceType }) => {
+    const filePath = join(process.cwd(), 'data', resourceType, `${resourceName}.json`);
+    
+    if (!existsSync(filePath)) {
+      return {
+        content: [{
+          type: "text",
+          text: `Error: Resource file not found at ${filePath}`
+        }]
+      };
+    }
+    
+    try {
+      const content = readFileSync(filePath, 'utf8');
+      const resource = JSON.parse(content);
+      
+      // Validate against AntiCMS schema
+      const validation = validateAntiCMSResource(resource, resourceType);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Resource validation result: ${validation.isValid ? 'Valid' : 'Invalid'}`
+          },
+          {
+            type: "text",
+            text: validation.errors ? `Errors: ${JSON.stringify(validation.errors, null, 2)}` : 'No errors found'
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [{
+          type: "text",
+          text: `Error parsing JSON: ${error.message}`
+        }]
+      };
+    }
+  }
+);
+```
+
+#### **List Resources Tool**
+```javascript
+server.registerTool(
+  "list-resources",
+  {
+    title: "List Resources",
+    description: "List all available resources from the data folder",
+    inputSchema: {
+      resourceType: z.enum(['pages', 'posts', 'templates', 'field-types', 'examples', 'best-practices']).optional().describe("Filter by resource type")
+    }
+  },
+  async ({ resourceType }) => {
+    const resourceTypes = resourceType ? [resourceType] : ['pages', 'posts', 'templates', 'field-types', 'examples', 'best-practices'];
+    const allResources = [];
+    
+    for (const type of resourceTypes) {
+      const dataDir = join(process.cwd(), 'data', type);
+      if (existsSync(dataDir)) {
+        const files = readdirSync(dataDir)
+          .filter(file => extname(file) === '.json')
+          .map(file => ({
+            name: file.replace('.json', ''),
+            type: type,
+            uri: `anticms://${type}/${file.replace('.json', '')}`
+          }));
+        allResources.push(...files);
+      }
+    }
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Available resources (${allResources.length} total):`
+        },
+        ...allResources.map(resource => ({
+          type: "resource_link",
+          uri: resource.uri,
+          name: resource.name,
+          mimeType: "application/json",
+          description: `${resource.type} resource: ${resource.name}`
+        }))
+      ]
+    };
+  }
+);
+```
+
+### **Resource Organization Best Practices**
+
+1. **Consistent Naming** - Use snake_case for all file names
+2. **Descriptive Names** - Make file names self-explanatory
+3. **Organized Folders** - Group related resources in appropriate folders
+4. **Documentation** - Include descriptions in JSON files
+5. **Validation** - Always validate resources before use
+6. **Versioning** - Use semantic versioning for resource updates
+
+This file-based approach makes MCP resources easily manageable and provides rich references for LLMs to learn from and build upon! 📁
+
+### **LLM Reference Workflow**
+
+#### **1. LLM Accessing Resources**
+```javascript
+// LLM can access resources for reference
+const homeTemplate = await client.readResource({
+  uri: "anticms://pages/home"
+});
+
+const mediaFieldExample = await client.readResource({
+  uri: "anticms://field-types/media"
+});
+
+const namingGuidelines = await client.readResource({
+  uri: "anticms://best-practices/naming-conventions"
+});
+```
+
+#### **2. LLM Creating New Resources**
+```javascript
+// LLM can create new resources based on examples
+await client.callTool({
+  name: "create-resource-file",
+  arguments: {
+    resourceName: "about_page",
+    resourceType: "pages",
+    resourceData: {
+      name: "about_page",
+      label: "About Page",
+      description: "About us page template",
+      // ... template data based on home.json reference
+    }
+  }
+});
+```
+
+#### **3. LLM Validation**
+```javascript
+// LLM can validate resources
+await client.callTool({
+  name: "validate-resource-file",
+  arguments: {
+    resourceName: "about_page",
+    resourceType: "pages"
+  }
+});
+```
+
+### **Benefits of File-Based Resources**
+
+- ✅ **Version Control** - JSON files can be tracked in git
+- ✅ **Easy Editing** - Open JSON files in any editor
+- ✅ **Backup & Restore** - Simple file operations
+- ✅ **Team Collaboration** - Share resource files easily
+- ✅ **LLM Learning** - LLMs can learn from existing examples
+- ✅ **Consistency** - Standardized structure across resources
+- ✅ **Documentation** - Self-documenting JSON structure
+- ✅ **Validation** - Validate resources before use
+
+### **Usage Examples**
+
+#### **Create Template from Reference**
+```
+"Buat template AntiCMS untuk halaman contact berdasarkan template 'home' yang sudah ada. 
+Simpan sebagai file JSON di folder data/pages/"
+```
+
+#### **Learn Field Types**
+```
+"Tunjukkan contoh field 'media' dan buat field baru untuk upload gambar berdasarkan referensi tersebut."
+```
+
+#### **Follow Best Practices**
+```
+"Buat template baru yang mengikuti best practices dari file naming-conventions.json"
+```
+
+### **Resource Organization Best Practices**
+
+1. **Consistent Naming** - Use snake_case for all file names
+2. **Descriptive Names** - Make file names self-explanatory
+3. **Organized Folders** - Group related resources in appropriate folders
+4. **Documentation** - Include descriptions in JSON files
+5. **Validation** - Always validate resources before use
+6. **Versioning** - Use semantic versioning for resource updates
+
+This file-based approach makes MCP resources easily manageable and provides rich references for LLMs to learn from and build upon! 📁
+
+## 🔧 Configuration Options
+
+### **Environment Variables**
+```bash
+export ANTICMS_PORT=3000
+export ANTICMS_HOST=localhost
+export ANTICMS_ADMIN_URL=https://antiplayground-v3.test
+export ANTICMS_ADMIN_API_KEY=your-api-key
+export ANTICMS_ADMIN_API_SECRET=your-secret
+```
+
+### **Command Line Arguments**
+```bash
+node index.js --port 3000 --host localhost --base-url https://antiplayground-v3.test --api-key your-key --api-secret your-secret
+```
+
+### **MCP Client Configuration**
+```json
+{
+  "mcpServers": {
+    "anticms-mcp": {
+      "command": "npx",
+      "args": [
+        "@tobidsn/anticms-mcp@latest",
+        "--port", "3000",
+        "--host", "localhost"
+      ],
+      "env": {
+        "ANTICMS_ADMIN_URL": "https://antiplayground-v3.test",
+        "ANTICMS_ADMIN_API_KEY": "your-api-key",
+        "ANTICMS_ADMIN_API_SECRET": "your-secret"
+      }
+    }
+  }
+}
+```
+
+## 🛡️ Security Features
+
+### **DNS Rebinding Protection**
+```javascript
+const transport = new StreamableHTTPServerTransport({
+  enableDnsRebindingProtection: true,
+  allowedHosts: ['127.0.0.1', 'localhost', 'your-domain.com'],
+  allowedOrigins: ['https://your-domain.com']
+});
+```
+
+### **Rate Limiting**
+```javascript
+const rateLimiter = new Map();
+
+function checkRateLimit(clientIP) {
+  const now = Date.now();
+  const requests = rateLimiter.get(clientIP) || [];
+  const recentRequests = requests.filter(time => now - time < 60000);
+  
+  if (recentRequests.length >= 100) {
+    throw new Error('Rate limit exceeded');
+  }
+  
+  rateLimiter.set(clientIP, [...recentRequests, now]);
+}
+```
+
+### **Authentication Middleware**
+```javascript
+function authenticateRequest(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    // Validate token here
+    next();
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+}
+```
+
+## 📊 Monitoring & Debugging
+
+### **Health Check**
+```bash
+curl http://localhost:3000/health
+```
+
+### **Session Monitoring**
+```javascript
+// Add to your server
+app.get('/sessions', (req, res) => {
+  res.json({
+    activeSessions: Object.keys(transports).length,
+    sessions: Object.keys(transports)
+  });
+});
+```
+
+### **Logging**
+```javascript
+// Add request logging
+app.use((req, res, next) => {
+  console.error(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  next();
+});
+```
+
+## 🔄 Backwards Compatibility
+
+For clients that don't support Streamable HTTP, you can implement backwards compatibility:
+
+```javascript
+// Legacy SSE endpoint
+app.get('/sse', async (req, res) => {
+  const transport = new SSEServerTransport('/messages', res);
+  await server.connect(transport);
+});
+
+app.post('/messages', async (req, res) => {
+  const sessionId = req.query.sessionId;
+  const transport = transports[sessionId];
+  if (transport) {
+    await transport.handlePostMessage(req, res, req.body);
+  } else {
+    res.status(400).send('No transport found');
+  }
+});
+```
+
+## 🧪 Testing
+
+### **Test with curl**
+```bash
+# Health check
+curl http://localhost:3000/health
+
+# Initialize session
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}},"id":1}'
+```
+
+### **Test with MCP Inspector**
+```bash
+# Install MCP Inspector
+npm install -g @modelcontextprotocol/inspector
+
+# Test your server
+mcp-inspector http://localhost:3000/mcp
+```
+
+## 📈 Performance Benefits
+
+1. **Concurrent Connections** - Handle multiple clients simultaneously
+2. **Load Balancing** - Deploy behind reverse proxies
+3. **Health Monitoring** - Built-in health checks
+4. **Web Integration** - Browser-based clients
+5. **Session Management** - Stateful connections with resumability
+6. **CORS Support** - Cross-origin requests
+
+## 🚨 Migration Checklist
+
+- [ ] Update dependencies (`express`, `cors`)
+- [ ] Replace `StdioServerTransport` with `StreamableHTTPServerTransport`
+- [ ] Add Express server setup
+- [ ] Implement session management
+- [ ] Add health check endpoints
+- [ ] Configure CORS for web clients
+- [ ] Add security features (rate limiting, DNS protection)
+- [ ] Implement MCP Resources for AntiCMS data
+- [ ] Add resource completion and notifications
+- [ ] Update MCP client configurations
+- [ ] Test with MCP Inspector
+- [ ] Update documentation
+
+## 📚 References
+
+- [MCP TypeScript SDK Documentation](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/README.md#streamable-http)
+- [MCP Resources Documentation](https://github.com/modelcontextprotocol/typescript-sdk/tree/main?tab=readme-ov-file#resources)
+- [Streamable HTTP Examples](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/src/examples/README.md)
+- [MCP Specification](https://modelcontextprotocol.io/)
