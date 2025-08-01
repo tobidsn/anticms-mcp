@@ -100,6 +100,7 @@ anticms-mcp
   ]
 }
 ```
+## Example prompts
 
 #### Basic Landing Page
 ```
@@ -224,7 +225,7 @@ Name them "homepage", "about_page", and "services_page" respectively.
 
 ```
 Generate an AntiCMS v3 template named
-"info"
+"project"
 based on project.instuctions.md
 using AntiCMS MCP
 create file in folder json/pages
