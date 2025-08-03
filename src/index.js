@@ -64,7 +64,7 @@ class AntiCMSServer {
           is_content: z.boolean().optional().default(false).describe('Whether this is a content template'),
           multilanguage: z.boolean().optional().default(true).describe('Enable multilanguage support'),
           is_multiple: z.boolean().optional().default(false).describe('Allow multiple instances'),
-          sections: z.array(z.enum(['hero', 'features', 'contact', 'gallery'])).describe('Array of section types to include'),
+          sections: z.array(z.enum(['hero', 'features', 'contact', 'gallery', 'content_parts', 'scorecards'])).describe('Array of section types to include'),
           include_cta: z.boolean().optional().default(false).describe('Include call-to-action in hero section'),
           max_features: z.number().optional().default(6).describe('Maximum number of features'),
           max_gallery_images: z.number().optional().default(12).describe('Maximum number of gallery images')
@@ -161,7 +161,7 @@ class AntiCMSServer {
         title: 'Generate Section',
         description: 'Generate a single section component for AntiCMS v3 template',
         inputSchema: {
-          section_type: z.enum(['hero', 'features', 'contact', 'gallery']).describe('Type of section to generate'),
+          section_type: z.enum(['hero', 'features', 'contact', 'gallery', 'content_parts', 'scorecards']).describe('Type of section to generate'),
           key_name: z.string().optional().describe('Custom key name for the section'),
           label: z.string().optional().describe('Custom label for the section'),
           position: z.number().optional().describe('Position/section number'),

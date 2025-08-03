@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 // AntiCMS v3 Field Type Definitions
 export const FIELD_TYPES = {
   input: {
-    attributes: ['type', 'is_required', 'placeholder', 'defaultValue', 'maxLength', 'minLength'],
+    attributes: ['type', 'is_required', 'placeholder', 'defaultValue', 'maxLength', 'minLength', 'min', 'max'],
     requiredAttributes: ['type']
   },
   textarea: {
@@ -20,11 +20,11 @@ export const FIELD_TYPES = {
     requiredAttributes: ['options']
   },
   toggle: {
-    attributes: ['caption', 'defaultValue'],
+    attributes: ['caption', 'defaultValue', 'is_required'],
     requiredAttributes: []
   },
   media: {
-    attributes: ['accept', 'resolution'],
+    attributes: ['accept', 'resolution', 'caption', 'is_required'],
     requiredAttributes: ['accept']
   },
   repeater: {
@@ -52,6 +52,74 @@ export const FIELD_TYPES = {
     requiredAttributes: ['columns']
   }
 };
+
+/**
+ * Recursively validate nested fields in repeaters and groups
+ * @param {Array} fields - Array of field definitions to validate
+ * @param {string} parentPath - Path to parent field for error reporting
+ * @param {Array} errors - Array to collect errors
+ */
+function validateNestedFields(fields, parentPath, errors) {
+  if (!Array.isArray(fields)) return;
+  
+  fields.forEach((field, fieldIndex) => {
+    const fieldPath = `${parentPath}, field ${fieldIndex + 1}`;
+    
+    // Validate basic field structure
+    const requiredFieldKeys = ['name', 'label', 'field'];
+    requiredFieldKeys.forEach(key => {
+      if (!(key in field)) {
+        errors.push(`${fieldPath} missing required key: ${key}`);
+      }
+    });
+
+    // Validate field type
+    if (field.field && !FIELD_TYPES[field.field]) {
+      errors.push(`${fieldPath} has unsupported field type: ${field.field}`);
+    } else if (field.field) {
+      // Check required attributes
+      const fieldConfig = FIELD_TYPES[field.field];
+      if (fieldConfig.requiredAttributes.length > 0 && !field.attribute) {
+        errors.push(`${fieldPath} (${field.field}) missing required attribute object`);
+      } else if (field.attribute) {
+        fieldConfig.requiredAttributes.forEach(attr => {
+          if (!(attr in field.attribute)) {
+            errors.push(`${fieldPath} (${field.field}) missing required attribute: ${attr}`);
+          }
+        });
+        
+        // Special validation for table fields and their columns
+        if (field.field === 'table' && field.attribute.columns) {
+          if (!Array.isArray(field.attribute.columns)) {
+            errors.push(`${fieldPath} (table) columns must be an array`);
+          } else {
+            field.attribute.columns.forEach((column, colIndex) => {
+              const colPath = `${fieldPath} (table), column ${colIndex + 1}`;
+              const requiredColumnKeys = ['label', 'name', 'type'];
+              
+              requiredColumnKeys.forEach(key => {
+                if (!(key in column)) {
+                  errors.push(`${colPath} missing required key: ${key}`);
+                }
+              });
+              
+              // Validate column types
+              const validColumnTypes = ['text', 'textarea', 'number', 'email', 'url'];
+              if (column.type && !validColumnTypes.includes(column.type)) {
+                errors.push(`${colPath} has invalid column type: ${column.type}. Valid types: ${validColumnTypes.join(', ')}`);
+              }
+            });
+          }
+        }
+        
+        // Recursively validate nested fields in repeaters and groups
+        if ((field.field === 'repeater' || field.field === 'group') && field.attribute.fields) {
+          validateNestedFields(field.attribute.fields, `${fieldPath} (${field.field})`, errors);
+        }
+      }
+    }
+  });
+}
 
 /**
  * AntiCMS Component Generator Class
@@ -131,6 +199,31 @@ export class AntiCMSComponentGenerator {
         attributes[key] = options[key];
       }
     });
+
+    // Handle special nested cases for repeater and group fields
+    if (fieldType === 'repeater' && attributes.fields) {
+      // Ensure nested repeater fields are properly structured
+      attributes.fields = attributes.fields.map(nestedField => {
+        if (typeof nestedField === 'object' && nestedField.field) {
+          // Validate nested field type
+          this.validateFieldType(nestedField.field);
+          return nestedField;
+        }
+        return nestedField;
+      });
+    }
+
+    if (fieldType === 'group' && attributes.fields) {
+      // Ensure group fields are properly structured
+      attributes.fields = attributes.fields.map(nestedField => {
+        if (typeof nestedField === 'object' && nestedField.field) {
+          // Validate nested field type
+          this.validateFieldType(nestedField.field);
+          return nestedField;
+        }
+        return nestedField;
+      });
+    }
 
     if (Object.keys(attributes).length > 0) {
       field.attribute = attributes;
@@ -343,6 +436,119 @@ export class AntiCMSComponentGenerator {
 
     return this.generateComponent('gallery_section', 'Gallery Section', '4', fields);
   }
+
+  /**
+   * Generates a complex content parts section like in governance-scorecard.json
+   * @param {object} options - Content parts options
+   * @returns {object} - Content parts component
+   */
+  static generateContentPartsSection(options = {}) {
+    const fields = [
+      this.generateField('status', 'Status', 'toggle', {
+        caption: 'Enable or disable the content',
+        defaultValue: true
+      }),
+      this.generateField('parts', 'Parts', 'repeater', {
+        fields: [
+          this.generateField('title', 'Title', 'input', {
+            multilanguage: true,
+            inputType: 'text',
+            placeholder: 'Part title'
+          }),
+          // Nested repeater with various field types including table
+          this.generateField('items', 'Items', 'repeater', {
+            min: 1,
+            fields: [
+              this.generateField('number', 'Number', 'input', {
+                multilanguage: false,
+                inputType: 'text',
+                placeholder: 'Input the number of the item'
+              }),
+              this.generateField('title', 'Title', 'input', {
+                multilanguage: true,
+                inputType: 'text',
+                placeholder: 'Item title'
+              }),
+              this.generateField('description', 'Description', 'textarea', {
+                multilanguage: true,
+                rows: 3,
+                cols: 3,
+                max: 200,
+                placeholder: 'Item description'
+              }),
+              this.generateField('table', 'Table', 'table', {
+                caption: 'input the table',
+                columns: [
+                  {
+                    label: 'Number',
+                    name: 'number',
+                    type: 'text',
+                    is_required: true,
+                    placeholder: 'Input the number of the item'
+                  },
+                  {
+                    label: 'Title',
+                    name: 'title', 
+                    type: 'textarea',
+                    is_required: true,
+                    placeholder: 'Input the title of the table'
+                  },
+                  {
+                    label: 'Description',
+                    name: 'description',
+                    type: 'textarea',
+                    is_required: false,
+                    placeholder: ''
+                  }
+                ],
+                min: 1,
+                max: 30
+              })
+            ]
+          })
+        ]
+      })
+    ];
+
+    return this.generateComponent('content_parts', 'Content List Parts', '2', fields);
+  }
+
+  /**
+   * Generates a scorecard section with icon and title
+   * @param {object} options - Scorecard options
+   * @returns {object} - Scorecard component
+   */
+  static generateScorecardsSection(options = {}) {
+    const fields = [
+      this.generateField('status', 'Status', 'toggle', {
+        caption: 'Enable or disable the content',
+        defaultValue: true
+      }),
+      this.generateField('scorecards', 'Scorecards', 'repeater', {
+        fields: [
+          this.generateField('icon', 'Icon', 'media', {
+            caption: 'Resolution 48x48 px',
+            is_required: true,
+            accept: ['image'],
+            fileSize: 100,
+            resolution: {
+              minWidth: 0,
+              maxWidth: 48,
+              minHeight: 0,
+              maxHeight: 48
+            }
+          }),
+          this.generateField('title', 'Title', 'input', {
+            multilanguage: true,
+            inputType: 'text',
+            placeholder: 'Scorecard title'
+          })
+        ]
+      })
+    ];
+
+    return this.generateComponent('content_scorecards', 'Content List Scorecards', '2', fields);
+  }
 }
 
 /**
@@ -398,6 +604,18 @@ export async function generateTemplate(args) {
         });
         gallerySection.section = String(sectionCounter++);
         components.push(gallerySection);
+        break;
+      
+      case 'content_parts':
+        const contentPartsSection = AntiCMSComponentGenerator.generateContentPartsSection();
+        contentPartsSection.section = String(sectionCounter++);
+        components.push(contentPartsSection);
+        break;
+      
+      case 'scorecards':
+        const scorecardsSection = AntiCMSComponentGenerator.generateScorecardsSection();
+        scorecardsSection.section = String(sectionCounter++);
+        components.push(scorecardsSection);
         break;
     }
   });
@@ -482,31 +700,7 @@ export async function validateTemplate(args) {
 
       // Validate fields
       if (Array.isArray(component.fields)) {
-        component.fields.forEach((field, fieldIndex) => {
-          const requiredFieldKeys = ['name', 'label', 'field'];
-          requiredFieldKeys.forEach(key => {
-            if (!(key in field)) {
-              errors.push(`Component ${index + 1}, field ${fieldIndex + 1} missing required key: ${key}`);
-            }
-          });
-
-          // Validate field type
-          if (field.field && !FIELD_TYPES[field.field]) {
-            errors.push(`Component ${index + 1}, field ${fieldIndex + 1} has unsupported field type: ${field.field}`);
-          } else if (field.field) {
-            // Check required attributes
-            const fieldConfig = FIELD_TYPES[field.field];
-            if (fieldConfig.requiredAttributes.length > 0 && !field.attribute) {
-              errors.push(`Component ${index + 1}, field ${fieldIndex + 1} (${field.field}) missing required attribute object`);
-            } else if (field.attribute) {
-              fieldConfig.requiredAttributes.forEach(attr => {
-                if (!(attr in field.attribute)) {
-                  errors.push(`Component ${index + 1}, field ${fieldIndex + 1} (${field.field}) missing required attribute: ${attr}`);
-                }
-              });
-            }
-          }
-        });
+        validateNestedFields(component.fields, `Component ${index + 1}`, errors);
       }
     });
   } else {
@@ -588,6 +782,14 @@ export async function generateSection(args) {
       section = AntiCMSComponentGenerator.generateGallerySection({
         maxImages: options.max_gallery_images || 12
       });
+      break;
+    
+    case 'content_parts':
+      section = AntiCMSComponentGenerator.generateContentPartsSection();
+      break;
+    
+    case 'scorecards':
+      section = AntiCMSComponentGenerator.generateScorecardsSection();
       break;
     
     default:

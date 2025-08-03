@@ -1,0 +1,237 @@
+{
+    "name": "governance-scorecard",
+    "label": "Governance - ASEAN CG Scorecard",
+    "is_content": false,
+    "multilanguage": true,
+    "description": "This is the governance soft structure page",
+    "components": [
+        {
+            "keyName": "header",
+            "label": "Header",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the header",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the title of section",
+                        "caption": "Short description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the description of section",
+                        "caption": "Description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "content-scorecards",
+            "label": "Content List Scorecards",
+            "section": "2",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the content",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "scorecards",
+                    "label": "Scorecards",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "icon",
+                                "label": "Icon",
+                                "field": "media",
+                                "attribute": {
+                                    "caption": "Resolution 48x48 px",
+                                    "is_required": true,
+                                    "accept": ["image"],
+                                    "fileSize": 100,
+                                    "resolution": {
+                                        "minWidth": 0,
+                                        "maxWidth": 48,
+                                        "minHeight": 0,
+                                        "maxHeight": 48
+                                    }
+                                }
+                            },
+                            {
+                                "name": "title",
+                                "label": "Title",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "content-parts",
+            "label": "Content List Parts",
+            "section": "2",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the content",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "parts",
+                    "label": "Parts",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "title",
+                                "label": "Title",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "field": "repeater",
+                                "name": "items",
+                                "label": "Items",
+                                "attribute": {
+                                    "min": 1,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "number",
+                                            "label": "Number",
+                                            "multilanguage": false,
+                                            "attribute": {
+                                                "is_required": false,
+                                                "type": "text",
+                                                "placeholder": "Input the number of the item"
+                                            }
+                                        },
+                                        {
+                                            "name": "title",
+                                            "label": "Title",
+                                            "field": "input",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "type": "text",
+                                                "is_required": false,
+                                                "placeholder": "",
+                                                "defaultValue": "",
+                                                "value": null
+                                            }
+                                        },
+                                        {
+                                            "name": "description",
+                                            "label": "Description",
+                                            "field": "textarea",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "rows": 3,
+                                                "cols": 3,
+                                                "max": 200,
+                                                "is_required": false,
+                                                "placeholder": "",
+                                                "caption": "",
+                                                "defaultValue": "",
+                                                "value": null
+                                            }
+                                        },
+                                        {
+                                            "name": "table",
+                                            "label": "Table",
+                                            "field": "table",
+                                            "attribute": {
+                                                "is_required": false,
+                                                "caption": "input the table",
+                                                "columns": [
+                                                    {
+                                                        "label": "Number",
+                                                        "name": "number",
+                                                        "type": "text",
+                                                        "is_required": true,
+                                                        "placeholder": "Input the number of the item"
+                                                    },
+                                                    {
+                                                        "label": "Title",
+                                                        "name": "title",
+                                                        "type": "textarea",
+                                                        "is_required": true,
+                                                        "placeholder": "Input the title of the table"
+                                                    },
+                                                    {
+                                                        "label": "Description",
+                                                        "name": "description",
+                                                        "type": "textarea",
+                                                        "is_required": false,
+                                                        "placeholder": ""
+                                                    }
+                                                ],
+                                                "min" : 1,
+                                                "max" : 30
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
