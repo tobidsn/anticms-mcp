@@ -1,0 +1,241 @@
+{
+    "name": "contact-us",
+    "label": "Contact Us",
+    "is_content": false,
+    "multilanguage": true,
+    "description": "This is the contact us page",
+    "components": [
+        {
+            "keyName": "header",
+            "label": "Header",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the header",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the title of section",
+                        "caption": "Short description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the description of section",
+                        "caption": "Description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "email_icon",
+                    "label": "Email Icon",
+                    "field": "media",
+                    "attribute": {
+                        "caption": "Resolution 24x24 px",
+                        "accept": [
+                            "image"
+                        ],
+                        "fileSize": 512,
+                        "convertToWebp": true,
+                        "resolution": {
+                            "minWidth": 0,
+                            "maxWidth": 24,
+                            "minHeight": 0,
+                            "maxHeight": 24
+                        }
+                    }
+                },
+                {
+                    "name": "email",
+                    "label": "Email",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "email",
+                        "is_required": true,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "phone_number_icon",
+                    "label": "Phone Number Icon",
+                    "field": "media",
+                    "attribute": {
+                        "caption": "Resolution 24x24 px",
+                        "accept": [
+                            "image"
+                        ],
+                        "fileSize": 512,
+                        "convertToWebp": true,
+                        "resolution": {
+                            "minWidth": 0,
+                            "maxWidth": 24,
+                            "minHeight": 0,
+                            "maxHeight": 24
+                        }
+                    }
+                },
+                {
+                    "name": "phone_number",
+                    "label": "Phone Number",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": true,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "social_media_icon",
+                    "label": "Social Media Icon",
+                    "field": "media",
+                    "attribute": {
+                        "caption": "Resolution 24x24 px",
+                        "accept": [
+                            "image"
+                        ],
+                        "fileSize": 512,
+                        "convertToWebp": true,
+                        "resolution": {
+                            "minWidth": 0,
+                            "maxWidth": 24,
+                            "minHeight": 0,
+                            "maxHeight": 24
+                        }
+                    }
+                },
+                {
+                    "name": "social_media",
+                    "label": "Social Media",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "url",
+                        "is_required": true,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "location",
+            "label": "Location",
+            "section": "2",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the Integrated Solutions",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "texteditor",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the title of section",
+                        "caption": "Short description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "address",
+                    "label": "Address",
+                    "field": "textarea",
+                    "multilanguage": false,
+                    "attribute": {
+                        "rows": 3,
+                        "cols": 3,
+                        "max": 200,
+                        "is_required": false,
+                        "placeholder": "Input the address",
+                        "caption": "Address",
+                        "defaultValue": ""
+                    }
+                },
+                {
+                    "name": "longitude",
+                    "label": "Longitude",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "latitude",
+                    "label": "Latitude",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "maps_url",
+                    "label": "Maps Url",
+                    "field": "input",
+                    "multilanguage": false,
+                    "attribute": {
+                        "type": "url",
+                        "is_required": true,
+                        "placeholder": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        }
+    ]
+}

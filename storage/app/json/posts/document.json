@@ -1,0 +1,17 @@
+[
+    {
+        "keyName": "detail",
+        "label": "Detail",
+        "section": "1",
+        "fields": [
+            {
+                "name": "document",
+                "label": "Document",
+                "field": "media",
+                "attribute": {
+                    "accept": ["document"]
+                }
+            }
+        ]
+    }
+]

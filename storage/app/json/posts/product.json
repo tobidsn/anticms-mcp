@@ -1,0 +1,40 @@
+[
+    {
+        "keyName": "product",
+        "label": "Product",
+        "section": "1",
+        "fields": [
+            {
+                "name": "product_short_description",
+                "label": "Product Short Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                    "rows": 10,
+                    "cols": 10,
+                    "is_required": false,
+                    "placeholder": "Enter product short description",
+                    "caption": "Short description of the product",
+                    "defaultValue": "",
+                    "value": null
+                }
+            },
+            {
+                "name": "product_image",
+                "label": "Product Image",
+                "field": "media",
+                "attribute": {
+                    "caption": "Resolution 3000px x 3000px",
+                    "accept": ["image"],
+                    "fileSize": 2000,
+                    "resolution": {
+                        "minWidth": 1,
+                        "maxWidth": 3000,
+                        "minHeight": 1,
+                        "maxHeight": 3000
+                    }
+                }
+            }
+        ]
+    }
+]

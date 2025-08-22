@@ -1,0 +1,280 @@
+{
+    "name": "about",
+    "label": "About",
+    "is_content": false,
+    "multilanguage": true,
+    "is_multiple" : false,
+    "description": "Template containing all components used on the About Page",
+    "components": [
+        {
+            "keyName": "section_1",
+            "label": "Section 1",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "small_title",
+                    "label": "Small Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter small title",
+                        "defaultValue": "",
+                        "maxLength": 50,
+                        "minLength": 1,
+                        "caption": ""
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "full",
+                        "rows": 10,
+                        "cols": 10,
+                        "max": 50,
+                        "is_required": false,
+                        "placeholder": "Enter description",
+                        "caption": "",
+                        "defaultValue": ""
+                    }
+                },
+                {
+                    "name": "banner_image",
+                    "label": "Banner Image",
+                    "field": "image",
+                    "attribute": {
+                        "caption": "",
+                        "accept": ["image/jpeg", "image/png", "image/jpg"],
+                        "fileSize": 5120,
+                        "resolution": {
+                            "minWidth": 3,
+                            "maxWidth": 300,
+                            "minHeight": 2.21,
+                            "maxHeight": 221
+                        }
+                    }
+                },
+                {
+                    "name": "small_image",
+                    "label": "Small Image",
+                    "field": "image",
+                    "attribute": {
+                        "caption": "",
+                        "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
+                        "fileSize": 512,
+                        "convertToWebp": true,
+                        "resolution": {
+                            "minWidth": 3,
+                            "maxWidth": 300,
+                            "minHeight": 2.21,
+                            "maxHeight": 221
+                        }
+                    }
+                },
+                {
+                    "name": "video",
+                    "label": "Video",
+                    "field": "file",
+                    "attribute": {
+                        "type": "video",
+                        "caption": "Upload video max. size 500kb",
+                        "accept": "video/*",
+                        "fileSize": 512
+                    }
+                },
+                {
+                    "name": "audio",
+                    "label": "Audio",
+                    "field": "file",
+                    "attribute": {
+                        "type": "audio",
+                        "caption": "Upload audio max. size 500kb",
+                        "accept": "audio/mp3",
+                        "fileSize": 512
+                    }
+                },
+                {
+                    "name": "document",
+                    "label": "Document",
+                    "field": "file",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "document",
+                        "caption": "Upload doc max. size 500kb",
+                        "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "fileSize": 512
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "slider",
+                    "label": "Slider",
+                    "attribute": {
+                        "min": 1,
+                        "max": 5,
+                        "fields": [
+                            {
+                                "field": "input",
+                                "name": "title",
+                                "label": "Title",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "is_required": true,
+                                    "type": "text",
+                                    "placeholder": "Enter title"
+                                }
+                            },
+                            {
+                                "name": "description",
+                                "label": "Description",
+                                "field": "texteditor",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "simple",
+                                    "rows": 10,
+                                    "cols": 10,
+                                    "max": 50,
+                                    "is_required": false,
+                                    "placeholder": "Enter description",
+                                    "caption": "",
+                                    "defaultValue": ""
+                                }
+                            },
+                            {
+                                "name": "small_image",
+                                "label": "Small Image",
+                                "field": "image",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "caption": "Resolution 300px x 221px",
+                                    "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
+                                    "fileSize": 512,
+                                    "convertToWebp": true,
+                                    "resolution": {
+                                        "minWidth": 3,
+                                        "maxWidth": 300,
+                                        "minHeight": 2.21,
+                                        "maxHeight": 221
+                                    }
+                                }
+                            },
+                            {
+                                "name": "document",
+                                "label": "Document",
+                                "field": "file",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "document",
+                                    "caption": "Upload doc max. size 500kb",
+                                    "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                    "fileSize": 512
+                                }
+                            },
+                            {
+                                "name": "video",
+                                "label": "Video",
+                                "field": "file",
+                                "attribute": {
+                                    "type": "video",
+                                    "caption": "Upload video max. size 500kb",
+                                    "accept": "video/*",
+                                    "fileSize": 512
+                                }
+                            },
+                            {
+                                "field": "repeater",
+                                "name": "images",
+                                "label": "Images",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 5,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "title",
+                                            "label": "Title",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": true,
+                                                "type": "text",
+                                                "placeholder": "Enter title"
+                                            }
+                                        },
+                                        {
+                                            "name": "small_image",
+                                            "label": "Small Image",
+                                            "field": "image",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "caption": "Resolution 300px x 221px",
+                                                "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
+                                                "fileSize": 512,
+                                                "convertToWebp": true,
+                                                "resolution": {
+                                                    "minWidth": 3,
+                                                    "maxWidth": 300,
+                                                    "minHeight": 2.21,
+                                                    "maxHeight": 221
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "document",
+                                            "label": "Document",
+                                            "field": "file",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "type": "document",
+                                                "caption": "Upload doc max. size 500kb",
+                                                "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                "fileSize": 512
+                                            }
+                                        },
+                                        {
+                                            "name": "video",
+                                            "label": "Video",
+                                            "field": "file",
+                                            "attribute": {
+                                                "type": "video",
+                                                "caption": "Upload video max. size 500kb",
+                                                "accept": "video/*",
+                                                "fileSize": 512
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

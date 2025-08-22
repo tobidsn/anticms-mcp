@@ -1,0 +1,603 @@
+{
+  "name": "homepage",
+  "label": "Homepage",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Savaya Group homepage template with hero section, about section, brands showcase, events listing, news section, and call-to-action areas",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Hero Background Image",
+          "field": "media",
+          "attribute": {
+            "caption": "Main hero background image (1440x800px recommended)",
+            "accept": ["image"],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "scroll_indicator_text",
+          "label": "Scroll Indicator Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Discover the experience",
+            "defaultValue": "Discover the experience"
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "about_section",
+      "label": "About Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the about section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "main_title",
+          "label": "Main Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "placeholder": "High above the cliffs, deep within the cities, amidst the nightlife.",
+            "max": 300
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "placeholder": "Company description text",
+            "max": 500
+          }
+        },
+        {
+          "name": "about_link_text",
+          "label": "About Link Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "ABOUT US",
+            "defaultValue": "ABOUT US"
+          }
+        },
+        {
+          "name": "about_link_url",
+          "label": "About Link URL",
+          "field": "input",
+          "attribute": {
+            "type": "url",
+            "placeholder": "/about-us"
+          }
+        },
+        {
+          "name": "gallery_images",
+          "label": "Gallery Images",
+          "field": "repeater",
+          "attribute": {
+            "min": 4,
+            "max": 4,
+            "fields": [
+              {
+                "name": "image",
+                "label": "Gallery Image",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Gallery image (342x360px or 342x456px recommended)"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "brands_section",
+      "label": "Brands Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the brands section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "background_color",
+          "label": "Background Color",
+          "field": "input",
+          "attribute": {
+            "type": "text",
+            "placeholder": "#edf3f5",
+            "defaultValue": "#edf3f5"
+          }
+        },
+        {
+          "name": "brand_logo",
+          "label": "Brand Logo",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Brand logo (200x88px recommended)"
+          }
+        },
+        {
+          "name": "brand_image",
+          "label": "Brand Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Brand showcase image (668x666px recommended)"
+          }
+        },
+        {
+          "name": "brand_title",
+          "label": "Brand Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "Timeless, refined steakhouse at the heart of Jakarta",
+            "max": 200
+          }
+        },
+        {
+          "name": "brand_description",
+          "label": "Brand Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "placeholder": "Brand description text",
+            "max": 500
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "events_section",
+      "label": "Events Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the events section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Gather, celebrate, & connect at our events",
+            "max": 150
+          }
+        },
+        {
+          "name": "browse_all_text",
+          "label": "Browse All Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "BROWSE ALL",
+            "defaultValue": "BROWSE ALL"
+          }
+        },
+        {
+          "name": "browse_all_url",
+          "label": "Browse All URL",
+          "field": "input",
+          "attribute": {
+            "type": "url",
+            "placeholder": "/events"
+          }
+        },
+        {
+          "name": "events_list",
+          "label": "Events List",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "fields": [
+              {
+                "name": "event_date",
+                "label": "Event Date",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "2025.01.02"
+                }
+              },
+              {
+                "name": "venue_name",
+                "label": "Venue Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Desa Kitsune"
+                }
+              },
+              {
+                "name": "event_title",
+                "label": "Event Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Paella Fiesta"
+                }
+              },
+              {
+                "name": "view_detail_url",
+                "label": "View Detail URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/events/event-slug"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "events_image",
+          "label": "Events Section Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Events section decorative image (320x320px recommended)"
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "news_section",
+      "label": "News Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the news section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Our stories unfold",
+            "defaultValue": "Our stories unfold"
+          }
+        },
+        {
+          "name": "browse_all_text",
+          "label": "Browse All Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "BROWSE ALL",
+            "defaultValue": "BROWSE ALL"
+          }
+        },
+        {
+          "name": "browse_all_url",
+          "label": "Browse All URL",
+          "field": "input",
+          "attribute": {
+            "type": "url",
+            "placeholder": "/news"
+          }
+        },
+        {
+          "name": "news_articles",
+          "label": "News Articles",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 4,
+            "fields": [
+              {
+                "name": "article_image",
+                "label": "Article Image",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Article thumbnail (380x380px recommended)"
+                }
+              },
+              {
+                "name": "article_title",
+                "label": "Article Title",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 200,
+                  "placeholder": "Article title"
+                }
+              },
+              {
+                "name": "article_date",
+                "label": "Article Date",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "22 January 2025"
+                }
+              },
+              {
+                "name": "article_url",
+                "label": "Article URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/news/article-slug"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "private_events_section",
+      "label": "Private Events Section",
+      "section": "6",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Section Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Private Events section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "PRIVATE EVENTS",
+            "defaultValue": "PRIVATE EVENTS",
+            "maxLength": 50,
+            "caption": "Small uppercase label text with letter spacing (opacity 70%)"
+          }
+        },
+        {
+          "name": "main_heading",
+          "label": "Main Heading",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "simple",
+            "rows": 3,
+            "max": 300,
+            "placeholder": "Where your special day becomes a lasting story for everyone",
+            "caption": "Large white heading text - TT Commons Light, 56px size, line-height: none"
+          }
+        },
+        {
+          "name": "description_text",
+          "label": "Description Text",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "simple",
+            "rows": 4,
+            "max": 600,
+            "placeholder": "Every event deserves an iconic setting. From intimate gatherings to grand celebrations, our venue reflects your unique style. Let us craft an experience that transforms your special day into unforgettable memories.",
+            "caption": "White description text with 70% opacity, TT Commons Regular, 18px font size"
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Call to Action Button",
+          "field": "group",
+          "attribute": {
+            "caption": "White button with dark text and letter spacing",
+            "fields": [
+              {
+                "name": "button_text",
+                "label": "Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "PLAN YOUR MOMENT",
+                  "defaultValue": "PLAN YOUR MOMENT",
+                  "maxLength": 30,
+                  "caption": "Uppercase button text - Proxima Nova Regular, 16px, tracking 2.4px"
+                }
+              },
+              {
+                "name": "button_url",
+                "label": "Button URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/private-events",
+                  "caption": "Destination URL for the button"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "background_styling",
+          "label": "Background & Styling",
+          "field": "group",
+          "attribute": {
+            "caption": "Section background color and layout specifications",
+            "fields": [
+              {
+                "name": "background_color",
+                "label": "Background Color",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "#16292f",
+                  "defaultValue": "#16292f",
+                  "caption": "Dark teal background color from Figma design"
+                }
+              },
+              {
+                "name": "section_height",
+                "label": "Section Height",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "860px",
+                  "defaultValue": "860px",
+                  "caption": "Full section height as per Figma specifications"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "aerial_venue_image",
+          "label": "Aerial Venue Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Large aerial view of luxury resort/venue with pools - positioned on right side (707x860px)",
+            "resolution": {
+              "minWidth": 600,
+              "maxWidth": 800,
+              "minHeight": 800,
+              "maxHeight": 900
+            }
+          }
+        },
+        {
+          "name": "intimate_gathering_image",
+          "label": "Intimate Gathering Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Small circular decorative image showing people in intimate setting - positioned top left (248x248px)",
+            "resolution": {
+              "minWidth": 200,
+              "maxWidth": 300,
+              "minHeight": 200,
+              "maxHeight": 300
+            }
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "final_cta_section",
+      "label": "Final CTA Section",
+      "section": "7",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the final CTA section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "CTA section background image (1440x636px recommended)"
+          }
+        },
+        {
+          "name": "main_title",
+          "label": "Main Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Celebrate Life, The Savaya Way",
+            "max": 150
+          }
+        },
+        {
+          "name": "cta_button_text",
+          "label": "CTA Button Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Plan Your Moment",
+            "defaultValue": "Plan Your Moment"
+          }
+        },
+        {
+          "name": "cta_button_url",
+          "label": "CTA Button URL",
+          "field": "input",
+          "attribute": {
+            "type": "url",
+            "placeholder": "/contact"
+          }
+        }
+      ]
+    }
+  ]
+}

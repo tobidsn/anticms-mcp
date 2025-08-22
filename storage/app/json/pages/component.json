@@ -1,0 +1,780 @@
+{
+    "name": "component",
+    "label": "Component",
+    "is_content": false,
+    "is_hide": true,
+    "multilanguage": true,
+    "is_multiple": false,
+    "description": "This is a component",
+    "components": [
+        {
+            "keyName": "section_media",
+            "label": "Section Media",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the banner image",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "image",
+                    "label": "Image",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "image"
+                        ],
+                        "resolution": {
+                            "minWidth": 3,
+                            "maxWidth": 300,
+                            "minHeight": 2.21,
+                            "maxHeight": 221
+                        }
+                    }
+                },
+                {
+                    "name": "banner_image",
+                    "label": "Banner Image",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "image"
+                        ],
+                        "resolution": {
+                            "minWidth": 3,
+                            "maxWidth": 300,
+                            "minHeight": 2.21,
+                            "maxHeight": 221
+                        }
+                    }
+                },
+                {
+                    "name": "video",
+                    "label": "Video",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "video"
+                        ]
+                    }
+                },
+                {
+                    "name": "audio",
+                    "label": "Audio",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "audio"
+                        ]
+                    }
+                },
+                {
+                    "name": "document",
+                    "label": "Document",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "document"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_input",
+            "label": "Section Input",
+            "section": "1",
+            "block": "HomeSlider",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "small_title",
+                    "label": "Small Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": true,
+                        "placeholder": "Enter small title of the banner",
+                        "defaultValue": "",
+                        "maxLength": 50,
+                        "minLength": 1,
+                        "caption": "Small title of the banner"
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "full",
+                        "rows": 10,
+                        "cols": 10,
+                        "max": 50,
+                        "is_required": false,
+                        "placeholder": "Enter title of the banner",
+                        "caption": "Short description of the banner",
+                        "defaultValue": ""
+                    }
+                },
+                {
+                    "name": "banner_image",
+                    "label": "Banner Image",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "image"
+                        ],
+                        "resolution": {
+                            "minWidth": 0,
+                            "maxWidth": 0,
+                            "minHeight": 0,
+                            "maxHeight": 0
+                        }
+                    }
+                },
+                {
+                    "name": "small_image",
+                    "label": "Small Image",
+                    "field": "media",
+                    "attribute": {
+                        "caption": "Resolution 300px x 221px",
+                        "accept": [
+                            "image"
+                        ],
+                        "fileSize": 512,
+                        "convertToWebp": true,
+                        "resolution": {
+                            "minWidth": 0,
+                            "maxWidth": 0,
+                            "minHeight": 0,
+                            "maxHeight": 0
+                        }
+                    }
+                },
+                {
+                    "name": "video",
+                    "label": "Video",
+                    "field": "file",
+                    "attribute": {
+                        "type": "video",
+                        "caption": "Upload video max. size 500kb",
+                        "accept": "video/*",
+                        "fileSize": 512
+                    }
+                },
+                {
+                    "name": "audio",
+                    "label": "Audio",
+                    "field": "file",
+                    "attribute": {
+                        "type": "audio",
+                        "caption": "Upload audio max. size 500kb",
+                        "accept": "audio/mp3",
+                        "fileSize": 512
+                    }
+                },
+                {
+                    "name": "document",
+                    "label": "Document",
+                    "field": "file",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "document",
+                        "caption": "Upload doc max. size 500kb",
+                        "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "fileSize": 512
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_repeater",
+            "label": "Section Repeater",
+            "section": "1",
+            "block": "ComponentRepeater",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the banner image",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "small_title",
+                    "label": "Small Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter small title of the banner",
+                        "defaultValue": "",
+                        "maxLength": 50,
+                        "minLength": 1,
+                        "caption": "Small title of the banner"
+                    }
+                },
+                {
+                    "name": "textarea",
+                    "label": "Textarea",
+                    "field": "textarea",
+                    "multilanguage": true,
+                    "attribute": {
+                        "rows": 3,
+                        "cols": 3,
+                        "max": 200,
+                        "is_required": false,
+                        "placeholder": "Enter description",
+                        "caption": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "banner_image",
+                    "label": "Banner Image",
+                    "field": "media",
+                    "attribute": {
+                        "accept": [
+                            "image"
+                        ],
+                        "resolution": {
+                            "minWidth": 3,
+                            "maxWidth": 300,
+                            "minHeight": 2.21,
+                            "maxHeight": 221
+                        }
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "slider",
+                    "label": "Slider",
+                    "attribute": {
+                        "min": 1,
+                        "max": 5,
+                        "fields": [
+                            {
+                                "name": "table_slider",
+                                "label": "Table Slider",
+                                "field": "table",
+                                "attribute": {
+                                    "is_required": false,
+                                    "caption": "Enter table",
+                                    "columns": [
+                                        {
+                                            "label": "Title",
+                                            "name": "title",
+                                            "type": "textarea",
+                                            "is_required": true,
+                                            "placeholder": "Enter title of the table"
+                                        },
+                                        {
+                                            "label": "Description",
+                                            "name": "description",
+                                            "type": "textarea",
+                                            "is_required": false,
+                                            "placeholder": ""
+                                        }
+                                    ],
+                                    "min": 1,
+                                    "max": 5
+                                }
+                            },
+                            {
+                                "field": "input",
+                                "name": "title",
+                                "label": "Title",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "is_required": false,
+                                    "type": "text",
+                                    "placeholder": "Enter title of the image slider"
+                                }
+                            },
+                            {
+                                "name": "small_image",
+                                "label": "Small Imagess",
+                                "field": "image",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "caption": "Resolution 300px x 221px",
+                                    "accept": [
+                                        "image"
+                                    ],
+                                    "fileSize": 512,
+                                    "convertToWebp": true,
+                                    "resolution": {
+                                        "minWidth": 0,
+                                        "maxWidth": 0,
+                                        "minHeight": 0,
+                                        "maxHeight": 0
+                                    }
+                                }
+                            },
+                            {
+                                "field": "repeater",
+                                "name": "images",
+                                "label": "Images",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 5,
+                                    "fields": [
+                                        {
+                                            "name": "table_images",
+                                            "label": "table_images",
+                                            "field": "table",
+                                            "attribute": {
+                                                "is_required": false,
+                                                "caption": "Enter table",
+                                                "columns": [
+                                                    {
+                                                        "label": "Title",
+                                                        "name": "title",
+                                                        "type": "text",
+                                                        "is_required": true,
+                                                        "placeholder": "Enter title of the table"
+                                                    },
+                                                    {
+                                                        "label": "Description",
+                                                        "name": "description",
+                                                        "type": "text",
+                                                        "is_required": false,
+                                                        "placeholder": ""
+                                                    }
+                                                ],
+                                                "min": 1,
+                                                "max": 5
+                                            }
+                                        },
+                                        {
+                                            "field": "input",
+                                            "name": "debug_title",
+                                            "label": "Title",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": true,
+                                                "type": "text",
+                                                "placeholder": "Enter title of the image slider"
+                                            }
+                                        },
+                                        {
+                                            "name": "debug_small_image",
+                                            "label": "Small Image",
+                                            "field": "media",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "caption": "Resolution 300px x 221px",
+                                                "accept": [
+                                                    "image/jpeg",
+                                                    "image/png",
+                                                    "image/jpg",
+                                                    "image/gif"
+                                                ],
+                                                "fileSize": 512,
+                                                "convertToWebp": true,
+                                                "resolution": {
+                                                    "minWidth": 3,
+                                                    "maxWidth": 300,
+                                                    "minHeight": 2.21,
+                                                    "maxHeight": 221
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "field": "repeater",
+                                "name": "images2",
+                                "label": "Images2",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 5,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "debug_title",
+                                            "label": "Title",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": true,
+                                                "type": "text",
+                                                "placeholder": "Enter title of the image slider"
+                                            }
+                                        },
+                                        {
+                                            "name": "debug_small_image",
+                                            "label": "Small Image",
+                                            "field": "media",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "caption": "Resolution 300px x 221px",
+                                                "accept": [
+                                                    "image/jpeg",
+                                                    "image/png",
+                                                    "image/jpg",
+                                                    "image/gif"
+                                                ],
+                                                "fileSize": 512,
+                                                "convertToWebp": true,
+                                                "resolution": {
+                                                    "minWidth": 3,
+                                                    "maxWidth": 300,
+                                                    "minHeight": 2.21,
+                                                    "maxHeight": 221
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "banners",
+                    "label": "Banners",
+                    "attribute": {
+                        "min": 1,
+                        "max": 5,
+                        "fields": [
+                            {
+                                "field": "input",
+                                "name": "title",
+                                "label": "Title",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "is_required": false,
+                                    "type": "text",
+                                    "placeholder": "Enter title of the image slider"
+                                }
+                            },
+                            {
+                                "name": "repeater_image",
+                                "label": "Repeater Image",
+                                "field": "media",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "caption": "Resolution 300px x 221px",
+                                    "accept": [
+                                        "image"
+                                    ],
+                                    "fileSize": 512,
+                                    "convertToWebp": true,
+                                    "resolution": {
+                                        "minWidth": 3,
+                                        "maxWidth": 300,
+                                        "minHeight": 2.21,
+                                        "maxHeight": 221
+                                    }
+                                }
+                            },
+                            {
+                                "field": "group",
+                                "name": "button_group",
+                                "label": "Button Group",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 1,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "label",
+                                            "label": "Label",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": false,
+                                                "type": "text",
+                                                "placeholder": "Button Label",
+                                                "defaultValue": "",
+                                                "value": null
+                                            }
+                                        },
+                                        {
+                                            "field": "input",
+                                            "name": "link",
+                                            "label": "Link",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "type": "url",
+                                                "is_required": false,
+                                                "placeholder": "Enter link",
+                                                "defaultValue": "#",
+                                                "value": null
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "field": "group",
+                                "name": "button_group2",
+                                "label": "Button Group 2",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 1,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "label",
+                                            "label": "Label",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": false,
+                                                "type": "text",
+                                                "placeholder": "Button Label",
+                                                "defaultValue": "",
+                                                "value": null
+                                            }
+                                        },
+                                        {
+                                            "field": "input",
+                                            "name": "link",
+                                            "label": "Link",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "type": "url",
+                                                "is_required": false,
+                                                "placeholder": "Enter link",
+                                                "defaultValue": "#",
+                                                "value": null
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_select",
+            "label": "Section Select",
+            "section": "1",
+            "block": "ComponentSelect",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the banner image",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "show_banner",
+                    "label": "Show Banner",
+                    "field": "select",
+                    "multilanguage": true,
+                    "attribute": {
+                        "options": [
+                            {
+                                "label": "Yes",
+                                "value": "yes"
+                            },
+                            {
+                                "label": "No",
+                                "value": "no"
+                            }
+                        ],
+                        "is_required": true,
+                        "placeholder": "",
+                        "caption": "",
+                        "defaultValue": "no",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "relationship",
+                    "label": "Relationship",
+                    "field": "relationship",
+                    "attribute": {
+                        "is_required": false,
+                        "caption": "Select the relationship",
+                        "filter": {
+                            "post_type": [
+                                "works",
+                                "post",
+                                "event",
+                                "page"
+                            ],
+                            "post_status": "publish",
+                            "post_category": []
+                        },
+                        "min": 1,
+                        "max": 4,
+                        "api_url": "/api/v1/posts/relationship?ids="
+                    }
+                },
+                {
+                    "name": "post_object",
+                    "label": "Post Object",
+                    "field": "post_object",
+                    "attribute": {
+                        "is_required": false,
+                        "caption": "Select posts",
+                        "filter": {
+                            "post_type": [
+                                "event",
+                                "page"
+                            ],
+                            "post_status": "publish"
+                        },
+                        "multiple": true
+                    }
+                },
+                {
+                    "name": "post_related",
+                    "label": "Post Related",
+                    "field": "post_related",
+                    "attribute": {
+                        "is_required": false,
+                        "caption": "Setting the related post",
+                        "api_prefix": "/api/v1/"
+                    }
+                },
+                {
+                    "name": "table_component",
+                    "label": "Table Component",
+                    "field": "table",
+                    "attribute": {
+                        "is_required": false,
+                        "caption": "Enter table",
+                        "columns": [
+                            {
+                                "label": "Title",
+                                "name": "title",
+                                "type": "text",
+                                "is_required": true,
+                                "placeholder": "Enter title of the table"
+                            },
+                            {
+                                "label": "Description",
+                                "name": "description",
+                                "type": "text",
+                                "is_required": false,
+                                "placeholder": ""
+                            }
+                        ],
+                        "min": 1,
+                        "max": 5
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "blog1",
+            "label": "Blog 1 (Atoms)",
+            "section": "1",
+            "block": "ComponentRelationship",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the banner image",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "lists",
+                    "label": "Lists",
+                    "field": "relationship",
+                    "attribute": {
+                        "is_required": false,
+                        "caption": "Select the relationship",
+                        "filter": {
+                            "post_type": [
+                                "news"
+                            ],
+                            "post_status": "publish",
+                            "post_category": [
+                                "omnis-odio-nisi-pari",
+                                "qui-pariatur-sint-i",
+                                "makan",
+                                "article",
+                                "release"
+                            ]
+                        },
+                        "min": 1,
+                        "max": 10,
+                        "api_url": "/api/v1/posts/relationship?ids="
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "button",
+            "label": "Section Button",
+            "section": "1",
+            "block": "ComponentButton",
+            "fields": [
+                {
+                    "field": "group",
+                    "name": "button",
+                    "label": "Button",
+                    "attribute": {
+                        "min": 1,
+                        "max": 1,
+                        "fields": [
+                            {
+                                "field": "input",
+                                "name": "label",
+                                "label": "Label",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "is_required": false,
+                                    "type": "text",
+                                    "placeholder": "Button Label",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "field": "input",
+                                "name": "link",
+                                "label": "Link",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "url",
+                                    "is_required": false,
+                                    "placeholder": "Enter link",
+                                    "defaultValue": "#",
+                                    "value": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Events",
+  "slug": "events",
+  "cpt": {
+      "is_show": true,
+      "is_category": true,
+      "is_tags": true,
+      "is_featured_image": true,
+      "is_content": true,
+      "is_enable_seo": true,
+      "is_edit_date": true,
+      "have_permission": true,
+      "have_custom_fields": true
+  }
+}

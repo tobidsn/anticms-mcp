@@ -1,0 +1,726 @@
+{
+  "name": "agency",
+  "label": "Agency",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Business Agency website template with hero section, services, capabilities, projects showcase, testimonials, and contact form",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "award_badge",
+          "label": "Award Badge",
+          "field": "group",
+          "attribute": {
+            "caption": "Award or certification badge",
+            "fields": [
+              {
+                "name": "badge_text",
+                "label": "Badge Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Best Business Platform - World Record 2021",
+                  "defaultValue": "Best Business Platform - World Record 2021"
+                }
+              },
+              {
+                "name": "badge_icon",
+                "label": "Badge Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Verification or award icon"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "main_heading",
+          "label": "Main Heading",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "Reach Your Business Goals in Record Time",
+            "max": 200,
+            "caption": "Large heading text - Ubuntu Bold, 58px, tracking 1.16px"
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "placeholder": "Support small business and join the nationwide movement to encourage commercial support for the millions of minority owned businesses helping world economy.",
+            "max": 500,
+            "caption": "Hero description text - Ubuntu Regular, 20px"
+          }
+        },
+        {
+          "name": "primary_cta",
+          "label": "Primary CTA Button",
+          "field": "group",
+          "attribute": {
+            "caption": "Main call-to-action button",
+            "fields": [
+              {
+                "name": "button_text",
+                "label": "Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Get Started",
+                  "defaultValue": "Get Started"
+                }
+              },
+              {
+                "name": "button_url",
+                "label": "Button URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/get-started"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "secondary_cta",
+          "label": "Secondary CTA Button",
+          "field": "group",
+          "attribute": {
+            "caption": "Watch video or secondary action button",
+            "fields": [
+              {
+                "name": "button_text",
+                "label": "Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Watch Video",
+                  "defaultValue": "Watch Video"
+                }
+              },
+              {
+                "name": "button_url",
+                "label": "Button URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/video"
+                }
+              },
+              {
+                "name": "button_icon",
+                "label": "Button Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Play button or similar icon"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "hero_image",
+          "label": "Hero Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Main hero image with decorative elements (416x496px recommended)",
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 500,
+              "minHeight": 450,
+              "maxHeight": 550
+            }
+          }
+        },
+        {
+          "name": "rating_widget",
+          "label": "Rating Widget",
+          "field": "group",
+          "attribute": {
+            "caption": "Customer rating display",
+            "fields": [
+              {
+                "name": "rating_score",
+                "label": "Rating Score",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "4.9",
+                  "defaultValue": "4.9"
+                }
+              },
+              {
+                "name": "customer_avatars",
+                "label": "Customer Avatars",
+                "field": "repeater",
+                "attribute": {
+                  "min": 3,
+                  "max": 5,
+                  "fields": [
+                    {
+                      "name": "avatar",
+                      "label": "Customer Avatar",
+                      "field": "media",
+                      "attribute": {
+                        "accept": ["image"],
+                        "caption": "Customer profile image (40x40px)"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "partners_section",
+      "label": "Partners Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the partners section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "partner_logos",
+          "label": "Partner Logos",
+          "field": "repeater",
+          "attribute": {
+            "min": 3,
+            "max": 6,
+            "fields": [
+              {
+                "name": "logo",
+                "label": "Partner Logo",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Partner company logo (200x80px recommended)"
+                }
+              },
+              {
+                "name": "company_name",
+                "label": "Company Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Company name for accessibility"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "services_section",
+      "label": "Services Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the services section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "SERVICES",
+            "defaultValue": "SERVICES",
+            "caption": "Small uppercase label"
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Our Capabilities",
+            "defaultValue": "Our Capabilities",
+            "caption": "Main section heading"
+          }
+        },
+        {
+          "name": "section_description",
+          "label": "Section Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "We will bring the breathe of our experience and industry knowledge to help you succeed",
+            "max": 300
+          }
+        },
+        {
+          "name": "services",
+          "label": "Services",
+          "field": "repeater",
+          "attribute": {
+            "min": 3,
+            "max": 4,
+            "fields": [
+              {
+                "name": "service_icon",
+                "label": "Service Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Service icon (40x40px recommended)"
+                }
+              },
+              {
+                "name": "service_title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Market Forecast",
+                  "is_required": true
+                }
+              },
+              {
+                "name": "service_description",
+                "label": "Service Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "placeholder": "Leverage agile framework to provide a robust high level synopsys overviews",
+                  "max": 200
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "why_choose_us_section",
+      "label": "Why Choose Us Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the why choose us section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "background_color",
+          "label": "Background Color",
+          "field": "input",
+          "attribute": {
+            "type": "text",
+            "placeholder": "#282c4b",
+            "defaultValue": "#282c4b",
+            "caption": "Dark background color for the section"
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "WHY CHOOSE US",
+            "defaultValue": "WHY CHOOSE US",
+            "caption": "Orange uppercase label"
+          }
+        },
+        {
+          "name": "main_title",
+          "label": "Main Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "Take on any Challenge of the Digital World",
+            "max": 200,
+            "caption": "White heading text"
+          }
+        },
+        {
+          "name": "feature_list",
+          "label": "Feature List",
+          "field": "repeater",
+          "attribute": {
+            "min": 3,
+            "max": 5,
+            "fields": [
+              {
+                "name": "feature_text",
+                "label": "Feature Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Corporate Financial Advisory"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "CTA Button",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "button_text",
+                "label": "Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Get Started",
+                  "defaultValue": "Get Started"
+                }
+              },
+              {
+                "name": "button_url",
+                "label": "Button URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/get-started"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "featured_image",
+          "label": "Featured Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Left side featured image with decorative elements"
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "projects_section",
+      "label": "Projects Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the projects section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "PROJECTS",
+            "defaultValue": "PROJECTS"
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Selected Works from Us",
+            "max": 100
+          }
+        },
+        {
+          "name": "see_more_button",
+          "label": "See More Button",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "button_text",
+                "label": "Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "See More",
+                  "defaultValue": "See More"
+                }
+              },
+              {
+                "name": "button_url",
+                "label": "Button URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/projects"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "projects",
+          "label": "Projects",
+          "field": "repeater",
+          "attribute": {
+            "min": 4,
+            "max": 6,
+            "fields": [
+              {
+                "name": "project_image",
+                "label": "Project Image",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Project thumbnail (346x207px recommended)"
+                }
+              },
+              {
+                "name": "project_title",
+                "label": "Project Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Cosmetic Forest Marketing",
+                  "is_required": true
+                }
+              },
+              {
+                "name": "project_url",
+                "label": "Project URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/projects/project-slug"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "testimonials_section",
+      "label": "Testimonials Section",
+      "section": "6",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the testimonials section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "TESTIMONIAL",
+            "defaultValue": "TESTIMONIAL"
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "What Our Customer's Say",
+            "max": 100
+          }
+        },
+        {
+          "name": "testimonials",
+          "label": "Testimonials",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 3,
+            "fields": [
+              {
+                "name": "testimonial_text",
+                "label": "Testimonial Text",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 4,
+                  "placeholder": "I really like the team for example, a relationship-focused performance expectation might be that the employee sustain collegial working relationships with her peers, subordinates and customers.",
+                  "max": 500
+                }
+              },
+              {
+                "name": "customer_name",
+                "label": "Customer Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Gloria Jessica"
+                }
+              },
+              {
+                "name": "customer_avatar",
+                "label": "Customer Avatar",
+                "field": "media",
+                "attribute": {
+                  "accept": ["image"],
+                  "caption": "Customer profile image (60x60px recommended)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "decorative_image",
+          "label": "Decorative Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Left side decorative image with abstract elements"
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "contact_section",
+      "label": "Contact Section",
+      "section": "7",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the contact section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "CONTACT US",
+            "defaultValue": "CONTACT US"
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Let's Collaborate Now!",
+            "defaultValue": "Let's Collaborate Now!"
+          }
+        },
+        {
+          "name": "contact_form",
+          "label": "Contact Form",
+          "field": "group",
+          "attribute": {
+            "caption": "Contact form configuration",
+            "fields": [
+              {
+                "name": "form_endpoint",
+                "label": "Form Endpoint",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/api/contact",
+                  "caption": "URL where form submissions should be sent"
+                }
+              },
+              {
+                "name": "submit_button_text",
+                "label": "Submit Button Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Send Message",
+                  "defaultValue": "Send Message"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "featured_image",
+          "label": "Featured Image",
+          "field": "media",
+          "attribute": {
+            "accept": ["image"],
+            "caption": "Left side featured image with decorative elements"
+          }
+        }
+      ]
+    }
+  ]
+}

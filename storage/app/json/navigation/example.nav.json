@@ -1,0 +1,114 @@
+{
+  "name": "Main Menu",
+  "slug": "main-menu",
+  "items": [
+    {
+      "translations": {
+        "en": {
+          "title": "Services"
+        },
+        "id": {
+          "title": "Layanan"
+        }
+      },
+      "type": "page",
+      "url": null,
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 1,
+      "image": null,
+      "children": []
+    },
+    {
+      "translations": {
+        "en": {
+          "title": "Resources"
+        },
+        "id": {
+          "title": "Sumber Daya"
+        }
+      },
+      "type": "page",
+      "url": null,
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 2,
+      "image": null,
+      "children": []
+    },
+    {
+      "translations": {
+        "en": {
+          "title": "Company"
+        },
+        "id": {
+          "title": "Perusahaan"
+        }
+      },
+      "type": "page",
+      "url": null,
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 3,
+      "image": null,
+      "children": []
+    },
+    {
+      "translations": {
+        "en": {
+          "title": "Blog"
+        },
+        "id": {
+          "title": "Blog"
+        }
+      },
+      "type": "page",
+      "url": null,
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 4,
+      "image": null,
+      "children": []
+    },
+    {
+      "translations": {
+        "en": {
+          "title": "Contact Us"
+        },
+        "id": {
+          "title": "Hubungi Kami"
+        }
+      },
+      "type": "page",
+      "url": null,
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 5,
+      "image": null,
+      "children": []
+    },
+    {
+      "translations": {
+        "en": {
+          "title": "Let's Talk"
+        },
+        "id": {
+          "title": "Mari Bicara"
+        }
+      },
+      "type": "url",
+      "url": "#contact",
+      "post_id": null,
+      "parent_id": null,
+      "new_window": false,
+      "sort": 6,
+      "image": null,
+      "children": []
+    }
+  ]
+}

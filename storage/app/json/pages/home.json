@@ -1,0 +1,737 @@
+{
+    "name": "home",
+    "label": "Home",
+    "is_content": false,
+    "multilanguage": true,
+    "is_multiple" : false,
+    "description": "Template containing all components used on the Home Page",
+    "components": [
+        {
+            "keyName": "section_1",
+            "label": "Banner",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "small_title",
+                    "label": "Small Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter small title of the banner",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the banner",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Enter title of the banner",
+                        "caption": "Short description of the banner",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "banner_image",
+                    "label": "Banner Image",
+                    "field": "media",
+                    "attribute": {
+                        "caption": "Resolution 3000px x 3000px",
+                        "accept": ["image"],
+                        "fileSize": 2000,
+                        "resolution": {
+                            "minWidth": 1,
+                            "maxWidth": 3000,
+                            "minHeight": 1,
+                            "maxHeight": 3000
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_2",
+            "label": "Our Services",
+            "section": "2",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the our services section",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": true,
+                        "placeholder": "Enter title of the our services section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "caption",
+                    "label": "Caption",
+                    "field": "textarea",
+                    "multilanguage": true,
+                    "attribute": {
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Enter caption of the our services section",
+                        "caption": "Short description of the our services section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "image_slider",
+                    "label": "Image Slider",
+                    "attribute": {
+                        "min": 1,
+                        "max": 5,
+                        "fields": [
+                            {
+                                "field": "input",
+                                "name": "title",
+                                "label": "Title",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "is_required": false,
+                                    "type": "text",
+                                    "placeholder": "Enter title of the image slider"
+                                }
+                            },
+                            {
+                                "name": "image",
+                                "label": "Image",
+                                "field": "media",
+                                "multilanguage": false,
+                                "attribute": {
+                                    "is_required": true,
+                                    "accept": ["image"]
+                                }
+                            },
+                            {
+                                "name": "small_image",
+                                "label": "Small Image",
+                                "field": "media",
+                                "attribute": {
+                                    "defaultValue": "image kecil",
+                                    "caption": "Resolution 3000px x 3000px",
+                                    "is_required": false,
+                                    "accept": ["image"]
+                                }
+                            },
+                            {
+                                "field": "group",
+                                "name": "button_group",
+                                "label": "Button Group",
+                                "attribute": {
+                                    "min": 1,
+                                    "max": 1,
+                                    "fields": [
+                                        {
+                                            "field": "input",
+                                            "name": "label",
+                                            "label": "Label",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "is_required": false,
+                                                "type": "text",
+                                                "placeholder": "Button Label",
+                                                "defaultValue": "",
+                                                "value": null
+                                            }
+                                        },
+                                        {
+                                            "field": "input",
+                                            "name": "link",
+                                            "label": "Link",
+                                            "multilanguage": true,
+                                            "attribute": {
+                                                "type": "url",
+                                                "is_required": false,
+                                                "placeholder": "Enter link",
+                                                "defaultValue": "#",
+                                                "value": null
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_3",
+            "label": "Our Partners",
+            "section": "3",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the our partners section",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the our partners section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "image_slider",
+                    "label": "Image Slider",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "image",
+                                "label": "Image",
+                                "field": "media",
+                                "attribute": {
+                                    "caption": "Resolution 3000px x 3000px",
+                                    "is_required": true,
+                                    "accept": ["image"]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_4",
+            "label": "Our Track Record",
+            "section": "4",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the our track record section",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the our track record section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "achievement_slider",
+                    "label": "Achievement Slider",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "image",
+                                "label": "Thumbnail",
+                                "field": "image",
+                                "attribute": {
+                                    "caption": "Resolution 3000px x 3000px",
+                                    "is_required": true,
+                                    "accept": ["image/jpeg", "image/png", "image/jpg"],
+                                    "fileSize": 2000,
+                                    "resolution": {
+                                        "minWidth": 1,
+                                        "maxWidth": 3000,
+                                        "minHeight": 1,
+                                        "maxHeight": 3000
+                                    }
+                                }
+                            },
+                            {
+                                "name": "subtitle",
+                                "label": "Subtitle",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter subtitle of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "title",
+                                "label": "Title",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter title of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_1",
+                                "label": "Achievement 1",
+                                "field": "input",
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 1 of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_1_label",
+                                "label": "Achievement 1 Label",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 1 label of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_2",
+                                "label": "Achievement 2",
+                                "field": "input",
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 2 of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_2_label",
+                                "label": "Achievement 2 Label",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 2 label of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_3",
+                                "label": "Achievement 3",
+                                "field": "input",
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 3 of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_3_label",
+                                "label": "Achievement 3 Label",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 3 label of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_4",
+                                "label": "Achievement 4",
+                                "field": "input",
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 4 of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "achievement_4_label",
+                                "label": "Achievement 4 Label",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter achievement 4 label of the our track record section",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "testimonial",
+                                "label": "Testimonial",
+                                "field": "texteditor",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "rows": 10,
+                                    "cols": 10,
+                                    "is_required": false,
+                                    "placeholder": "Enter testimonial of the our track record section",
+                                    "caption": "Short description of the testimonial",
+                                    "defaultValue": "",
+                                    "value": null,
+                                    "max": 255,
+                                    "min": 50
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_5",
+            "label": "Video Section",
+            "section": "5",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the video section",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "image_banner",
+                    "label": "Image Banner",
+                    "field": "image",
+                    "attribute": {
+                        "caption": "Resolution 3000px x 3000px",
+                        "accept": ["image/jpeg", "image/png", "image/jpg"],
+                        "fileSize": 2000,
+                        "resolution": {
+                            "minWidth": 1,
+                            "maxWidth": 3000,
+                            "minHeight": 1,
+                            "maxHeight": 3000
+                        }
+                    }
+                },
+                {
+                    "name": "subtitle",
+                    "label": "Subtitle",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter subtitle of the video section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the video section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "section_5_video",
+                    "label": "Video",
+                    "field": "input",
+                    "attribute": {
+                        "type": "file",
+                        "is_required": false,
+                        "placeholder": "Enter video of the video section",
+                        "accept": "video/*",
+                        "caption": "Max. size 500kb",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_6",
+            "label": "Our Network",
+            "section": "6",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the our network section",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the our network section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "network_slider",
+                    "label": "Network Slider",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "image",
+                                "label": "Image",
+                                "field": "image",
+                                "attribute": {
+                                    "caption": "Resolution 3000px x 3000px",
+                                    "is_required": true,
+                                    "accept": ["image/jpeg", "image/png", "image/jpg"],
+                                    "fileSize": 2000,
+                                    "resolution": {
+                                        "minWidth": 1,
+                                        "maxWidth": 3000,
+                                        "minHeight": 1,
+                                        "maxHeight": 3000
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_7",
+            "label": "Section 7",
+            "section": "7",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the section 7",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the section 7",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "caption",
+                    "label": "Caption",
+                    "field": "textarea",
+                    "multilanguage": true,
+                    "attribute": {
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Enter caption of the section 7",
+                        "caption": "Short description of the section 7",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "section_7_hyperlink",
+                    "label": "Section 7 Hyperlink",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "title",
+                                "label": "Title",
+                                "field": "input",
+                                "multilanguage": true,
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter title of the section 7 hyperlink",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            },
+                            {
+                                "name": "url",
+                                "label": "URL",
+                                "field": "input",
+                                "attribute": {
+                                    "type": "text",
+                                    "is_required": false,
+                                    "placeholder": "Enter url of the section 7 hyperlink",
+                                    "defaultValue": "",
+                                    "value": null
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "keyName": "section_8",
+            "label": "Section 8",
+            "section": "8",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the section 8",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "input",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "text",
+                        "is_required": false,
+                        "placeholder": "Enter title of the section 8",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "caption",
+                    "label": "Caption",
+                    "field": "textarea",
+                    "multilanguage": true,
+                    "attribute": {
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Enter caption of the section 8",
+                        "caption": "Short description of the section 8",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "field": "repeater",
+                    "name": "section_8_slider",
+                    "label": "Section 8 Slider",
+                    "attribute": {
+                        "fields": [
+                            {
+                                "name": "image",
+                                "label": "Image",
+                                "field": "image",
+                                "attribute": {
+                                    "caption": "Resolution 3000px x 3000px",
+                                    "is_required": true,
+                                    "accept": ["image/jpeg", "image/png", "image/jpg"],
+                                    "fileSize": 2000,
+                                    "resolution": {
+                                        "minWidth": 1,
+                                        "maxWidth": 3000,
+                                        "minHeight": 1,
+                                        "maxHeight": 3000
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,70 @@
+{
+    "name": "blank",
+    "label": "Blank - Empty State",
+    "description": "This is a blank state template. Good for static page",
+    "multilanguage": true,
+    "is_multiple": true,
+    "is_content": true,
+    "lang_option" : [
+        {
+            "name" : "Indonesian",
+            "value" : "id",
+            "master" : "true"
+        },
+        {
+            "name" : "English",
+            "value" : "en",
+            "master" : "false"
+        }
+    ],
+    "components": [
+        {
+            "keyName": "header",
+            "label": "Header",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the header",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "title",
+                    "label": "Title",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "simple",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the title of section",
+                        "caption": "Short description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "",
+                        "caption": "",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        }
+    ]
+}
