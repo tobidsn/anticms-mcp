@@ -1137,6 +1137,294 @@ export async function generateNavigation(args) {
 }
 
 /**
+ * Parse instruction document (markdown format) to generate template structure
+ * @param {string} instructionText - Instruction document content
+ * @returns {object} - Parsed template structure
+ */
+function parseInstructionDocument(instructionText) {
+  const lines = instructionText.split('\n');
+  const template = {
+    components: []
+  };
+  
+  let currentSection = null;
+  let currentField = null;
+  let inFieldProperties = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Parse template header
+    if (line.startsWith('# ')) {
+      template.label = line.substring(2).trim();
+      template.name = template.label.toLowerCase().replace(/\s+/g, '_');
+    }
+    
+    // Parse template properties
+    if (line.startsWith('- Name: ')) {
+      template.name = line.substring(8).trim();
+    } else if (line.startsWith('- Label: ')) {
+      template.label = line.substring(9).trim();
+    } else if (line.startsWith('- Multilanguage: ')) {
+      template.multilanguage = line.substring(17).trim() === 'true';
+    } else if (line.startsWith('- Is Content: ')) {
+      template.is_content = line.substring(14).trim() === 'true';
+    } else if (line.startsWith('- Is Multiple: ')) {
+      template.is_multiple = line.substring(15).trim() === 'true';
+    } else if (line.startsWith('- Description: ')) {
+      template.description = line.substring(15).trim();
+    }
+    
+    // Parse sections
+    if (line.startsWith('## Section: ')) {
+      if (currentSection) {
+        template.components.push(currentSection);
+      }
+      
+      const sectionMatch = line.match(/## Section: (.+?) \(`(.+?)`\)/);
+      if (sectionMatch) {
+        currentSection = {
+          label: sectionMatch[1],
+          keyName: sectionMatch[2],
+          fields: [],
+          section: "1" // Will be updated later
+        };
+      }
+    }
+    
+    // Parse section properties
+    if (currentSection && line.startsWith('- Block: ')) {
+      // Block information - could be used for styling/organization
+    } else if (currentSection && line.startsWith('- Order: ')) {
+      currentSection.section = line.substring(9).trim();
+    }
+    
+    // Parse fields
+    if (line.startsWith('- `') && line.includes('`:')){
+      if (currentField) {
+        currentSection?.fields.push(currentField);
+      }
+      
+      const fieldMatch = line.match(/- `(.+?)`: (.+)/);
+      if (fieldMatch) {
+        const fieldName = fieldMatch[1];
+        const fieldDefinition = fieldMatch[2];
+        
+        // Parse field type and properties
+        let fieldType = 'input';
+        let isMultilanguage = false;
+        let attributes = {};
+        
+        if (fieldDefinition.includes('toggle')) {
+          fieldType = 'toggle';
+        } else if (fieldDefinition.includes('textarea')) {
+          fieldType = 'textarea';
+        } else if (fieldDefinition.includes('repeater')) {
+          fieldType = 'repeater';
+          // Parse repeater constraints
+          const minMatch = fieldDefinition.match(/min:\s*(\d+)/);
+          const maxMatch = fieldDefinition.match(/max:\s*(\d+)/);
+          if (minMatch) attributes.min = parseInt(minMatch[1]);
+          if (maxMatch) attributes.max = parseInt(maxMatch[1]);
+          attributes.fields = []; // Will be populated with nested fields
+        } else if (fieldDefinition.includes('input')) {
+          fieldType = 'input';
+          attributes.type = 'text';
+        }
+        
+        if (fieldDefinition.includes('multilanguage')) {
+          isMultilanguage = true;
+        }
+        
+        currentField = {
+          name: fieldName,
+          label: fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/_/g, ' '),
+          field: fieldType,
+          multilanguage: isMultilanguage
+        };
+        
+        if (Object.keys(attributes).length > 0) {
+          currentField.attribute = attributes;
+        }
+        
+        inFieldProperties = true;
+      }
+    }
+    
+    // Parse field properties (indented lines)
+    if (inFieldProperties && line.startsWith('  - ')) {
+      if (currentField) {
+        const propLine = line.substring(4).trim();
+        
+        if (propLine.startsWith('Required: ')) {
+          if (!currentField.attribute) currentField.attribute = {};
+          currentField.attribute.is_required = propLine.substring(10).trim() === 'true';
+        } else if (propLine.startsWith('Default: ')) {
+          if (!currentField.attribute) currentField.attribute = {};
+          currentField.attribute.defaultValue = propLine.substring(9).trim();
+        } else if (propLine.startsWith('Caption: ')) {
+          if (!currentField.attribute) currentField.attribute = {};
+          currentField.attribute.caption = propLine.substring(9).trim();
+        }
+      }
+    }
+    
+    // Parse nested fields for repeaters
+    if (currentField && currentField.field === 'repeater' && line.startsWith('  - `')) {
+      const nestedFieldMatch = line.match(/  - `(.+?)`: (.+)/);
+      if (nestedFieldMatch) {
+        const nestedFieldName = nestedFieldMatch[1];
+        const nestedFieldDef = nestedFieldMatch[2];
+        
+        let nestedFieldType = 'input';
+        let nestedIsMultilang = false;
+        let nestedAttributes = { type: 'text' };
+        
+        if (nestedFieldDef.includes('textarea')) {
+          nestedFieldType = 'textarea';
+          delete nestedAttributes.type;
+        } else if (nestedFieldDef.includes('input')) {
+          nestedFieldType = 'input';
+        }
+        
+        if (nestedFieldDef.includes('multilanguage')) {
+          nestedIsMultilang = true;
+        }
+        
+        const nestedField = {
+          name: nestedFieldName,
+          label: nestedFieldName.charAt(0).toUpperCase() + nestedFieldName.slice(1).replace(/_/g, ' '),
+          field: nestedFieldType,
+          multilanguage: nestedIsMultilang
+        };
+        
+        if (Object.keys(nestedAttributes).length > 0) {
+          nestedField.attribute = nestedAttributes;
+        }
+        
+        if (!currentField.attribute.fields) {
+          currentField.attribute.fields = [];
+        }
+        currentField.attribute.fields.push(nestedField);
+      }
+    }
+    
+    // End field properties when we hit a blank line or new section
+    if (line === '' || line.startsWith('#') || line.startsWith('---')) {
+      if (currentField) {
+        currentSection?.fields.push(currentField);
+        currentField = null;
+      }
+      inFieldProperties = false;
+    }
+  }
+  
+  // Add the last field and section
+  if (currentField) {
+    currentSection?.fields.push(currentField);
+  }
+  if (currentSection) {
+    template.components.push(currentSection);
+  }
+  
+  return template;
+}
+
+/**
+ * Generate template from instruction document
+ * @param {object} args - Instruction generation arguments
+ * @returns {object} - Generated template
+ */
+export async function generateFromInstructions(args) {
+  const {
+    instruction_content,
+    instruction_file,
+    template_type = 'pages'
+  } = args;
+
+  let instructionText = instruction_content;
+  
+  // Read instruction file if provided
+  if (instruction_file && !instruction_content) {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      let filePath;
+      if (instruction_file.startsWith('/') || instruction_file.includes(':\\')) {
+        // Absolute path
+        filePath = instruction_file;
+      } else {
+        // Relative to workspace
+        filePath = path.join(process.cwd(), instruction_file);
+      }
+      
+      instructionText = await fs.readFile(filePath, 'utf8');
+    } catch (error) {
+      throw new Error(`Failed to read instruction file: ${error.message}`);
+    }
+  }
+  
+  if (!instructionText) {
+    throw new Error('No instruction content provided');
+  }
+  
+  // Parse the instruction document
+  const parsedTemplate = parseInstructionDocument(instructionText);
+  
+  // Create the complete template structure
+  const template = AntiCMSComponentGenerator.generateTemplate(
+    parsedTemplate.name || 'instruction_template',
+    parsedTemplate.label || 'Instruction Template',
+    {
+      is_content: parsedTemplate.is_content || false,
+      multilanguage: parsedTemplate.multilanguage !== false,
+      is_multiple: parsedTemplate.is_multiple || false,
+      description: parsedTemplate.description || 'Template generated from instruction document',
+      components: parsedTemplate.components || []
+    }
+  );
+  
+  // Auto-create template file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const targetDir = template_type;
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', targetDir);
+    const filePath = path.join(storageDir, `${template.name}.json`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write template file
+    await fs.writeFile(filePath, JSON.stringify(template, null, 2), 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated AntiCMS v3 template "${template.label}" from instruction document.\n\n📁 **File saved to:** ${relativePath}\n📂 **Template type:** ${template_type === 'posts' ? 'Post Template' : 'Page Template'}\n📋 **Components:** ${template.components.length}\n\n**Parsed Structure:**\n${template.components.map(comp => `- ${comp.label} (${comp.fields.length} fields)`).join('\n')}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    console.error(`[MCP] Failed to save instruction-based template: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated AntiCMS v3 template "${template.label}" from instruction document.\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  }
+}
+
+/**
  * Smart template generator that analyzes prompts and Figma links
  * @param {object} args - Smart generation arguments
  * @returns {object} - Generation results
@@ -1145,12 +1433,46 @@ export async function smartGenerate(args) {
   const {
     prompt,
     figma_link,
+    instruction_file,
+    instruction_content,
     auto_detect = true
   } = args;
 
   let results = [];
   
   try {
+    // Check if instruction document is provided
+    if (instruction_file || instruction_content) {
+      // Use instruction-based generation
+      try {
+        const instructionResult = await generateFromInstructions({
+          instruction_content,
+          instruction_file,
+          template_type: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
+        });
+        
+        results.push({
+          type: 'text',
+          text: `📋 **Instruction-Based Generation**\n\n${instructionResult.content[0].text}`
+        });
+        
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `✨ **Smart Generation Complete (Instruction-Based)**\n\n📝 **Original Prompt:** "${prompt}"\n📄 **Instruction Source:** ${instruction_file || 'Direct content'}\n\n---\n`
+            },
+            ...results
+          ]
+        };
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `❌ **Instruction Generation Failed:** ${error.message}\n\nFalling back to prompt-based generation...`
+        });
+      }
+    }
+    
     // Extract template name from prompt
     const templateNameMatch = prompt.match(/template\s+called\s+"([^"]+)"/i) || 
                              prompt.match(/template\s+"([^"]+)"/i) ||

@@ -18,6 +18,7 @@ import {
   assignSectionToTemplate,
   generateNavigation,
   smartGenerate,
+  generateFromInstructions,
   // getAllPages, // Disabled for this version
 } from './tools/templateGenerator.js';
 import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
@@ -258,6 +259,8 @@ class AntiCMSServer {
         inputSchema: {
           prompt: z.string().describe('User prompt describing what to generate (e.g., "Create an AntiCMS v3 template called agency")'),
           figma_link: z.string().optional().describe('Figma design link to analyze and extract components from'),
+          instruction_file: z.string().optional().describe('Path to instruction document file (.md format)'),
+          instruction_content: z.string().optional().describe('Direct instruction document content (markdown format)'),
           auto_detect: z.boolean().optional().default(true).describe('Enable automatic detection of generation needs')
         }
       },
@@ -269,6 +272,31 @@ class AntiCMSServer {
           return result;
         } catch (error) {
           console.error(`[MCP] smart_generate error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register generate_from_instructions tool
+    this.server.registerTool(
+      'generate_from_instructions',
+      {
+        title: 'Generate from Instructions',
+        description: 'Generate AntiCMS v3 template from structured instruction document (markdown format)',
+        inputSchema: {
+          instruction_file: z.string().optional().describe('Path to instruction document file (.md format)'),
+          instruction_content: z.string().optional().describe('Direct instruction document content (markdown format)'),
+          template_type: z.enum(['pages', 'posts']).optional().default('pages').describe('Template type: "pages" or "posts"')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_from_instructions called with args:`, args);
+        try {
+          const result = await generateFromInstructions(args);
+          console.error(`[MCP] generate_from_instructions completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_from_instructions error:`, error);
           throw error;
         }
       }
