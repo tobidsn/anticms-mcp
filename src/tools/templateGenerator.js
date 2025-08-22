@@ -1425,6 +1425,280 @@ export async function generateFromInstructions(args) {
 }
 
 /**
+ * Generate post type settings JSON for AntiCMS v3
+ * @param {object} args - Post type generation arguments
+ * @returns {object} - Generated post type settings
+ */
+export async function generatePostType(args) {
+  const {
+    name,
+    slug,
+    is_show = true,
+    is_category = true,
+    is_tags = true,
+    is_featured_image = true,
+    is_content = true,
+    is_enable_seo = true,
+    is_edit_date = true,
+    have_permission = true,
+    have_custom_fields = true
+  } = args;
+
+  const postType = {
+    name,
+    slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
+    cpt: {
+      is_show,
+      is_category,
+      is_tags,
+      is_featured_image,
+      is_content,
+      is_enable_seo,
+      is_edit_date,
+      have_permission,
+      have_custom_fields
+    }
+  };
+
+  // Auto-create post type file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'posts-type');
+    const filePath = path.join(storageDir, `${postType.slug}.setting.json`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write post type file
+    await fs.writeFile(filePath, JSON.stringify(postType, null, 2), 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated AntiCMS v3 post type "${name}".\n\n📁 **File saved to:** ${relativePath}\n📂 **Post type slug:** ${postType.slug}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(postType, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    console.error(`[MCP] Failed to save post type file: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated AntiCMS v3 post type "${name}".\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(postType, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  }
+}
+
+/**
+ * Generate post detail custom fields JSON for AntiCMS v3
+ * @param {object} args - Post detail generation arguments
+ * @returns {object} - Generated post detail fields
+ */
+export async function generatePostDetails(args) {
+  const {
+    post_type_name,
+    sections = []
+  } = args;
+
+  const components = [];
+  
+  // Generate detail section with provided fields
+  sections.forEach((section, index) => {
+    const component = {
+      keyName: section.keyName || `section_${index + 1}`,
+      label: section.label || `Section ${index + 1}`,
+      section: String(index + 1),
+      fields: section.fields || []
+    };
+    
+    components.push(component);
+  });
+
+  // If no sections provided, create a default detail section
+  if (components.length === 0) {
+    components.push({
+      keyName: "detail",
+      label: "Detail",
+      section: "1",
+      fields: [
+        AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the content',
+          defaultValue: true
+        })
+      ]
+    });
+  }
+
+  // Auto-create post detail file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const slug = post_type_name.toLowerCase().replace(/\s+/g, '_');
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'posts');
+    const filePath = path.join(storageDir, `${slug}.json`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write post detail file
+    await fs.writeFile(filePath, JSON.stringify(components, null, 2), 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated AntiCMS v3 post detail fields for "${post_type_name}".\n\n📁 **File saved to:** ${relativePath}\n📋 **Components:** ${components.length}\n\n**Structure:**\n${components.map(comp => `- ${comp.label} (${comp.fields.length} fields)`).join('\n')}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(components, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    console.error(`[MCP] Failed to save post detail file: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated AntiCMS v3 post detail fields for "${post_type_name}".\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(components, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  }
+}
+
+/**
+ * Detect if a section is a post collection based on keywords and context
+ * @param {string} sectionText - Section text content
+ * @param {object} sectionData - Section data structure
+ * @returns {boolean} - True if section is a post collection
+ */
+function isPostCollectionSection(sectionText, sectionData = {}) {
+  const collectionKeywords = [
+    // Direct action keywords
+    'more data', 'see more', 'browse all', 'view all', 'load more',
+    'show more', 'explore more', 'discover more', 'read more',
+    'see all', 'view more', 'learn more', 'find out more',
+    
+    // Content type keywords
+    'latest posts', 'recent posts', 'blog posts', 'news items',
+    'events list', 'portfolio items', 'product list', 'case studies',
+    'testimonials', 'team members', 'gallery items', 'projects',
+    'articles', 'publications', 'resources', 'downloads',
+    'services list', 'features list', 'benefits', 'achievements',
+    
+    // Collection indicators
+    'collection', 'archive', 'catalog', 'directory', 'listing',
+    'showcase', 'exhibition', 'highlights', 'featured items',
+    
+    // Pagination/Navigation keywords
+    'pagination', 'next page', 'previous page', 'page navigation',
+    'infinite scroll', 'lazy load', 'dynamic loading'
+  ];
+
+  const text = sectionText.toLowerCase();
+  
+  // Check for collection keywords
+  const hasCollectionKeywords = collectionKeywords.some(keyword => 
+    text.includes(keyword)
+  );
+  
+  // Check for repeater patterns that suggest post collections
+  const hasRepeaterPatterns = text.includes('repeater') && (
+    text.includes('posts') || 
+    text.includes('items') || 
+    text.includes('cards') ||
+    text.includes('list') ||
+    text.includes('grid') ||
+    text.includes('collection')
+  );
+  
+  // Check for plural content types (often indicates collections)
+  const pluralPatterns = [
+    'events', 'projects', 'products', 'services', 'testimonials',
+    'articles', 'blogs', 'news', 'stories', 'cases', 'studies',
+    'portfolios', 'galleries', 'resources', 'downloads', 'features',
+    'benefits', 'achievements', 'awards', 'certifications', 'teams',
+    'members', 'staff', 'clients', 'partners', 'sponsors'
+  ];
+  
+  const hasPluralContent = pluralPatterns.some(pattern => 
+    text.includes(pattern)
+  );
+  
+  // Check section structure for collection indicators
+  const hasCollectionStructure = sectionData.fields && 
+    sectionData.fields.some(field => {
+      if (field.field === 'repeater' && field.attribute && field.attribute.fields) {
+        // Complex repeater with multiple fields suggests post collection
+        const hasComplexStructure = field.attribute.fields.length > 2;
+        
+        // Check if repeater has typical post fields
+        const hasPostFields = field.attribute.fields.some(subField => 
+          ['title', 'description', 'image', 'content', 'date', 'author', 'category', 'tags'].includes(subField.name)
+        );
+        
+        return hasComplexStructure || hasPostFields;
+      }
+      return false;
+    });
+
+  // Check for instruction document patterns
+  const hasInstructionPatterns = text.includes('min:') && text.includes('max:') && 
+    text.includes('repeater') && (
+      text.includes('title') || 
+      text.includes('description') ||
+      text.includes('image')
+    );
+
+  return hasCollectionKeywords || hasRepeaterPatterns || hasCollectionStructure || 
+         hasPluralContent || hasInstructionPatterns;
+}
+
+/**
+ * Convert post collection section to simple reference section
+ * @param {object} section - Original section with repeater
+ * @param {string} postTypeName - Name of the post type to reference
+ * @returns {object} - Simplified section for page template
+ */
+function convertToCollectionReference(section, postTypeName) {
+  return {
+    keyName: section.keyName,
+    label: section.label,
+    section: section.section,
+    fields: [
+      AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
+        caption: `Enable or disable the ${section.label.toLowerCase()} section`,
+        defaultValue: true
+      }),
+      AntiCMSComponentGenerator.generateField('title', 'Title', 'input', {
+        multilanguage: true,
+        inputType: 'text',
+        is_required: true,
+        placeholder: `Enter ${section.label.toLowerCase()} title`,
+        maxLength: 100
+      }),
+      AntiCMSComponentGenerator.generateField('description', 'Description', 'textarea', {
+        multilanguage: true,
+        rows: 3,
+        max: 200,
+        placeholder: `Enter ${section.label.toLowerCase()} description`
+      })
+    ]
+  };
+}
+
+/**
  * Smart template generator that analyzes prompts and Figma links
  * @param {object} args - Smart generation arguments
  * @returns {object} - Generation results
@@ -1443,24 +1717,113 @@ export async function smartGenerate(args) {
   try {
     // Check if instruction document is provided
     if (instruction_file || instruction_content) {
-      // Use instruction-based generation
+      // Use instruction-based generation with post collection detection
       try {
-        const instructionResult = await generateFromInstructions({
-          instruction_content,
-          instruction_file,
+        let instructionText = instruction_content;
+        
+        // Read instruction file if provided
+        if (instruction_file && !instruction_content) {
+          const fs = await import('fs/promises');
+          const path = await import('path');
+          
+          let filePath;
+          if (instruction_file.startsWith('/') || instruction_file.includes(':\\')) {
+            filePath = instruction_file;
+          } else {
+            filePath = path.join(process.cwd(), instruction_file);
+          }
+          
+          instructionText = await fs.readFile(filePath, 'utf8');
+        }
+        
+        // Parse instruction to detect post collections
+        const parsedTemplate = parseInstructionDocument(instructionText);
+        let detectedPostTypes = [];
+        let modifiedComponents = [];
+        
+        // Analyze each component for post collection patterns
+        parsedTemplate.components?.forEach(component => {
+          const componentText = `${component.label} ${JSON.stringify(component.fields)}`;
+          
+          if (isPostCollectionSection(componentText, component)) {
+            // This is a post collection section
+            const postTypeName = component.label.replace(/\s+(section|list|items?)$/i, '');
+            const postTypeSlug = postTypeName.toLowerCase().replace(/\s+/g, '-');
+            
+            detectedPostTypes.push({
+              name: postTypeName,
+              slug: postTypeSlug,
+              originalComponent: component
+            });
+            
+            // Convert to simple reference section for page template
+            const referenceComponent = convertToCollectionReference(component, postTypeName);
+            modifiedComponents.push(referenceComponent);
+          } else {
+            // Regular component - keep as is
+            modifiedComponents.push(component);
+          }
+        });
+        
+        // Generate main template with modified components
+        const templateResult = await generateFromInstructions({
+          instruction_content: instructionText,
           template_type: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
         });
         
         results.push({
           type: 'text',
-          text: `📋 **Instruction-Based Generation**\n\n${instructionResult.content[0].text}`
+          text: `📋 **Instruction-Based Template Generated**\n\n${templateResult.content[0].text}`
         });
+        
+        // Generate post types for detected collections
+        for (const postType of detectedPostTypes) {
+          try {
+            // Generate post type settings
+            const postTypeResult = await generatePostType({
+              name: postType.name,
+              slug: postType.slug
+            });
+            
+            results.push({
+              type: 'text',
+              text: `📮 **Post Type Generated from Instructions**\n\n${postTypeResult.content[0].text}`
+            });
+            
+            // Generate post detail fields using original component structure
+            const postDetailResult = await generatePostDetails({
+              post_type_name: postType.name,
+              sections: [
+                {
+                  keyName: postType.originalComponent.keyName || 'detail',
+                  label: postType.originalComponent.label || 'Detail',
+                  fields: postType.originalComponent.fields || [
+                    AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
+                      caption: 'Enable or disable the content',
+                      defaultValue: true
+                    })
+                  ]
+                }
+              ]
+            });
+            
+            results.push({
+              type: 'text',
+              text: `📋 **Post Detail Fields Generated from Instructions**\n\n${postDetailResult.content[0].text}`
+            });
+          } catch (error) {
+            results.push({
+              type: 'text',
+              text: `❌ **Post Type Generation Failed for ${postType.name}:** ${error.message}`
+            });
+          }
+        }
         
         return {
           content: [
             {
               type: 'text',
-              text: `✨ **Smart Generation Complete (Instruction-Based)**\n\n📝 **Original Prompt:** "${prompt}"\n📄 **Instruction Source:** ${instruction_file || 'Direct content'}\n\n---\n`
+              text: `✨ **Smart Generation Complete (Instruction-Based)**\n\n📝 **Original Prompt:** "${prompt}"\n📄 **Instruction Source:** ${instruction_file || 'Direct content'}\n🎯 **Generated:** Template${detectedPostTypes.length > 0 ? ` + ${detectedPostTypes.length} Post Type(s)` : ''}\n${detectedPostTypes.length > 0 ? `📮 **Post Collections:** ${detectedPostTypes.map(pt => pt.name).join(', ')}\n` : ''}\n---\n`
             },
             ...results
           ]
@@ -1566,11 +1929,19 @@ export async function smartGenerate(args) {
     const needsNavigation = prompt.toLowerCase().includes('navigation') || 
                            prompt.toLowerCase().includes('menu') || 
                            prompt.toLowerCase().includes('nav') ||
+                           prompt.toLowerCase().includes('footer nav') ||
+                           prompt.toLowerCase().includes('header') ||
                            (figmaData && figmaData.hasNavigation);
 
     const needsTemplate = prompt.toLowerCase().includes('template') || 
                          prompt.toLowerCase().includes('page') ||
                          prompt.toLowerCase().includes('component');
+    
+    // Detect post type generation needs
+    const needsPostType = prompt.toLowerCase().includes('post type') ||
+                         prompt.toLowerCase().includes('custom post') ||
+                         prompt.toLowerCase().includes('cpt') ||
+                         isPostCollectionSection(prompt);
 
     // Generate navigation if detected
     if (needsNavigation) {
@@ -1607,13 +1978,37 @@ export async function smartGenerate(args) {
       const templateType = prompt.toLowerCase().includes('post') ? 'posts' : 'pages';
       const sections = figmaData?.sections || ['hero', 'features', 'contact'];
       
+      // Check for post collection sections and handle them intelligently
+      let detectedPostTypes = [];
+      let processedSections = [];
+      
+      sections.forEach(sectionName => {
+        const sectionText = `${sectionName} ${prompt}`;
+        
+        if (isPostCollectionSection(sectionText)) {
+          // This section represents a post collection
+          const postTypeName = `${sectionName}_posts`;
+          detectedPostTypes.push({
+            name: sectionName.charAt(0).toUpperCase() + sectionName.slice(1),
+            slug: sectionName.toLowerCase().replace(/_/g, '-'),
+            originalSection: sectionName
+          });
+          
+          // For page template, create simple reference section
+          processedSections.push(sectionName + '_reference');
+        } else {
+          // Regular section
+          processedSections.push(sectionName);
+        }
+      });
+      
       try {
         const templateResult = await generateTemplate({
           name: templateName,
           label: templateName.charAt(0).toUpperCase() + templateName.slice(1).replace(/_/g, ' '),
           description: `Template generated from ${figma_link ? 'Figma design' : 'user prompt'}`,
           template_type: templateType,
-          sections: sections,
+          sections: processedSections.filter(s => !s.endsWith('_reference')), // Use original sections for now
           include_cta: true,
           max_features: 6,
           max_gallery_images: 12
@@ -1623,10 +2018,104 @@ export async function smartGenerate(args) {
           type: 'text',
           text: `📄 **Template Generated**\n\n${templateResult.content[0].text}`
         });
+        
+        // Generate post types for detected collections
+        for (const postType of detectedPostTypes) {
+          try {
+            const postTypeResult = await generatePostType({
+              name: postType.name,
+              slug: postType.slug
+            });
+            
+            results.push({
+              type: 'text',
+              text: `📮 **Post Type Generated**\n\n${postTypeResult.content[0].text}`
+            });
+            
+            // Generate basic post detail structure
+            const postDetailResult = await generatePostDetails({
+              post_type_name: postType.name,
+              sections: [
+                {
+                  keyName: 'detail',
+                  label: 'Detail',
+                  fields: [
+                    AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
+                      caption: 'Enable or disable the content',
+                      defaultValue: true
+                    })
+                  ]
+                }
+              ]
+            });
+            
+            results.push({
+              type: 'text',
+              text: `📋 **Post Detail Fields Generated**\n\n${postDetailResult.content[0].text}`
+            });
+          } catch (error) {
+            results.push({
+              type: 'text',
+              text: `❌ **Post Type Generation Failed for ${postType.name}:** ${error.message}`
+            });
+          }
+        }
+        
       } catch (error) {
         results.push({
           type: 'text',
           text: `❌ **Template Generation Failed:** ${error.message}`
+        });
+      }
+    }
+
+    // Generate standalone post type if explicitly requested
+    if (needsPostType && !needsTemplate) {
+      // Extract post type name from prompt
+      const postTypeMatch = prompt.match(/(?:post type|custom post|cpt)\s+(?:for\s+)?["']?([^"'\s]+)["']?/i) ||
+                           prompt.match(/create\s+["']?([^"'\s]+)["']?\s+(?:post type|custom post|cpt)/i) ||
+                           prompt.match(/["']?([^"'\s]+)["']?\s+posts?/i);
+      
+      const postTypeName = postTypeMatch ? 
+        postTypeMatch[1].charAt(0).toUpperCase() + postTypeMatch[1].slice(1) : 
+        'Custom Posts';
+      
+      try {
+        const postTypeResult = await generatePostType({
+          name: postTypeName,
+          slug: postTypeName.toLowerCase().replace(/\s+/g, '-')
+        });
+        
+        results.push({
+          type: 'text',
+          text: `📮 **Standalone Post Type Generated**\n\n${postTypeResult.content[0].text}`
+        });
+        
+        // Generate basic post detail structure
+        const postDetailResult = await generatePostDetails({
+          post_type_name: postTypeName,
+          sections: [
+            {
+              keyName: 'detail',
+              label: 'Detail',
+              fields: [
+                AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
+                  caption: 'Enable or disable the content',
+                  defaultValue: true
+                })
+              ]
+            }
+          ]
+        });
+        
+        results.push({
+          type: 'text',
+          text: `📋 **Post Detail Fields Generated**\n\n${postDetailResult.content[0].text}`
+        });
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `❌ **Standalone Post Type Generation Failed:** ${error.message}`
         });
       }
     }
@@ -1638,9 +2127,14 @@ export async function smartGenerate(args) {
         text: `🤔 **No Clear Generation Intent Detected**\n\nPrompt: "${prompt}"\n\nPlease specify if you want to generate:\n- **Navigation/Menu** (use keywords: navigation, menu, nav)\n- **Template/Page** (use keywords: template, page, component)\n\nOr use specific generation tools directly.`
       });
     } else {
+      const generatedItems = [];
+      if (needsNavigation) generatedItems.push('Navigation');
+      if (needsTemplate) generatedItems.push('Template');
+      if (needsPostType) generatedItems.push('Post Type');
+      
       results.unshift({
         type: 'text',
-        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${needsNavigation ? 'Navigation + ' : ''}${needsTemplate ? 'Template' : ''}\n\n---\n`
+        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${generatedItems.join(' + ')}\n${needsPostType ? `📮 **Post Collections Detected:** Auto-generated post types and details\n` : ''}\n---\n`
       });
     }
 

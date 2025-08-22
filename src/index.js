@@ -19,6 +19,8 @@ import {
   generateNavigation,
   smartGenerate,
   generateFromInstructions,
+  generatePostType,
+  generatePostDetails,
   // getAllPages, // Disabled for this version
 } from './tools/templateGenerator.js';
 import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
@@ -297,6 +299,67 @@ class AntiCMSServer {
           return result;
         } catch (error) {
           console.error(`[MCP] generate_from_instructions error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register generate_post_type tool
+    this.server.registerTool(
+      'generate_post_type',
+      {
+        title: 'Generate Post Type',
+        description: 'Generate AntiCMS v3 post type settings (saves to posts-type folder)',
+        inputSchema: {
+          name: z.string().describe('Post type name (e.g., "Events")'),
+          slug: z.string().optional().describe('Post type slug (auto-generated if not provided)'),
+          is_show: z.boolean().optional().default(true).describe('Show in admin menu'),
+          is_category: z.boolean().optional().default(true).describe('Enable categories'),
+          is_tags: z.boolean().optional().default(true).describe('Enable tags'),
+          is_featured_image: z.boolean().optional().default(true).describe('Enable featured image'),
+          is_content: z.boolean().optional().default(true).describe('Enable content editor'),
+          is_enable_seo: z.boolean().optional().default(true).describe('Enable SEO settings'),
+          is_edit_date: z.boolean().optional().default(true).describe('Enable date editing'),
+          have_permission: z.boolean().optional().default(true).describe('Enable permissions'),
+          have_custom_fields: z.boolean().optional().default(true).describe('Enable custom fields')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_post_type called with args:`, args);
+        try {
+          const result = await generatePostType(args);
+          console.error(`[MCP] generate_post_type completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_post_type error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register generate_post_details tool
+    this.server.registerTool(
+      'generate_post_details',
+      {
+        title: 'Generate Post Details',
+        description: 'Generate AntiCMS v3 post detail custom fields (saves to posts folder)',
+        inputSchema: {
+          post_type_name: z.string().describe('Post type name'),
+          sections: z.array(z.object({
+            keyName: z.string().optional().describe('Section key name'),
+            label: z.string().optional().describe('Section label'),
+            fields: z.array(z.any()).optional().describe('Array of field objects')
+          })).optional().describe('Array of sections with custom fields')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_post_details called with args:`, args);
+        try {
+          const result = await generatePostDetails(args);
+          console.error(`[MCP] generate_post_details completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_post_details error:`, error);
           throw error;
         }
       }
