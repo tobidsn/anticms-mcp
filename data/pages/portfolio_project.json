@@ -1,0 +1,261 @@
+{
+  "name": "portfolio_project",
+  "label": "Portfolio Project",
+  "is_content": true,
+  "multilanguage": true,
+  "is_multiple": true,
+  "description": "A comprehensive template for showcasing individual portfolio projects with hero section, project gallery, feature details, and call-to-action section",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "is_required": true,
+            "placeholder": "Enter main title",
+            "maxLength": 100
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "max": 200,
+            "placeholder": "Enter subtitle"
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Call to Action",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Button Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button text"
+                }
+              },
+              {
+                "name": "url",
+                "label": "URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "gallery_section",
+      "label": "Gallery Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "section_title",
+          "label": "Gallery Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Gallery section title"
+          }
+        },
+        {
+          "name": "gallery_images",
+          "label": "Gallery Images",
+          "field": "repeater",
+          "attribute": {
+            "fields": [
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1200,
+                    "minHeight": 300,
+                    "maxHeight": 800
+                  }
+                }
+              },
+              {
+                "name": "caption",
+                "label": "Image Caption",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Optional image caption"
+                }
+              }
+            ],
+            "min": 1,
+            "max": 20
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "features_section",
+      "label": "Features Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Features section title"
+          }
+        },
+        {
+          "name": "features",
+          "label": "Features",
+          "field": "repeater",
+          "attribute": {
+            "fields": [
+              {
+                "name": "feature_title",
+                "label": "Feature Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "is_required": true,
+                  "placeholder": "Feature name"
+                }
+              },
+              {
+                "name": "feature_description",
+                "label": "Feature Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 150,
+                  "placeholder": "Feature description"
+                }
+              },
+              {
+                "name": "feature_icon",
+                "label": "Feature Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ]
+                }
+              }
+            ],
+            "min": 1,
+            "max": 6
+          }
+        }
+      ]
+    },
+    {
+      "keyName": "contact_section",
+      "label": "Contact Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Contact section title"
+          }
+        },
+        {
+          "name": "contact_info",
+          "label": "Contact Information",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "email",
+                "label": "Email",
+                "field": "input",
+                "attribute": {
+                  "type": "email",
+                  "placeholder": "contact@example.com"
+                }
+              },
+              {
+                "name": "phone",
+                "label": "Phone",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "+1 (555) 123-4567"
+                }
+              },
+              {
+                "name": "address",
+                "label": "Address",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "placeholder": "Company address"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

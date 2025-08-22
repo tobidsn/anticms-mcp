@@ -1,0 +1,351 @@
+{
+    "name": "contact",
+    "label": "Contact",
+    "is_content": false,
+    "multilanguage": true,
+    "is_multiple": true,
+    "description": "Contact page template with Professional Services, Services, and Features sections",
+    "components": [
+      {
+        "keyName": "section_professional_services",
+        "label": "Professional Services",
+        "section": "1",
+        "block": "ProfessionalServices",
+        "fields": [
+          {
+            "name": "status",
+            "label": "Enable Section",
+            "field": "toggle",
+            "attribute": {
+              "defaultValue": true,
+              "caption": "Enable or disable the professional services section"
+            }
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Enter section title",
+              "defaultValue": "Ready to get started? Let's connect",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "description",
+            "label": "Section Description",
+            "field": "textarea",
+            "multilanguage": true,
+            "attribute": {
+              "rows": 3,
+              "is_required": false,
+              "placeholder": "Enter section description",
+              "defaultValue": "Get in touch with our professional team. We're here to help with all your home service needs and provide personalized solutions."
+            }
+          },
+          {
+            "name": "features",
+            "label": "Contact Methods Column 1",
+            "field": "repeater",
+            "attribute": {
+              "min": 1,
+              "max": 5,
+              "caption": "First column contact methods",
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Contact Method",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "is_required": true,
+                    "placeholder": "Enter contact method"
+                  }
+                }
+              ],
+              "defaultValue": [
+                {"text": "Phone Support"},
+                {"text": "Email Inquiries"},
+                {"text": "Online Chat"}
+              ]
+            }
+          },
+          {
+            "name": "featuresSection2",
+            "label": "Contact Methods Column 2", 
+            "field": "repeater",
+            "attribute": {
+              "min": 1,
+              "max": 5,
+              "caption": "Second column contact methods",
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Contact Method",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "is_required": true,
+                    "placeholder": "Enter contact method"
+                  }
+                }
+              ],
+              "defaultValue": [
+                {"text": "Free Consultation"},
+                {"text": "Quick Response"},
+                {"text": "24/7 Availability"}
+              ]
+            }
+          },
+          {
+            "name": "contactNote",
+            "label": "Contact Note",
+            "field": "group",
+            "attribute": {
+              "fields": [
+                {
+                  "name": "text",
+                  "label": "Note Text",
+                  "field": "textarea",
+                  "multilanguage": true,
+                  "attribute": {
+                    "rows": 2,
+                    "placeholder": "Contact note text",
+                    "defaultValue": "Need immediate assistance? Call us now and speak with one of our experts."
+                  }
+                },
+                {
+                  "name": "phoneNumber",
+                  "label": "Phone Number",
+                  "field": "input",
+                  "attribute": {
+                    "type": "text",
+                    "placeholder": "Phone number",
+                    "defaultValue": "(888) 617-5894"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "keyName": "section_services",
+        "label": "Our Services",
+        "section": "2",
+        "block": "Services",
+        "fields": [
+          {
+            "name": "status",
+            "label": "Enable Section",
+            "field": "toggle",
+            "attribute": {
+              "defaultValue": true
+            }
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "placeholder": "Services section title",
+              "defaultValue": "Services We Offer"
+            }
+          },
+          {
+            "name": "description",
+            "label": "Section Description",
+            "field": "textarea",
+            "multilanguage": true,
+            "attribute": {
+              "rows": 3,
+              "placeholder": "Services section description",
+              "defaultValue": "Explore our comprehensive range of professional home services. Whatever your needs, our experienced team is ready to help."
+            }
+          },
+          {
+            "name": "services",
+            "label": "Services",
+            "field": "repeater",
+            "attribute": {
+              "min": 1,
+              "max": 10,
+              "fields": [
+                {
+                  "name": "icon",
+                  "label": "Service Icon",
+                  "field": "select",
+                  "attribute": {
+                    "options": [
+                      {"value": "Wrench", "label": "Wrench"},
+                      {"value": "Home", "label": "Home"},
+                      {"value": "Shield", "label": "Shield"},
+                      {"value": "TreePine", "label": "TreePine"},
+                      {"value": "Settings", "label": "Settings"},
+                      {"value": "Bath", "label": "Bath"},
+                      {"value": "Key", "label": "Key"}
+                    ]
+                  }
+                },
+                {
+                  "name": "title",
+                  "label": "Service Title",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "is_required": true,
+                    "placeholder": "Service name"
+                  }
+                },
+                {
+                  "name": "description",
+                  "label": "Service Description",
+                  "field": "textarea",
+                  "multilanguage": true,
+                  "attribute": {
+                    "rows": 2,
+                    "placeholder": "Service description"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "moreServices",
+            "label": "More Services Card",
+            "field": "group",
+            "attribute": {
+              "fields": [
+                {
+                  "name": "title",
+                  "label": "Card Title",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "defaultValue": "More Services",
+                    "placeholder": "Card title"
+                  }
+                },
+                {
+                  "name": "description",
+                  "label": "Card Description",
+                  "field": "textarea",
+                  "multilanguage": true,
+                  "attribute": {
+                    "rows": 2,
+                    "defaultValue": "Contact us for additional home services not listed above",
+                    "placeholder": "Card description"
+                  }
+                },
+                {
+                  "name": "buttonText",
+                  "label": "Button Text",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "defaultValue": "Contact Us",
+                    "placeholder": "Button text"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "keyName": "section_features",
+        "label": "Why Choose Us",
+        "section": "3",
+        "block": "Features",
+        "fields": [
+          {
+            "name": "status",
+            "label": "Enable Section",
+            "field": "toggle",
+            "attribute": {
+              "defaultValue": true
+            }
+          },
+          {
+            "name": "title",
+            "label": "Section Title",
+            "field": "input",
+            "multilanguage": true,
+            "attribute": {
+              "type": "text",
+              "placeholder": "Features section title",
+              "defaultValue": "Why Choose Our Professional Services"
+            }
+          },
+          {
+            "name": "description",
+            "label": "Section Description",
+            "field": "textarea",
+            "multilanguage": true,
+            "attribute": {
+              "rows": 3,
+              "placeholder": "Features section description",
+              "defaultValue": "When you contact us, you're choosing a team committed to excellence, reliability, and customer satisfaction in every project we undertake."
+            }
+          },
+          {
+            "name": "features",
+            "label": "Features",
+            "field": "repeater",
+            "attribute": {
+              "min": 1,
+              "max": 6,
+              "fields": [
+                {
+                  "name": "icon",
+                  "label": "Feature Icon",
+                  "field": "select",
+                  "attribute": {
+                    "options": [
+                      {"value": "Star", "label": "Star"},
+                      {"value": "Clock", "label": "Clock"},
+                      {"value": "Shield", "label": "Shield"},
+                      {"value": "Users", "label": "Users"},
+                      {"value": "Award", "label": "Award"},
+                      {"value": "Check", "label": "Check"}
+                    ]
+                  }
+                },
+                {
+                  "name": "title",
+                  "label": "Feature Title",
+                  "field": "input",
+                  "multilanguage": true,
+                  "attribute": {
+                    "type": "text",
+                    "is_required": true,
+                    "placeholder": "Feature name"
+                  }
+                },
+                {
+                  "name": "description",
+                  "label": "Feature Description",
+                  "field": "textarea",
+                  "multilanguage": true,
+                  "attribute": {
+                    "rows": 3,
+                    "placeholder": "Feature description"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  } 

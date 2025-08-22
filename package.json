@@ -1,21 +1,27 @@
 {
   "name": "@tobidsn/anticms-mcp",
-  "version": "1.0.9",
-  "description": "MCP Server for generating AntiCMS v3 JSON component templates with validation and field type support",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "MCP Server for generating AntiCMS v3 JSON component templates with validation and field type support. Supports both Streamable HTTP and Stdio transports.",
+  "main": "src/index.js",
   "type": "module",
   "bin": {
-    "anticms-mcp": "./index.js"
+    "anticms-mcp": "./src/index.js"
   },
   "files": [
-    "index.js",
+    "src/",
+    "data/",
     "README.md",
     ".cursor/docs/project.mdc"
   ],
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
+    "start:http": "node src/index.js --http",
+    "start:http:port": "node src/index.js --http --port=3001",
+    "dev": "node src/index.js --http --port=3000",
+    "test": "node test-mcp.js",
+    "test:stdio": "echo '{\"jsonrpc\":\"2.0\",\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"test\",\"version\":\"1.0.0\"}},\"id\":1}' | node src/index.js --stdio",
+    "test:health": "curl -s http://localhost:3000/health || echo 'Start server with: npm run dev'",
     "prepublishOnly": "npm test",
-    "test": "node -e \"console.log('✅ Basic syntax check passed')\"",
     "version": "npm run prepublishOnly"
   },
   "keywords": [
@@ -27,7 +33,9 @@
     "template",
     "generator",
     "field-types",
-    "v3"
+    "v3",
+    "streamable-http",
+    "stdio"
   ],
   "author": "AntiCMS Team",
   "license": "MIT",
@@ -44,6 +52,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
     "zod": "^3.22.4"
   },
   "engines": {

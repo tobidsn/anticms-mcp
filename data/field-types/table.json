@@ -1,0 +1,219 @@
+{
+  "name": "table",
+  "label": "Table Field",
+  "description": "Table fields allow you to define tabular data with custom columns, minimum and maximum rows.",
+  "field_type": "table",
+  "examples": [
+    {
+      "name": "basic_table",
+      "label": "Basic Table",
+      "description": "Simple table with title and description columns",
+      "field": {
+        "name": "table_component",
+        "label": "Table Component",
+        "field": "table",
+        "attribute": {
+          "is_required": false,
+          "caption": "input the table",
+          "columns": [
+            {
+              "label": "Title",
+              "name": "title",
+              "type": "text",
+              "is_required": true,
+              "placeholder": "Input the title of the table"
+            },
+            {
+              "label": "Description",
+              "name": "description",
+              "type": "text",
+              "is_required": false,
+              "placeholder": ""
+            }
+          ],
+          "min": 1,
+          "max": 5
+        }
+      }
+    },
+    {
+      "name": "pricing_table",
+      "label": "Pricing Table",
+      "description": "Table for pricing information",
+      "field": {
+        "name": "pricing_table",
+        "label": "Pricing Table",
+        "field": "table",
+        "attribute": {
+          "is_required": false,
+          "caption": "Add pricing rows",
+          "columns": [
+            {
+              "label": "Plan Name",
+              "name": "plan_name",
+              "type": "text",
+              "is_required": true,
+              "placeholder": "Enter plan name"
+            },
+            {
+              "label": "Price",
+              "name": "price",
+              "type": "text",
+              "is_required": true,
+              "placeholder": "$99/month"
+            },
+            {
+              "label": "Features",
+              "name": "features",
+              "type": "textarea",
+              "is_required": false,
+              "placeholder": "List features"
+            }
+          ],
+          "min": 1,
+          "max": 10
+        }
+      }
+    },
+    {
+      "name": "comparison_table",
+      "label": "Comparison Table",
+      "description": "Table for comparing different options",
+      "field": {
+        "name": "comparison_table",
+        "label": "Comparison Table",
+        "field": "table",
+        "attribute": {
+          "is_required": false,
+          "caption": "Add comparison rows",
+          "columns": [
+            {
+              "label": "Feature",
+              "name": "feature",
+              "type": "text",
+              "is_required": true,
+              "placeholder": "Feature name"
+            },
+            {
+              "label": "Basic Plan",
+              "name": "basic_plan",
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Yes/No"
+            },
+            {
+              "label": "Pro Plan",
+              "name": "pro_plan",
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Yes/No"
+            },
+            {
+              "label": "Enterprise Plan",
+              "name": "enterprise_plan",
+              "type": "text",
+              "is_required": false,
+              "placeholder": "Yes/No"
+            }
+          ],
+          "min": 1,
+          "max": 20
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "pricing_table"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Pricing Table"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'table' for table)",
+        "required": true,
+        "example": "table"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": false
+      }
+    },
+    "attribute_properties": {
+      "columns": {
+        "type": "array",
+        "description": "Array of column definitions",
+        "required": true,
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "Column header label"
+            },
+            "name": {
+              "type": "string",
+              "description": "Column field name"
+            },
+            "type": {
+              "type": "string",
+              "description": "Column input type",
+              "enum": ["text", "textarea", "number", "select"]
+            },
+            "is_required": {
+              "type": "boolean",
+              "description": "Whether the column is required"
+            },
+            "placeholder": {
+              "type": "string",
+              "description": "Placeholder text for the column"
+            }
+          }
+        },
+        "example": [
+          {
+            "label": "Title",
+            "name": "title",
+            "type": "text",
+            "is_required": true,
+            "placeholder": "Enter title"
+          }
+        ]
+      },
+      "min": {
+        "type": "number",
+        "description": "Minimum number of rows",
+        "required": false,
+        "example": 1
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum number of rows",
+        "required": false,
+        "example": 10
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Add rows"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": false
+      }
+    }
+  }
+} 

@@ -1,0 +1,42 @@
+{
+    "name": "privacy-policy",
+    "label": "Privacy Policy",
+    "is_content": false,
+    "multilanguage": true,
+    "description": "This is the privacy policy page",
+    "components": [
+        {
+            "keyName": "term-condition",
+            "label": "Terms & Condition",
+            "section": "1",
+            "fields": [
+                {
+                    "name": "status",
+                    "label": "Status",
+                    "field": "toggle",
+                    "attribute": {
+                        "caption": "Enable or disable the Integrated Solutions",
+                        "defaultValue": true,
+                        "value": null
+                    }
+                },
+                {
+                    "name": "description",
+                    "label": "Description",
+                    "field": "texteditor",
+                    "multilanguage": true,
+                    "attribute": {
+                        "type": "full",
+                        "rows": 10,
+                        "cols": 10,
+                        "is_required": false,
+                        "placeholder": "Input the description of section",
+                        "caption": "Description of section",
+                        "defaultValue": "",
+                        "value": null
+                    }
+                }
+            ]
+        }
+    ]
+}

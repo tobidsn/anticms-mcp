@@ -1,0 +1,154 @@
+{
+  "name": "textarea",
+  "label": "Textarea Field",
+  "description": "Textarea fields are used for multi-line text input. You can specify rows, columns, placeholder, captions, and validation.",
+  "field_type": "textarea",
+  "examples": [
+    {
+      "name": "basic_textarea",
+      "label": "Basic Textarea",
+      "description": "Simple textarea with rows and columns",
+      "field": {
+        "name": "description",
+        "label": "Description",
+        "field": "textarea",
+        "attribute": {
+          "rows": 10,
+          "max": 500,
+          "cols": 10,
+          "is_required": false,
+          "placeholder": "Input the caption of the our services section",
+          "caption": "Short description of the our services section",
+          "defaultValue": "",
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "multilanguage_textarea",
+      "label": "Multilanguage Textarea",
+      "description": "Textarea with multilanguage support",
+      "field": {
+        "name": "content",
+        "label": "Content",
+        "field": "textarea",
+        "multilanguage": true,
+        "attribute": {
+          "rows": 5,
+          "cols": 50,
+          "max": 1000,
+          "min": 10,
+          "is_required": true,
+          "placeholder": "Enter content description",
+          "caption": "Detailed content description",
+          "defaultValue": "",
+          "value": null
+        }
+      }
+    },
+    {
+      "name": "short_textarea",
+      "label": "Short Textarea",
+      "description": "Small textarea for brief descriptions",
+      "field": {
+        "name": "summary",
+        "label": "Summary",
+        "field": "textarea",
+        "attribute": {
+          "rows": 3,
+          "cols": 30,
+          "max": 200,
+          "is_required": false,
+          "placeholder": "Brief summary",
+          "caption": "Short summary text",
+          "defaultValue": "",
+          "value": null
+        }
+      }
+    }
+  ],
+  "properties": {
+    "field_properties": {
+      "name": {
+        "type": "string",
+        "description": "Unique key for the field",
+        "required": true,
+        "example": "description"
+      },
+      "label": {
+        "type": "string",
+        "description": "Human-readable label for the field",
+        "required": true,
+        "example": "Description"
+      },
+      "field": {
+        "type": "string",
+        "description": "Field type (always 'textarea' for textarea)",
+        "required": true,
+        "example": "textarea"
+      },
+      "multilanguage": {
+        "type": "boolean",
+        "description": "Enable multilanguage support (tabs in UI)",
+        "required": false,
+        "example": true
+      }
+    },
+    "attribute_properties": {
+      "rows": {
+        "type": "number",
+        "description": "Number of visible text lines",
+        "required": false,
+        "example": 10
+      },
+      "cols": {
+        "type": "number",
+        "description": "Number of visible columns",
+        "required": false,
+        "example": 10
+      },
+      "max": {
+        "type": "number",
+        "description": "Maximum number of characters",
+        "required": false,
+        "example": 500
+      },
+      "min": {
+        "type": "number",
+        "description": "Minimum number of characters",
+        "required": false,
+        "example": 1
+      },
+      "placeholder": {
+        "type": "string",
+        "description": "Placeholder text for the textarea",
+        "required": false,
+        "example": "Enter description"
+      },
+      "is_required": {
+        "type": "boolean",
+        "description": "Whether the field is required",
+        "required": false,
+        "example": true
+      },
+      "defaultValue": {
+        "type": "string",
+        "description": "Default value for the textarea",
+        "required": false,
+        "example": ""
+      },
+      "value": {
+        "type": "string",
+        "description": "Current value (set by system, not template)",
+        "required": false,
+        "example": null
+      },
+      "caption": {
+        "type": "string",
+        "description": "Helper/caption text shown below the field",
+        "required": false,
+        "example": "Short description"
+      }
+    }
+  }
+} 
