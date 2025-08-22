@@ -1585,10 +1585,10 @@ export async function generatePostDetails(args) {
  */
 function isPostCollectionSection(sectionText, sectionData = {}) {
   const collectionKeywords = [
-    // Direct action keywords
-    'more data', 'see more', 'browse all', 'view all', 'load more',
+    // Direct action keywords - Strong indicators for post collections
+    'see more', 'view more', 'browse all', 'view all', 'load more',
     'show more', 'explore more', 'discover more', 'read more',
-    'see all', 'view more', 'learn more', 'find out more',
+    'see all', 'learn more', 'find out more', 'more details',
     
     // Content type keywords
     'latest posts', 'recent posts', 'blog posts', 'news items',
@@ -1607,6 +1607,9 @@ function isPostCollectionSection(sectionText, sectionData = {}) {
   ];
 
   const text = sectionText.toLowerCase();
+  
+  // Strong indicators - "See More" buttons are clear signs of post collections
+  const hasSeeMorePattern = text.includes('see more') || text.includes('view more') || text.includes('browse all');
   
   // Check for collection keywords
   const hasCollectionKeywords = collectionKeywords.some(keyword => 
@@ -1636,6 +1639,18 @@ function isPostCollectionSection(sectionText, sectionData = {}) {
     text.includes(pattern)
   );
   
+  // Specific section name patterns that typically need post collections
+  const postCollectionSectionNames = [
+    'projects', 'portfolio', 'work', 'case_studies', 'testimonials',
+    'team', 'news', 'blog', 'events', 'products'
+  ];
+  
+  // Only detect as post collection if it's a specific match for the section name
+  const hasPostCollectionSectionName = postCollectionSectionNames.some(name => {
+    const words = text.toLowerCase().split(/\s+/);
+    return words.includes(name) || text.includes(`${name}_section`) || text.includes(`${name} section`);
+  });
+  
   // Check section structure for collection indicators
   const hasCollectionStructure = sectionData.fields && 
     sectionData.fields.some(field => {
@@ -1661,12 +1676,27 @@ function isPostCollectionSection(sectionText, sectionData = {}) {
       text.includes('image')
     );
 
+  // Priority logic: "See More" is a strong indicator
+  if (hasSeeMorePattern) {
+    return true;
+  }
+
+  // Exclude common template sections that should NOT be post collections
+  const excludedSections = ['hero', 'features', 'contact', 'footer', 'header', 'about'];
+  const isExcludedSection = excludedSections.some(section => 
+    text.toLowerCase().includes(section) && !text.toLowerCase().includes('see more')
+  );
+  
+  if (isExcludedSection) {
+    return false;
+  }
+
   return hasCollectionKeywords || hasRepeaterPatterns || hasCollectionStructure || 
-         hasPluralContent || hasInstructionPatterns;
+         hasPluralContent || hasInstructionPatterns || hasPostCollectionSectionName;
 }
 
 /**
- * Convert post collection section to simple reference section
+ * Convert post collection section to simple reference section with post_related field
  * @param {object} section - Original section with repeater
  * @param {string} postTypeName - Name of the post type to reference
  * @returns {object} - Simplified section for page template
@@ -1681,18 +1711,25 @@ function convertToCollectionReference(section, postTypeName) {
         caption: `Enable or disable the ${section.label.toLowerCase()} section`,
         defaultValue: true
       }),
-      AntiCMSComponentGenerator.generateField('title', 'Title', 'input', {
+      AntiCMSComponentGenerator.generateField('section_label', 'Section Label', 'input', {
         multilanguage: true,
         inputType: 'text',
-        is_required: true,
-        placeholder: `Enter ${section.label.toLowerCase()} title`,
-        maxLength: 100
+        placeholder: section.label.toUpperCase(),
+        defaultValue: section.label.toUpperCase(),
+        caption: 'Section label text'
       }),
-      AntiCMSComponentGenerator.generateField('description', 'Description', 'textarea', {
+      AntiCMSComponentGenerator.generateField('section_title', 'Section Title', 'input', {
         multilanguage: true,
-        rows: 3,
-        max: 200,
-        placeholder: `Enter ${section.label.toLowerCase()} description`
+        inputType: 'text',
+        placeholder: `Featured ${section.label}`,
+        defaultValue: `Featured ${section.label}`,
+        caption: 'Main section heading'
+      }),
+      AntiCMSComponentGenerator.generateField('posts', 'Related Posts', 'post_related', {
+        post_type: postTypeName.toLowerCase(),
+        max: 12,
+        min: 1,
+        caption: `Select ${section.label.toLowerCase()} to display in this section`
       })
     ]
   };
@@ -1893,6 +1930,31 @@ export async function smartGenerate(args) {
           detectedSections.push('gallery');
         }
         
+        // Enhanced detection for post collection sections
+        const hasProjectsKeywords = prompt.toLowerCase().includes('projects') || 
+                                  prompt.toLowerCase().includes('portfolio') ||
+                                  prompt.toLowerCase().includes('showcase') ||
+                                  prompt.toLowerCase().includes('work');
+                                  
+        const hasTestimonialsKeywords = prompt.toLowerCase().includes('testimonials') ||
+                                      prompt.toLowerCase().includes('reviews') ||
+                                      prompt.toLowerCase().includes('feedback');
+                                      
+        const hasTeamKeywords = prompt.toLowerCase().includes('team') ||
+                              prompt.toLowerCase().includes('staff') ||
+                              prompt.toLowerCase().includes('members');
+                              
+        // Add post collection sections that will be converted to post types
+        if (hasProjectsKeywords) {
+          detectedSections.push('projects');
+        }
+        if (hasTestimonialsKeywords) {
+          detectedSections.push('testimonials');
+        }
+        if (hasTeamKeywords) {
+          detectedSections.push('team');
+        }
+        
         // Default sections if none detected
         if (detectedSections.length === 0) {
           detectedSections = ['hero', 'features', 'contact'];
@@ -1990,9 +2052,27 @@ export async function smartGenerate(args) {
       let processedSections = [];
       
       sections.forEach(sectionName => {
-        const sectionText = `${sectionName} ${prompt}`;
+        // Check if this specific section should be a post collection
+        // Only if "see more" appears near the section name or if it's a known collection type
+        const promptLower = prompt.toLowerCase();
+        const sectionIndex = promptLower.indexOf(sectionName.toLowerCase());
+        let promptHasSeeMoreForSection = false;
         
-        if (isPostCollectionSection(sectionText)) {
+        if (sectionIndex !== -1) {
+          // Check if "see more" appears within 50 characters of the section name
+          const sectionContext = promptLower.substring(Math.max(0, sectionIndex - 25), sectionIndex + sectionName.length + 25);
+          promptHasSeeMoreForSection = sectionContext.includes('see more') || 
+                                      sectionContext.includes('view more');
+          
+          // Special case: if section contains "showcase" directly with the section name
+          if (sectionContext.includes(`${sectionName} showcase`) || sectionContext.includes(`${sectionName}showcase`)) {
+            promptHasSeeMoreForSection = true;
+          }
+        }
+        
+        const isKnownCollectionSection = ['projects', 'portfolio', 'testimonials', 'team', 'work', 'case_studies'].includes(sectionName.toLowerCase());
+        
+        if (promptHasSeeMoreForSection || isKnownCollectionSection) {
           // This section represents a post collection
           const postTypeName = `${sectionName}_posts`;
           detectedPostTypes.push({
@@ -2010,12 +2090,44 @@ export async function smartGenerate(args) {
       });
       
       try {
+        // For sections that are post collections, we need to manually create the template
+        // and replace repeater sections with post_related sections
+        let templateSections = [];
+        
+        sections.forEach(sectionName => {
+          // Use the same logic as above
+          const promptLower = prompt.toLowerCase();
+          const sectionIndex = promptLower.indexOf(sectionName.toLowerCase());
+          let promptHasSeeMoreForSection = false;
+          
+                     if (sectionIndex !== -1) {
+             // Check if "see more" appears within 50 characters of the section name
+             const sectionContext = promptLower.substring(Math.max(0, sectionIndex - 25), sectionIndex + sectionName.length + 25);
+             promptHasSeeMoreForSection = sectionContext.includes('see more') || 
+                                         sectionContext.includes('view more');
+             
+             // Special case: if section contains "showcase" directly with the section name
+             if (sectionContext.includes(`${sectionName} showcase`) || sectionContext.includes(`${sectionName}showcase`)) {
+               promptHasSeeMoreForSection = true;
+             }
+           }
+          
+          const isKnownCollectionSection = ['projects', 'portfolio', 'testimonials', 'team', 'work', 'case_studies'].includes(sectionName.toLowerCase());
+          
+          if (promptHasSeeMoreForSection || isKnownCollectionSection) {
+            // Don't include this section in the automatic generation
+            // We'll handle it manually below
+          } else {
+            templateSections.push(sectionName);
+          }
+        });
+
         const templateResult = await generateTemplate({
           name: templateName,
           label: templateName.charAt(0).toUpperCase() + templateName.slice(1).replace(/_/g, ' '),
           description: `Template generated from ${figma_link ? 'Figma design' : 'user prompt'}`,
           template_type: templateType,
-          sections: processedSections.filter(s => !s.endsWith('_reference')), // Use original sections for now
+          sections: templateSections,
           include_cta: true,
           max_features: 6,
           max_gallery_images: 12
@@ -2064,6 +2176,46 @@ export async function smartGenerate(args) {
             results.push({
               type: 'text',
               text: `❌ **Post Type Generation Failed for ${postType.name}:** ${error.message}`
+            });
+          }
+        }
+        
+        // Now add post_related sections to the template file for each detected post collection
+        if (detectedPostTypes.length > 0) {
+          try {
+            // We need to read and modify the generated template to add post_related sections
+            const fs = await import('fs/promises');
+            const path = await import('path');
+            
+            const templateFilePath = path.join(process.cwd(), 'storage', 'app', 'json', 'pages', `${templateName}.json`);
+            
+            // Read the generated template
+            const templateContent = await fs.readFile(templateFilePath, 'utf8');
+            const templateJson = JSON.parse(templateContent);
+            
+            // Add post_related sections for each detected post type
+            for (const postType of detectedPostTypes) {
+              const postRelatedSection = convertToCollectionReference({
+                keyName: `${postType.originalSection}_section`,
+                label: `${postType.name} Section`,
+                section: String(templateJson.components.length + 1)
+              }, postType.slug);
+              
+              templateJson.components.push(postRelatedSection);
+            }
+            
+            // Write back the modified template
+            await fs.writeFile(templateFilePath, JSON.stringify(templateJson, null, 2));
+            
+            results.push({
+              type: 'text',
+              text: `✅ **Template Updated with Post Collections**\n\nAdded post_related sections for: ${detectedPostTypes.map(pt => pt.name).join(', ')}`
+            });
+            
+          } catch (error) {
+            results.push({
+              type: 'text',
+              text: `⚠️ **Template Post Collection Update Warning:** ${error.message}\nPost types were created but template sections may need manual integration.`
             });
           }
         }
