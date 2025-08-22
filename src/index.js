@@ -13,10 +13,10 @@ import {
   generateCustomField,
   validateTemplate,
   listFieldTypes,
-  getRandomQuote,
+  // getRandomQuote, // Disabled for this version
   generateSection,
   assignSectionToTemplate,
-  getAllPages,
+  // getAllPages, // Disabled for this version
 } from './tools/templateGenerator.js';
 import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
 import { registerResources } from './tools/resources.js';
@@ -130,7 +130,8 @@ class AntiCMSServer {
       }
     );
 
-    // Register get_random_quote tool
+    // Register get_random_quote tool - DISABLED FOR THIS VERSION
+    /*
     this.server.registerTool(
       'get_random_quote',
       {
@@ -153,6 +154,7 @@ class AntiCMSServer {
         }
       }
     );
+    */
 
     // Register generate_section tool
     this.server.registerTool(
@@ -210,7 +212,8 @@ class AntiCMSServer {
       }
     );
 
-    // Register get_all_pages tool
+    // Register get_all_pages tool - DISABLED FOR THIS VERSION
+    /*
     this.server.registerTool(
       'get_all_pages',
       {
@@ -260,6 +263,7 @@ class AntiCMSServer {
         }
       }
     );
+    */
   }
 
   /**
