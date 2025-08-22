@@ -21,6 +21,7 @@ import {
   generateFromInstructions,
   generatePostType,
   generatePostDetails,
+  generateInstructions,
   // getAllPages, // Disabled for this version
 } from './tools/templateGenerator.js';
 import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
@@ -360,6 +361,53 @@ class AntiCMSServer {
           return result;
         } catch (error) {
           console.error(`[MCP] generate_post_details error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register generate_instructions tool
+    this.server.registerTool(
+      'generate_instructions',
+      {
+        title: 'Generate Instructions',
+        description: 'Generate instruction document (.md) from prompt or Figma analysis (saves to storage/app/rules/)',
+        inputSchema: {
+          prompt: z.string().optional().describe('User prompt describing the template structure'),
+          figma_link: z.string().optional().describe('Figma design link to analyze'),
+          template_name: z.string().optional().describe('Template identifier (snake_case, auto-generated if not provided)'),
+          template_label: z.string().optional().describe('Human-readable template name (auto-generated if not provided)'),
+          sections: z.array(z.object({
+            name: z.string().describe('Section name'),
+            label: z.string().describe('Section label'),
+            keyName: z.string().describe('Section key name'),
+            order: z.number().describe('Section order'),
+            fields: z.array(z.object({
+              name: z.string().describe('Field name'),
+              type: z.string().describe('Field type'),
+              multilanguage: z.boolean().optional().describe('Multilanguage support'),
+              required: z.boolean().optional().describe('Required field'),
+              default: z.string().optional().describe('Default value'),
+              caption: z.string().optional().describe('Field caption'),
+              min: z.number().optional().describe('Minimum value/length'),
+              max: z.number().optional().describe('Maximum value/length'),
+              fields: z.array(z.any()).optional().describe('Nested fields for repeater/group')
+            })).describe('Array of field definitions')
+          })).optional().describe('Array of sections (auto-detected from prompt if not provided)'),
+          is_content: z.boolean().optional().default(false).describe('Whether this is a content template'),
+          multilanguage: z.boolean().optional().default(true).describe('Enable multilanguage support'),
+          is_multiple: z.boolean().optional().default(false).describe('Allow multiple instances'),
+          description: z.string().optional().describe('Template description (auto-generated if not provided)')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_instructions called with args:`, args);
+        try {
+          const result = await generateInstructions(args);
+          console.error(`[MCP] generate_instructions completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_instructions error:`, error);
           throw error;
         }
       }

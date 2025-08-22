@@ -1,0 +1,80 @@
+flowchart TD
+    %% Input
+    A["👤 User Input • Prompts • Figma Links • Instructions"]
+    
+    %% AI Agent
+    B["🤖 AI Agent (Cursor) Claude Sonnet 4"]
+    
+    %% MCP Server
+    C["⚡ AntiCMS MCP Server Port: 3000"]
+    
+    %% Smart Analysis
+    D["🧠 Smart Analysis • Prompt parsing • Figma analysis • Collection detection"]
+    
+    %% Core Tools
+    E1["🎯 smart_generate AI Orchestration"]
+    E2["🏗️ generate_template Page/Post Templates"]
+    E3["🧭 generate_navigation Menu Structures"]
+    E4["📮 generate_post_type Custom Post Types"]
+    E5["📄 generate_from_instructions Document-based"]
+    
+    %% Field System
+    F["📦 Field Types 12 Types Available • input • textarea • repeater • media • etc."]
+    
+    %% Output Files
+    G1["📄 Pages storage/app/json/pages/"]
+    G2["📮 Posts storage/app/json/posts/"]
+    G3["⚙️ Post Types storage/app/json/posts-type/"]
+    G4["🧭 Navigation storage/app/json/navigation/"]
+    
+    %% External Integrations
+    H1["🎨 Figma MCP"]
+    
+    %% Main Flow
+    A --> B
+    B --> C
+    C --> D
+    D --> E1
+    
+    %% Tool Orchestration
+    E1 --> E2
+    E1 --> E3
+    E1 --> E4
+    E1 --> E5
+    
+    %% Field Integration
+    E2 --> F
+    E4 --> F
+    E5 --> F
+    
+    %% Output Generation
+    E2 --> G1
+    E4 --> G2
+    E4 --> G3
+    E3 --> G4
+    E5 --> G1
+    
+    %% External Connections
+    C --> H1
+    
+    %% Example Flow
+    subgraph EXAMPLE ["💡 Example Flow"]
+        EX["User: Create agency template with portfolio - see more → 1. smart_generate detects collection 2. Creates page template (simple) 3. Creates post type (portfolio) 4. Creates post details (complex) 5. Auto-saves to storage folders"]
+    end
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef agentStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef serverStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    classDef toolStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef outputStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef integrationStyle fill:#f0f4c3,stroke:#827717,stroke-width:2px
+    classDef exampleStyle fill:#ffebee,stroke:#c62828,stroke-width:2px
+    
+    class A inputStyle
+    class B agentStyle
+    class C,D serverStyle
+    class E1,E2,E3,E4,E5,F toolStyle
+    class G1,G2,G3,G4 outputStyle
+    class H1 integrationStyle
+    class EX exampleStyle

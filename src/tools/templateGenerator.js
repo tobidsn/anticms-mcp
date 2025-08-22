@@ -1942,6 +1942,13 @@ export async function smartGenerate(args) {
                          prompt.toLowerCase().includes('custom post') ||
                          prompt.toLowerCase().includes('cpt') ||
                          isPostCollectionSection(prompt);
+    
+    // Detect instruction generation needs
+    const needsInstructions = prompt.toLowerCase().includes('instruction') ||
+                             prompt.toLowerCase().includes('rules') ||
+                             prompt.toLowerCase().includes('documentation') ||
+                             prompt.toLowerCase().includes('generate instructions') ||
+                             prompt.toLowerCase().includes('create instructions');
 
     // Generate navigation if detected
     if (needsNavigation) {
@@ -2120,6 +2127,27 @@ export async function smartGenerate(args) {
       }
     }
 
+    // Generate instructions if detected
+    if (needsInstructions) {
+      try {
+        const instructionResult = await generateInstructions({
+          prompt,
+          figma_link,
+          is_content: prompt.toLowerCase().includes('post') || prompt.toLowerCase().includes('blog')
+        });
+        
+        results.push({
+          type: 'text',
+          text: `📄 **Instructions Generated**\n\n${instructionResult.content[0].text}`
+        });
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `❌ **Instruction Generation Failed:** ${error.message}`
+        });
+      }
+    }
+
     // Summary
     if (results.length === 0) {
       results.push({
@@ -2131,10 +2159,11 @@ export async function smartGenerate(args) {
       if (needsNavigation) generatedItems.push('Navigation');
       if (needsTemplate) generatedItems.push('Template');
       if (needsPostType) generatedItems.push('Post Type');
+      if (needsInstructions) generatedItems.push('Instructions');
       
       results.unshift({
         type: 'text',
-        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${generatedItems.join(' + ')}\n${needsPostType ? `📮 **Post Collections Detected:** Auto-generated post types and details\n` : ''}\n---\n`
+        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${generatedItems.join(' + ')}\n${needsPostType ? `📮 **Post Collections Detected:** Auto-generated post types and details\n` : ''}${needsInstructions ? `📄 **Instructions Created:** Auto-saved to storage/app/rules/\n` : ''}\n---\n`
       });
     }
 
@@ -2150,6 +2179,262 @@ export async function smartGenerate(args) {
         {
           type: 'text',
           text: `❌ **Smart Generation Failed**\n\n**Error:** ${error.message}\n\n**Prompt:** "${prompt}"\n${figma_link ? `**Figma Link:** ${figma_link}\n` : ''}\nPlease try using specific generation tools directly.`
+        }
+      ]
+    };
+  }
+}
+
+/**
+ * Generate instruction document from prompt or Figma analysis
+ * @param {object} args - Instruction generation arguments
+ * @returns {object} - Generated instruction document
+ */
+export async function generateInstructions(args) {
+  const {
+    prompt,
+    figma_link,
+    template_name,
+    template_label,
+    sections = [],
+    is_content = false,
+    multilanguage = true,
+    is_multiple = false,
+    description
+  } = args;
+
+  // Extract template information from prompt if not provided
+  let finalTemplateName = template_name;
+  let finalTemplateLabel = template_label;
+  let finalDescription = description;
+
+  if (!finalTemplateName && prompt) {
+    const nameMatch = prompt.match(/template\s+called\s+"([^"]+)"/i) || 
+                     prompt.match(/template\s+"([^"]+)"/i) ||
+                     prompt.match(/create\s+([a-zA-Z0-9_-]+)/i);
+    finalTemplateName = nameMatch ? nameMatch[1].toLowerCase().replace(/\s+/g, '_') : 'custom_template';
+  }
+
+  if (!finalTemplateLabel) {
+    finalTemplateLabel = finalTemplateName ? 
+      finalTemplateName.charAt(0).toUpperCase() + finalTemplateName.slice(1).replace(/_/g, ' ') + ' Page' :
+      'Custom Page';
+  }
+
+  if (!finalDescription && prompt) {
+    finalDescription = `Template generated from prompt: "${prompt}"${figma_link ? ` with Figma design integration` : ''}`;
+  }
+
+  // Analyze prompt for sections if not provided
+  let finalSections = sections;
+  if (finalSections.length === 0 && prompt) {
+    const detectedSections = [];
+    
+    // Analyze prompt for common section types
+    const promptLower = prompt.toLowerCase();
+    
+    if (promptLower.includes('hero') || promptLower.includes('banner') || promptLower.includes('landing')) {
+      detectedSections.push({
+        name: 'hero',
+        label: 'Hero Section',
+        keyName: 'hero_section',
+        order: detectedSections.length + 1,
+        fields: [
+          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the hero section' },
+          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Welcome to Our Website' },
+          { name: 'subtitle', type: 'textarea', multilanguage: true, required: false, default: 'Discover amazing features and services' },
+          { name: 'background_image', type: 'media', required: false, caption: 'Hero background image' }
+        ]
+      });
+    }
+
+    if (promptLower.includes('services') || promptLower.includes('features') || promptLower.includes('benefits')) {
+      const sectionName = promptLower.includes('services') ? 'services' : 'features';
+      detectedSections.push({
+        name: sectionName,
+        label: `${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)} Section`,
+        keyName: `section_${sectionName}`,
+        order: detectedSections.length + 1,
+        fields: [
+          { name: 'status', type: 'toggle', required: false, default: 'true', caption: `Enable or disable the ${sectionName} section` },
+          { name: 'title', type: 'input', multilanguage: true, required: true, default: `Our ${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}` },
+          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: `Explore our amazing ${sectionName}` },
+          { 
+            name: sectionName, 
+            type: 'repeater', 
+            min: 1, 
+            max: 8,
+            fields: [
+              { name: 'icon', type: 'input', required: true, caption: 'Icon name (Lucide React icons)' },
+              { name: 'title', type: 'input', multilanguage: true, required: true },
+              { name: 'description', type: 'textarea', multilanguage: true, required: false }
+            ]
+          }
+        ]
+      });
+    }
+
+    if (promptLower.includes('contact') || promptLower.includes('footer')) {
+      detectedSections.push({
+        name: 'contact',
+        label: 'Contact Section',
+        keyName: 'contact_section',
+        order: detectedSections.length + 1,
+        fields: [
+          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the contact section' },
+          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Contact Us' },
+          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: 'Get in touch with us' },
+          {
+            name: 'contact_info',
+            type: 'group',
+            fields: [
+              { name: 'email', type: 'input', inputType: 'email', required: false },
+              { name: 'phone', type: 'input', required: false },
+              { name: 'address', type: 'textarea', multilanguage: true, required: false }
+            ]
+          }
+        ]
+      });
+    }
+
+    if (promptLower.includes('gallery') || promptLower.includes('portfolio')) {
+      detectedSections.push({
+        name: 'gallery',
+        label: 'Gallery Section',
+        keyName: 'gallery_section',
+        order: detectedSections.length + 1,
+        fields: [
+          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the gallery section' },
+          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Our Gallery' },
+          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: 'Explore our work' },
+          {
+            name: 'gallery_items',
+            type: 'repeater',
+            min: 1,
+            max: 12,
+            fields: [
+              { name: 'image', type: 'media', required: true },
+              { name: 'caption', type: 'input', multilanguage: true, required: false }
+            ]
+          }
+        ]
+      });
+    }
+
+    // Default sections if none detected
+    if (detectedSections.length === 0) {
+      detectedSections.push({
+        name: 'content',
+        label: 'Content Section',
+        keyName: 'content_section',
+        order: 1,
+        fields: [
+          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the content section' },
+          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Page Title' },
+          { name: 'content', type: 'texteditor', multilanguage: true, required: false, default: 'Page content goes here...' }
+        ]
+      });
+    }
+
+    finalSections = detectedSections;
+  }
+
+  // Generate instruction document content
+  let instructionContent = `# ${finalTemplateLabel}\n\n`;
+  instructionContent += `- Name: ${finalTemplateName}\n`;
+  instructionContent += `- Label: ${finalTemplateLabel}\n`;
+  instructionContent += `- Multilanguage: ${multilanguage}\n`;
+  instructionContent += `- Is Content: ${is_content}\n`;
+  instructionContent += `- Is Multiple: ${is_multiple}\n`;
+  instructionContent += `- Description: ${finalDescription}\n\n`;
+
+  // Add sections
+  finalSections.forEach((section, index) => {
+    if (index > 0) instructionContent += `---\n\n`;
+    
+    instructionContent += `## Section: ${section.label} (\`${section.keyName}\`)\n`;
+    instructionContent += `- Block: ${section.name.charAt(0).toUpperCase() + section.name.slice(1)}\n`;
+    instructionContent += `- Order: ${section.order}\n\n`;
+    instructionContent += `### Fields:\n`;
+
+    section.fields.forEach(field => {
+      let fieldLine = `- \`${field.name}\`: ${field.type}`;
+      
+      if (field.multilanguage) {
+        fieldLine += ' (multilanguage)';
+      }
+      
+      if (field.min !== undefined && field.max !== undefined) {
+        fieldLine += ` (min: ${field.min}, max: ${field.max})`;
+      }
+      
+      instructionContent += fieldLine + '\n';
+
+      // Add field properties
+      if (field.required !== undefined) {
+        instructionContent += `  - Required: ${field.required}\n`;
+      }
+      if (field.default) {
+        instructionContent += `  - Default: ${field.default}\n`;
+      }
+      if (field.caption) {
+        instructionContent += `  - Caption: ${field.caption}\n`;
+      }
+
+      // Add nested fields for repeaters and groups
+      if (field.fields && field.fields.length > 0) {
+        field.fields.forEach(nestedField => {
+          let nestedLine = `  - \`${nestedField.name}\`: ${nestedField.type}`;
+          if (nestedField.multilanguage) {
+            nestedLine += ' (multilanguage)';
+          }
+          instructionContent += nestedLine + '\n';
+          
+          if (nestedField.required !== undefined) {
+            instructionContent += `    - Required: ${nestedField.required}\n`;
+          }
+          if (nestedField.caption) {
+            instructionContent += `    - Caption: ${nestedField.caption}\n`;
+          }
+        });
+      }
+
+      instructionContent += '\n';
+    });
+  });
+
+  // Auto-create instruction file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'rules');
+    const filePath = path.join(storageDir, `${finalTemplateName}.instructions.md`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write instruction file
+    await fs.writeFile(filePath, instructionContent, 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated instruction document "${finalTemplateLabel}".\n\n📁 **File saved to:** ${relativePath}\n📋 **Sections:** ${finalSections.length}\n${figma_link ? `🎨 **Figma Integration:** ${figma_link}\n` : ''}\n**Generated Structure:**\n${finalSections.map(s => `- ${s.label} (${s.fields.length} fields)`).join('\n')}\n\n**Instruction Content:**\n\`\`\`markdown\n${instructionContent}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    console.error(`[MCP] Failed to save instruction file: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated instruction document "${finalTemplateLabel}".\n\n❌ **File creation failed:** ${error.message}\n\n**Instruction Content:**\n\`\`\`markdown\n${instructionContent}\n\`\`\``
         }
       ]
     };
