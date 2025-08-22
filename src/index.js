@@ -16,6 +16,8 @@ import {
   // getRandomQuote, // Disabled for this version
   generateSection,
   assignSectionToTemplate,
+  generateNavigation,
+  smartGenerate,
   // getAllPages, // Disabled for this version
 } from './tools/templateGenerator.js';
 import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
@@ -61,6 +63,7 @@ class AntiCMSServer {
           name: z.string().describe('Template identifier (snake_case)'),
           label: z.string().describe('Human-readable template name'),
           description: z.string().optional().describe('Template description'),
+          template_type: z.enum(['pages', 'posts']).optional().default('pages').describe('Template type: "pages" for page templates, "posts" for post templates'),
           is_content: z.boolean().optional().default(false).describe('Whether this is a content template'),
           multilanguage: z.boolean().optional().default(true).describe('Enable multilanguage support'),
           is_multiple: z.boolean().optional().default(false).describe('Allow multiple instances'),
@@ -207,6 +210,65 @@ class AntiCMSServer {
           return result;
         } catch (error) {
           console.error(`[MCP] assign_section_to_template error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register generate_navigation tool
+    this.server.registerTool(
+      'generate_navigation',
+      {
+        title: 'Generate Navigation',
+        description: 'Generate JSON AntiCMS v3 navigation/menu/nav',
+        inputSchema: {
+          name: z.string().describe('Menu name'),
+          menu_items: z.array(z.object({
+            title: z.union([z.string(), z.object({}).passthrough()]).describe('Menu item title (string or multilingual object)'),
+            type: z.enum(['page', 'url', 'post']).optional().default('page').describe('Menu item type'),
+            url: z.string().optional().describe('URL for link type items'),
+            post_id: z.number().optional().describe('Post ID for post type items'),
+            parent_id: z.number().optional().describe('Parent menu item ID for nested items'),
+            new_window: z.boolean().optional().default(false).describe('Open in new window'),
+            sort: z.number().optional().describe('Sort order (auto-generated if not provided)'),
+            image: z.string().optional().describe('Menu item image'),
+            children: z.array(z.any()).optional().default([]).describe('Child menu items')
+          })).describe('Array of menu items')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] generate_navigation called with args:`, args);
+        try {
+          const result = await generateNavigation(args);
+          console.error(`[MCP] generate_navigation completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] generate_navigation error:`, error);
+          throw error;
+        }
+      }
+    );
+
+    // Register smart_generate tool
+    this.server.registerTool(
+      'smart_generate',
+      {
+        title: 'Smart Generate from Prompt',
+        description: 'Intelligently analyze user prompts and Figma links to automatically generate navigation and templates',
+        inputSchema: {
+          prompt: z.string().describe('User prompt describing what to generate (e.g., "Create an AntiCMS v3 template called agency")'),
+          figma_link: z.string().optional().describe('Figma design link to analyze and extract components from'),
+          auto_detect: z.boolean().optional().default(true).describe('Enable automatic detection of generation needs')
+        }
+      },
+      async (args) => {
+        console.error(`[MCP] smart_generate called with args:`, args);
+        try {
+          const result = await smartGenerate(args);
+          console.error(`[MCP] smart_generate completed successfully`);
+          return result;
+        } catch (error) {
+          console.error(`[MCP] smart_generate error:`, error);
           throw error;
         }
       }

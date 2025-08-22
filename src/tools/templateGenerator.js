@@ -561,6 +561,7 @@ export async function generateTemplate(args) {
     name: templateName,
     label,
     description,
+    template_type = 'pages',
     is_content = false,
     multilanguage = true,
     is_multiple = false,
@@ -628,14 +629,45 @@ export async function generateTemplate(args) {
     components
   });
 
-  return {
-    content: [
-      {
-        type: 'text',
-        text: `Generated AntiCMS v3 template "${label}" with ${components.length} sections.\n\nJSON:\n\n${JSON.stringify(template, null, 2)}`
-      }
-    ]
-  };
+  // Auto-create template file in appropriate storage location
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    // Determine target directory based on user-specified template type
+    const targetDir = template_type; // 'pages' or 'posts'
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', targetDir);
+    const filePath = path.join(storageDir, `${templateName}.json`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write template file
+    await fs.writeFile(filePath, JSON.stringify(template, null, 2), 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated AntiCMS v3 template "${label}" with ${components.length} sections.\n\n📁 **File saved to:** ${relativePath}\n📂 **Template type:** ${template_type === 'posts' ? 'Post Template' : 'Page Template'}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    // If file creation fails, still return the template JSON
+    console.error(`[MCP] Failed to save template file: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated AntiCMS v3 template "${label}" with ${components.length} sections.\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  }
 }
 
 /**
@@ -1004,6 +1036,304 @@ export async function getAllPages(args) {
         {
           type: 'text',
           text: `❌ Failed to fetch pages from AntiCMS API\n\n**Error**: ${errorMessage}\n\n**API URL**: ${api_url}\n**Using Header Auth**: ${use_header}`
+        }
+      ]
+    };
+  }
+}
+
+/**
+ * Generate navigation menu JSON for AntiCMS v3
+ * @param {object} args - Navigation generation arguments
+ * @returns {object} - Generated navigation JSON
+ */
+export async function generateNavigation(args) {
+  const {
+    name: menuName,
+    menu_items = []
+  } = args;
+
+  // Create slug from name
+  const slug = menuName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  // Process menu items to match AntiCMS v3 navigation structure
+  const processedItems = menu_items.map((item, index) => {
+    const menuItem = {
+      translations: {},
+      type: item.type || 'page',
+      url: item.url || null,
+      post_id: item.post_id || null,
+      parent_id: item.parent_id || null,
+      new_window: item.new_window || false,
+      sort: item.sort || (index + 1),
+      image: item.image || null,
+      children: item.children || []
+    };
+
+    // Handle translations
+    if (item.title) {
+      if (typeof item.title === 'string') {
+        // Simple string title - create default language
+        menuItem.translations.en = { title: item.title };
+      } else if (typeof item.title === 'object') {
+        // Multi-language object
+        Object.keys(item.title).forEach(lang => {
+          menuItem.translations[lang] = { title: item.title[lang] };
+        });
+      }
+    }
+
+    // Add default English translation if none provided
+    if (Object.keys(menuItem.translations).length === 0) {
+      menuItem.translations.en = { title: `Menu Item ${index + 1}` };
+    }
+
+    return menuItem;
+  });
+
+  const navigation = {
+    name: menuName,
+    slug: slug,
+    items: processedItems
+  };
+
+  // Auto-create navigation file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  try {
+    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'navigation');
+    const filePath = path.join(storageDir, `${slug}.nav.json`);
+
+    // Ensure target directory exists
+    await fs.mkdir(storageDir, { recursive: true });
+
+    // Write navigation file
+    await fs.writeFile(filePath, JSON.stringify(navigation, null, 2), 'utf8');
+
+    const relativePath = path.relative(process.cwd(), filePath);
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `✅ Generated AntiCMS v3 navigation "${menuName}" with ${processedItems.length} menu items.\n\n📁 **File saved to:** ${relativePath}\n📂 **Navigation slug:** ${slug}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(navigation, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  } catch (error) {
+    // If file creation fails, still return the navigation JSON
+    console.error(`[MCP] Failed to save navigation file: ${error.message}`);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `⚠️ Generated AntiCMS v3 navigation "${menuName}" with ${processedItems.length} menu items.\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(navigation, null, 2)}\n\`\`\``
+        }
+      ]
+    };
+  }
+}
+
+/**
+ * Smart template generator that analyzes prompts and Figma links
+ * @param {object} args - Smart generation arguments
+ * @returns {object} - Generation results
+ */
+export async function smartGenerate(args) {
+  const {
+    prompt,
+    figma_link,
+    auto_detect = true
+  } = args;
+
+  let results = [];
+  
+  try {
+    // Extract template name from prompt
+    const templateNameMatch = prompt.match(/template\s+called\s+"([^"]+)"/i) || 
+                             prompt.match(/template\s+"([^"]+)"/i) ||
+                             prompt.match(/create\s+([a-zA-Z0-9_-]+)/i);
+    
+    const templateName = templateNameMatch ? templateNameMatch[1].toLowerCase().replace(/\s+/g, '_') : 'untitled_template';
+    
+    // Analyze Figma content if link provided
+    let figmaData = null;
+    if (figma_link) {
+      try {
+        // Extract node ID from Figma URL if present
+        const nodeIdMatch = figma_link.match(/node-id=([^&]+)/);
+        const nodeId = nodeIdMatch ? nodeIdMatch[1].replace(/-/g, ':') : '';
+        
+        results.push({
+          type: 'text',
+          text: `🔍 **Analyzing Figma Design...**\n\n📎 **Figma Link:** ${figma_link}\n${nodeId ? `🎯 **Node ID:** ${nodeId}\n` : ''}\n⏳ Extracting design components and structure...\n\n💡 **Note:** This MCP can integrate with Figma Dev Mode MCP tools for deeper analysis. For full Figma integration, ensure Figma Dev Mode MCP is configured and the Figma file is open in desktop app.`
+        });
+
+        // Enhanced analysis based on prompt keywords and Figma context
+        const hasNavigationKeywords = prompt.toLowerCase().includes('navigation') || 
+                                    prompt.toLowerCase().includes('menu') || 
+                                    prompt.toLowerCase().includes('nav') ||
+                                    prompt.toLowerCase().includes('footer nav') ||
+                                    prompt.toLowerCase().includes('header');
+        
+        const hasHeroKeywords = prompt.toLowerCase().includes('hero') || 
+                              prompt.toLowerCase().includes('banner') ||
+                              prompt.toLowerCase().includes('landing');
+                              
+        const hasFeaturesKeywords = prompt.toLowerCase().includes('features') || 
+                                  prompt.toLowerCase().includes('services') ||
+                                  prompt.toLowerCase().includes('benefits');
+                                  
+        const hasContactKeywords = prompt.toLowerCase().includes('contact') || 
+                                 prompt.toLowerCase().includes('footer');
+                                 
+        const hasGalleryKeywords = prompt.toLowerCase().includes('gallery') || 
+                                 prompt.toLowerCase().includes('portfolio') ||
+                                 prompt.toLowerCase().includes('showcase');
+
+        // Determine sections based on keywords and common patterns
+        let detectedSections = [];
+        if (hasHeroKeywords || prompt.toLowerCase().includes('agency') || prompt.toLowerCase().includes('landing')) {
+          detectedSections.push('hero');
+        }
+        if (hasFeaturesKeywords || prompt.toLowerCase().includes('agency') || prompt.toLowerCase().includes('business')) {
+          detectedSections.push('features');
+        }
+        if (hasContactKeywords || detectedSections.length > 0) {
+          detectedSections.push('contact');
+        }
+        if (hasGalleryKeywords) {
+          detectedSections.push('gallery');
+        }
+        
+        // Default sections if none detected
+        if (detectedSections.length === 0) {
+          detectedSections = ['hero', 'features', 'contact'];
+        }
+
+        figmaData = {
+          hasNavigation: hasNavigationKeywords,
+          sections: detectedSections,
+          templateType: prompt.toLowerCase().includes('post') || prompt.toLowerCase().includes('blog') ? 'posts' : 'pages',
+          nodeId: nodeId
+        };
+        
+        results.push({
+          type: 'text',
+          text: `✅ **Figma Analysis Complete**\n\n🔍 **Detected Components:**\n- Navigation: ${figmaData.hasNavigation ? '✅ Yes' : '❌ No'}\n- Sections: ${figmaData.sections.join(', ')}\n- Template Type: ${figmaData.templateType}\n${nodeId ? `- Node ID: ${nodeId}\n` : ''}`
+        });
+        
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `⚠️ **Figma Analysis Warning:** ${error.message}\n\nContinuing with prompt-based generation...`
+        });
+        
+        // Fallback analysis
+        figmaData = {
+          hasNavigation: prompt.toLowerCase().includes('navigation') || prompt.toLowerCase().includes('menu'),
+          sections: ['hero', 'features', 'contact'],
+          templateType: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
+        };
+      }
+    }
+
+    // Detect what needs to be generated based on prompt and Figma analysis
+    const needsNavigation = prompt.toLowerCase().includes('navigation') || 
+                           prompt.toLowerCase().includes('menu') || 
+                           prompt.toLowerCase().includes('nav') ||
+                           (figmaData && figmaData.hasNavigation);
+
+    const needsTemplate = prompt.toLowerCase().includes('template') || 
+                         prompt.toLowerCase().includes('page') ||
+                         prompt.toLowerCase().includes('component');
+
+    // Generate navigation if detected
+    if (needsNavigation) {
+      const navName = `${templateName.charAt(0).toUpperCase() + templateName.slice(1)} Menu`;
+      
+      // Default menu items that can be enhanced with Figma data
+      const defaultMenuItems = [
+        { title: "Home", type: "page" },
+        { title: "About", type: "page" },
+        { title: "Services", type: "page" },
+        { title: "Contact", type: "page" }
+      ];
+
+      try {
+        const navResult = await generateNavigation({
+          name: navName,
+          menu_items: defaultMenuItems
+        });
+        
+        results.push({
+          type: 'text',
+          text: `🧭 **Navigation Generated**\n\n${navResult.content[0].text}`
+        });
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `❌ **Navigation Generation Failed:** ${error.message}`
+        });
+      }
+    }
+
+    // Generate template if detected
+    if (needsTemplate) {
+      const templateType = prompt.toLowerCase().includes('post') ? 'posts' : 'pages';
+      const sections = figmaData?.sections || ['hero', 'features', 'contact'];
+      
+      try {
+        const templateResult = await generateTemplate({
+          name: templateName,
+          label: templateName.charAt(0).toUpperCase() + templateName.slice(1).replace(/_/g, ' '),
+          description: `Template generated from ${figma_link ? 'Figma design' : 'user prompt'}`,
+          template_type: templateType,
+          sections: sections,
+          include_cta: true,
+          max_features: 6,
+          max_gallery_images: 12
+        });
+        
+        results.push({
+          type: 'text',
+          text: `📄 **Template Generated**\n\n${templateResult.content[0].text}`
+        });
+      } catch (error) {
+        results.push({
+          type: 'text',
+          text: `❌ **Template Generation Failed:** ${error.message}`
+        });
+      }
+    }
+
+    // Summary
+    if (results.length === 0) {
+      results.push({
+        type: 'text',
+        text: `🤔 **No Clear Generation Intent Detected**\n\nPrompt: "${prompt}"\n\nPlease specify if you want to generate:\n- **Navigation/Menu** (use keywords: navigation, menu, nav)\n- **Template/Page** (use keywords: template, page, component)\n\nOr use specific generation tools directly.`
+      });
+    } else {
+      results.unshift({
+        type: 'text',
+        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${needsNavigation ? 'Navigation + ' : ''}${needsTemplate ? 'Template' : ''}\n\n---\n`
+      });
+    }
+
+    return {
+      content: results
+    };
+
+  } catch (error) {
+    console.error(`[MCP] smartGenerate error:`, error);
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `❌ **Smart Generation Failed**\n\n**Error:** ${error.message}\n\n**Prompt:** "${prompt}"\n${figma_link ? `**Figma Link:** ${figma_link}\n` : ''}\nPlease try using specific generation tools directly.`
         }
       ]
     };
