@@ -15,32 +15,55 @@ A Model Context Protocol (MCP) server for generating AntiCMS v3 JSON component t
 - **Health check endpoint** for monitoring
 - **CORS support** for browser compatibility
 
-## 📁 Project Structure
+## 🚀 MCP Installation & Configuration
 
+### Claude Desktop
+Add to your claude_desktop_config.json:
+
+```json
+{
+  "mcpServers": {
+    "anticms-generator": {
+      "command": "npx",
+      "args": ["@tobidsn/anticms-mcp"]
+    }
+  }
+}
 ```
-Anticms-MCP/
-├── src/
-│   ├── index.js              # Main MCP server with dual transport support
-│   └── tools/
-│       ├── templateGenerator.js  # Core template generation logic
-│       └── definitions.js       # Tool definitions for MCP
-├── data/
-│   └── field-types/          # JSON resource files for all field types
-│       ├── index.json        # Field types index
-│       ├── input.json        # Input field examples and docs
-│       ├── textarea.json     # Textarea field examples and docs
-│       ├── texteditor.json   # Text editor field examples and docs
-│       ├── select.json       # Select field examples and docs
-│       ├── toggle.json       # Toggle field examples and docs
-│       ├── media.json        # Media field examples and docs
-│       ├── repeater.json     # Repeater field examples and docs
-│       ├── group.json        # Group field examples and docs
-│       ├── relationship.json # Relationship field examples and docs
-│       ├── post-object.json  # Post object field examples and docs
-│       ├── post-related.json # Post related field examples and docs
-│       └── table.json        # Table field examples and docs
-├── package.json
-└── README.md
+
+### Cursor
+Add to your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "anticms-mcp": {
+      "command": "npx",
+      "args": [
+        "@tobidsn/anticms-mcp@latest"
+      ]
+    }
+  }
+}
+```
+
+### VSCode
+
+Create a new file `.vscode/mcp.json`:
+
+```bash
+touch .vscode/mcp.json
+```
+
+```json
+{
+  "servers": {
+    "anticms-mcp": {
+      "command": "npx",
+      "args": ["@tobidsn/anticms-mcp@latest"]
+    }
+  }
+}
 ```
 
 ## 🛠 Installation
@@ -104,21 +127,6 @@ node src/index.js --http --port=3000
 ```
 
 ## 🔧 Configuration
-
-### MCP Client Configuration
-
-For **Claude Desktop** or other MCP clients using stdio:
-
-```json
-{
-  "mcpServers": {
-    "anticms-generator": {
-      "command": "npx",
-      "args": ["@tobidsn/anticms-mcp"]
-    }
-  }
-}
-```
 
 For **HTTP-based clients**:
 
