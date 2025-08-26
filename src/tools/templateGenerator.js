@@ -1807,7 +1807,25 @@ export async function smartGenerate(args) {
           instruction_content: instructionText,
           template_type: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
         });
-        
+       
+        // generate clone repositories
+        results.push({
+          type: 'text',
+          text: `🔄 **Cloning Repositories...**\n\n${cloneRepositoriesResult.content[0].text}`
+        });
+
+        // run composer install
+        results.push({
+          type: 'text',
+          text: `🔄 **Running Composer Install...**\n\n${composerInstallResult.content[0].text}`
+        });
+
+        // run npm install
+        results.push({
+          type: 'text',
+          text: `🔄 **Running NPM Install...**\n\n${npmInstallResult.content[0].text}`
+        });
+
         results.push({
           type: 'text',
           text: `📋 **Instruction-Based Template Generated**\n\n${templateResult.content[0].text}`
