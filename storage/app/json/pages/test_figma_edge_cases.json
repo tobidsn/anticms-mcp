@@ -1,0 +1,174 @@
+{
+  "name": "test_figma_edge_cases",
+  "label": "Test Figma Edge Cases",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Test template for Figma MCP integration",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter main title",
+            "is_required": true,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 3,
+            "placeholder": "Enter subtitle",
+            "cols": 50,
+            "max": 200,
+            "min": 10,
+            "is_required": true,
+            "defaultValue": "",
+            "value": null
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            },
+            "caption": "Recommended resolution: 1920x1080px"
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "Custom-Section with Spaces_section",
+      "label": "Custom Section with Spaces Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Custom-Section with Spaces section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter Custom-Section with Spaces section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter Custom-Section with Spaces content"
+          }
+        }
+      ],
+      "block": "Custom Section with Spaces"
+    },
+    {
+      "keyName": "another_section_section",
+      "label": "Another section Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the another_section section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter another_section section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter another_section content"
+          }
+        }
+      ],
+      "block": "Another section"
+    }
+  ]
+}

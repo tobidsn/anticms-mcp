@@ -84,14 +84,14 @@
       "name": "post_object",
       "label": "Post Object Field",
       "description": "Post Object fields allow you to select one or more posts as objects.",
-      "file": "post_object.json",
+      "file": "post-object.json",
       "deprecated": false
     },
     {
       "name": "post_related",
       "label": "Post Related Field",
       "description": "Post Related fields configure related post settings.",
-      "file": "post_related.json",
+      "file": "post-related.json",
       "deprecated": false
     },
     {

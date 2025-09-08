@@ -1,65 +1,71 @@
-// Import fetch for API calls
-import fetch from 'node-fetch';
+// Field type definitions cache
+let FIELD_TYPES_CACHE = null;
 
-// AntiCMS v3 Field Type Definitions
-export const FIELD_TYPES = {
-  input: {
-    attributes: ['type', 'is_required', 'placeholder', 'defaultValue', 'maxLength', 'minLength', 'min', 'max'],
-    requiredAttributes: ['type']
-  },
-  textarea: {
-    attributes: ['rows', 'cols', 'max', 'min', 'placeholder', 'is_required', 'defaultValue', 'caption'],
-    requiredAttributes: []
-  },
-  texteditor: {
-    attributes: ['type', 'rows', 'cols', 'max', 'min', 'placeholder', 'is_required', 'defaultValue', 'caption'],
-    requiredAttributes: ['type']
-  },
-  select: {
-    attributes: ['options', 'is_required', 'placeholder', 'caption', 'defaultValue'],
-    requiredAttributes: ['options']
-  },
-  toggle: {
-    attributes: ['caption', 'defaultValue', 'is_required'],
-    requiredAttributes: []
-  },
-  media: {
-    attributes: ['accept', 'resolution', 'caption', 'is_required'],
-    requiredAttributes: ['accept']
-  },
-  repeater: {
-    attributes: ['fields', 'min', 'max', 'caption'],
-    requiredAttributes: ['fields']
-  },
-  group: {
-    attributes: ['fields', 'caption'],
-    requiredAttributes: ['fields']
-  },
-  relationship: {
-    attributes: ['filter', 'min', 'max', 'api_url', 'caption', 'is_required'],
-    requiredAttributes: ['filter']
-  },
-  post_object: {
-    attributes: ['filter', 'multiple', 'caption', 'is_required'],
-    requiredAttributes: ['filter']
-  },
-  post_related: {
-    attributes: ['api_prefix', 'caption', 'is_required'],
-    requiredAttributes: ['api_prefix']
-  },
-  table: {
-    attributes: ['columns', 'min', 'max', 'caption', 'is_required'],
-    requiredAttributes: ['columns']
+/**
+ * Load field types dynamically from data/field-types directory
+ * @returns {Promise<Object>} Field types configuration
+ */
+async function loadFieldTypes() {
+  if (FIELD_TYPES_CACHE) {
+    return FIELD_TYPES_CACHE;
   }
-};
+
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Load field types index
+    const indexPath = path.join(process.cwd(), 'data', 'field-types', 'index.json');
+    const indexContent = await fs.readFile(indexPath, 'utf8');
+    const indexData = JSON.parse(indexContent);
+    
+    const fieldTypes = {};
+    
+    // Load each field type definition
+    for (const fieldTypeInfo of indexData.field_types) {
+      if (fieldTypeInfo.deprecated) continue;
+      
+      const fieldTypePath = path.join(process.cwd(), 'data', 'field-types', fieldTypeInfo.file);
+      const fieldTypeContent = await fs.readFile(fieldTypePath, 'utf8');
+      const fieldTypeData = JSON.parse(fieldTypeContent);
+      
+      fieldTypes[fieldTypeInfo.name] = {
+        ...fieldTypeData,
+        examples: fieldTypeData.examples || [],
+        properties: fieldTypeData.properties || {}
+      };
+    }
+    
+    FIELD_TYPES_CACHE = fieldTypes;
+    return fieldTypes;
+  } catch (error) {
+    console.error('Failed to load field types:', error);
+    // Fallback to basic field types
+    return {
+      input: { name: 'input', label: 'Input Field', field_type: 'input' },
+      textarea: { name: 'textarea', label: 'Textarea Field', field_type: 'textarea' },
+      texteditor: { name: 'texteditor', label: 'Text Editor Field', field_type: 'texteditor' },
+      select: { name: 'select', label: 'Select Field', field_type: 'select' },
+      toggle: { name: 'toggle', label: 'Toggle Field', field_type: 'toggle' },
+      media: { name: 'media', label: 'Media Field', field_type: 'media' },
+      repeater: { name: 'repeater', label: 'Repeater Field', field_type: 'repeater' },
+      group: { name: 'group', label: 'Group Field', field_type: 'group' },
+      relationship: { name: 'relationship', label: 'Relationship Field', field_type: 'relationship' },
+      post_object: { name: 'post_object', label: 'Post Object Field', field_type: 'post_object' },
+      post_related: { name: 'post_related', label: 'Post Related Field', field_type: 'post_related' },
+      table: { name: 'table', label: 'Table Field', field_type: 'table' }
+    };
+  }
+}
 
 /**
  * Recursively validate nested fields in repeaters and groups
  * @param {Array} fields - Array of field definitions to validate
  * @param {string} parentPath - Path to parent field for error reporting
  * @param {Array} errors - Array to collect errors
+ * @param {Object} fieldTypes - Field types configuration
  */
-function validateNestedFields(fields, parentPath, errors) {
+function validateNestedFields(fields, parentPath, errors, fieldTypes) {
   if (!Array.isArray(fields)) return;
   
   fields.forEach((field, fieldIndex) => {
@@ -74,34 +80,41 @@ function validateNestedFields(fields, parentPath, errors) {
     });
 
     // Validate field type
-    if (field.field && !FIELD_TYPES[field.field]) {
+    if (field.field && !fieldTypes[field.field]) {
       errors.push(`${fieldPath} has unsupported field type: ${field.field}`);
     } else if (field.field) {
-      // Check required attributes
-      const fieldConfig = FIELD_TYPES[field.field];
-      if (fieldConfig.requiredAttributes.length > 0 && !field.attribute) {
-        errors.push(`${fieldPath} (${field.field}) missing required attribute object`);
-      } else if (field.attribute) {
-        fieldConfig.requiredAttributes.forEach(attr => {
-          if (!(attr in field.attribute)) {
-            errors.push(`${fieldPath} (${field.field}) missing required attribute: ${attr}`);
-          }
-        });
+      // Check required attributes based on field type properties
+      const fieldConfig = fieldTypes[field.field];
+      if (fieldConfig && fieldConfig.properties && fieldConfig.properties.attribute_properties) {
+        const requiredAttrs = Object.entries(fieldConfig.properties.attribute_properties)
+          .filter(([_, prop]) => prop.required)
+          .map(([name, _]) => name);
         
-        // Special validation for table fields and their columns
-        if (field.field === 'table' && field.attribute.columns) {
-          if (!Array.isArray(field.attribute.columns)) {
-            errors.push(`${fieldPath} (table) columns must be an array`);
-          } else {
-            field.attribute.columns.forEach((column, colIndex) => {
-              const colPath = `${fieldPath} (table), column ${colIndex + 1}`;
-              const requiredColumnKeys = ['label', 'name', 'type'];
-              
-              requiredColumnKeys.forEach(key => {
-                if (!(key in column)) {
-                  errors.push(`${colPath} missing required key: ${key}`);
-                }
-              });
+        if (requiredAttrs.length > 0 && !field.attribute) {
+          errors.push(`${fieldPath} (${field.field}) missing required attribute object`);
+        } else if (field.attribute) {
+          requiredAttrs.forEach(attr => {
+            if (!(attr in field.attribute)) {
+              errors.push(`${fieldPath} (${field.field}) missing required attribute: ${attr}`);
+            }
+          });
+        }
+      }
+      
+      // Special validation for table fields and their columns
+      if (field.field === 'table' && field.attribute && field.attribute.columns) {
+        if (!Array.isArray(field.attribute.columns)) {
+          errors.push(`${fieldPath} (table) columns must be an array`);
+        } else {
+          field.attribute.columns.forEach((column, colIndex) => {
+            const colPath = `${fieldPath} (table), column ${colIndex + 1}`;
+            const requiredColumnKeys = ['label', 'name', 'type'];
+            
+            requiredColumnKeys.forEach(key => {
+              if (!(key in column)) {
+                errors.push(`${colPath} missing required key: ${key}`);
+              }
+            });
               
               // Validate column types
               const validColumnTypes = ['text', 'textarea', 'number', 'email', 'url'];
@@ -114,11 +127,11 @@ function validateNestedFields(fields, parentPath, errors) {
         
         // Recursively validate nested fields in repeaters and groups
         if ((field.field === 'repeater' || field.field === 'group') && field.attribute.fields) {
-          validateNestedFields(field.attribute.fields, `${fieldPath} (${field.field})`, errors);
+          validateNestedFields(field.attribute.fields, `${fieldPath} (${field.field})`, errors, fieldTypes);
         }
       }
     }
-  });
+  )
 }
 
 /**
@@ -130,29 +143,58 @@ export class AntiCMSComponentGenerator {
   /**
    * Validates that a field type is supported
    * @param {string} fieldType - The field type to validate
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {boolean} - Returns true if valid
    * @throws {Error} - Throws error if field type is not supported
    */
-  static validateFieldType(fieldType) {
-    if (!FIELD_TYPES[fieldType]) {
+  static validateFieldType(fieldType, fieldTypes) {
+    if (!fieldTypes[fieldType]) {
       throw new Error(`Unsupported field type: ${fieldType}`);
     }
     return true;
   }
 
   /**
-   * Generates a field definition for AntiCMS v3
+   * Generates a field definition for AntiCMS v3 using examples from field types
    * @param {string} name - Field name (snake_case)
    * @param {string} label - Human-readable label
-   * @param {string} fieldType - Field type from FIELD_TYPES
+   * @param {string} fieldType - Field type from field types
    * @param {object} options - Field options and attributes
+   * @param {Object} fieldTypes - Field types configuration
+   * @param {string} context - Context hint for better example selection
    * @returns {object} - Complete field definition
    */
-  static generateField(name, label, fieldType, options = {}) {
-    this.validateFieldType(fieldType);
+  static generateField(name, label, fieldType, options = {}, fieldTypes = null, context = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    // Validate and sanitize inputs
+    if (!name || typeof name !== 'string') {
+      throw new Error('Field name must be a non-empty string');
+    }
+    if (!label || typeof label !== 'string') {
+      throw new Error('Field label must be a non-empty string');
+    }
+    if (!fieldType || typeof fieldType !== 'string') {
+      throw new Error('Field type must be a non-empty string');
+    }
+    
+    // Sanitize field name to be compatible with AntiCMS
+    const sanitizedName = name
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    
+    if (!sanitizedName) {
+      throw new Error(`Invalid field name: "${name}" - cannot be sanitized to valid format`);
+    }
+    
+    this.validateFieldType(fieldType, fieldTypes);
     
     const field = {
-      name,
+      name: sanitizedName,
       label,
       field: fieldType
     };
@@ -162,43 +204,15 @@ export class AntiCMSComponentGenerator {
       field.multilanguage = options.multilanguage;
     }
 
-    // Generate attributes based on field type
-    const fieldConfig = FIELD_TYPES[fieldType];
-    const attributes = {};
-
-    // Add required attributes with defaults
-    fieldConfig.requiredAttributes.forEach(attr => {
-      switch (attr) {
-        case 'type':
-          attributes.type = options.inputType || 'text';
-          break;
-        case 'accept':
-          attributes.accept = options.accept || ['image'];
-          break;
-        case 'options':
-          attributes.options = options.options || [];
-          break;
-        case 'fields':
-          attributes.fields = options.fields || [];
-          break;
-        case 'filter':
-          attributes.filter = options.filter || { post_type: ['post'], post_status: 'publish' };
-          break;
-        case 'api_prefix':
-          attributes.api_prefix = options.api_prefix || '/api/v1/';
-          break;
-        case 'columns':
-          attributes.columns = options.columns || [];
-          break;
-      }
-    });
-
-    // Add optional attributes if provided
-    Object.keys(options).forEach(key => {
-      if (fieldConfig.attributes.includes(key) && options[key] !== undefined) {
-        attributes[key] = options[key];
-      }
-    });
+    // Get field configuration and examples
+    const fieldConfig = fieldTypes[fieldType];
+    const examples = fieldConfig.examples || [];
+    
+    // Select the best example based on context and field name
+    const bestExample = this.selectBestExample(examples, sanitizedName, context, options);
+    
+    // Generate attributes based on field type and examples
+    const attributes = this.generateAttributesFromExample(bestExample, fieldConfig, options, sanitizedName, fieldType, context, fieldTypes);
 
     // Handle special nested cases for repeater and group fields
     if (fieldType === 'repeater' && attributes.fields) {
@@ -206,7 +220,7 @@ export class AntiCMSComponentGenerator {
       attributes.fields = attributes.fields.map(nestedField => {
         if (typeof nestedField === 'object' && nestedField.field) {
           // Validate nested field type
-          this.validateFieldType(nestedField.field);
+          this.validateFieldType(nestedField.field, fieldTypes);
           return nestedField;
         }
         return nestedField;
@@ -218,13 +232,14 @@ export class AntiCMSComponentGenerator {
       attributes.fields = attributes.fields.map(nestedField => {
         if (typeof nestedField === 'object' && nestedField.field) {
           // Validate nested field type
-          this.validateFieldType(nestedField.field);
+          this.validateFieldType(nestedField.field, fieldTypes);
           return nestedField;
         }
         return nestedField;
       });
     }
 
+    // Add attributes if any exist
     if (Object.keys(attributes).length > 0) {
       field.attribute = attributes;
     }
@@ -233,20 +248,171 @@ export class AntiCMSComponentGenerator {
   }
 
   /**
+   * Select the best example from field type examples based on context
+   * @param {Array} examples - Available examples
+   * @param {string} fieldName - Field name for context
+   * @param {string} context - Section/component context
+   * @param {object} options - Additional options
+   * @returns {object|null} - Best matching example or null
+   */
+  static selectBestExample(examples, fieldName, context, options) {
+    if (!examples || examples.length === 0) return null;
+
+    // Score examples based on relevance
+    const scoredExamples = examples.map(example => {
+      let score = 0;
+      const exampleName = example.name?.toLowerCase() || '';
+      const exampleLabel = example.label?.toLowerCase() || '';
+      const exampleField = example.field || {};
+      
+      // Match field name patterns
+      if (exampleName.includes(fieldName.toLowerCase())) score += 10;
+      if (exampleField.name === fieldName) score += 15;
+      
+      // Match context patterns
+      if (context) {
+        const contextLower = context.toLowerCase();
+        if (exampleName.includes(contextLower) || exampleLabel.includes(contextLower)) score += 8;
+      }
+      
+      // Match option patterns
+      if (options.inputType && exampleField.attribute?.type === options.inputType) score += 5;
+      if (options.accept && Array.isArray(exampleField.attribute?.accept) && 
+          options.accept.some(type => exampleField.attribute.accept.includes(type))) score += 5;
+      
+      // Prefer more complete examples
+      if (exampleField.attribute) {
+        score += Object.keys(exampleField.attribute).length;
+      }
+      
+      return { example, score };
+    });
+
+    // Return the highest scoring example
+    const best = scoredExamples.reduce((prev, current) => 
+      current.score > prev.score ? current : prev
+    );
+    
+    return best.score > 0 ? best.example : examples[0]; // Fallback to first example
+  }
+
+  /**
+   * Generate field attributes from example and options
+   * @param {object} example - Selected example
+   * @param {object} fieldConfig - Field type configuration
+   * @param {object} options - User-provided options
+   * @param {string} fieldName - Field name for smart attributes
+   * @param {string} fieldType - Field type
+   * @param {string} context - Section context
+   * @param {Object} fieldTypes - Field types configuration
+   * @returns {object} - Generated attributes
+   */
+  static generateAttributesFromExample(example, fieldConfig, options, fieldName = '', fieldType = '', context = '', fieldTypes = null) {
+    const attributes = {};
+    
+    // Start with smart attributes based on context and field name
+    if (fieldName && fieldType && fieldTypes) {
+      const smartAttrs = this.generateSmartAttributes(fieldName, fieldType, context, fieldTypes);
+      Object.assign(attributes, smartAttrs);
+    }
+    
+    // Merge with example attributes if available (example takes precedence for specific attributes)
+    if (example && example.field && example.field.attribute) {
+      const exampleAttrs = JSON.parse(JSON.stringify(example.field.attribute));
+      
+      // Only use example attributes that aren't already set by smart generation
+      Object.keys(exampleAttrs).forEach(key => {
+        if (attributes[key] === undefined || key === 'placeholder' || key === 'caption') {
+          // For placeholder and caption, prefer example if it's more specific
+          if ((key === 'placeholder' || key === 'caption') && exampleAttrs[key] && 
+              exampleAttrs[key].toLowerCase().includes(fieldName.toLowerCase())) {
+            attributes[key] = exampleAttrs[key];
+          } else if (key !== 'placeholder' && key !== 'caption') {
+            attributes[key] = exampleAttrs[key];
+          }
+        }
+      });
+    }
+    
+    // Override with user-provided options (highest priority)
+    Object.keys(options).forEach(key => {
+      if (options[key] !== undefined && key !== 'multilanguage') {
+        attributes[key] = options[key];
+      }
+    });
+    
+    // Ensure required attributes are present based on field type properties
+    if (fieldConfig.properties && fieldConfig.properties.attribute_properties) {
+      const requiredAttrs = Object.entries(fieldConfig.properties.attribute_properties)
+        .filter(([_, prop]) => prop.required)
+        .map(([name, _]) => name);
+
+      // Add required attributes with defaults if missing
+      requiredAttrs.forEach(attr => {
+        if (attributes[attr] === undefined) {
+          attributes[attr] = this.getDefaultAttributeValue(attr, fieldConfig);
+        }
+      });
+    }
+    
+    return attributes;
+  }
+
+  /**
+   * Get default value for a required attribute
+   * @param {string} attr - Attribute name
+   * @param {object} fieldConfig - Field configuration
+   * @returns {*} - Default value
+   */
+  static getDefaultAttributeValue(attr, fieldConfig) {
+    const attrConfig = fieldConfig.properties?.attribute_properties?.[attr];
+    
+    if (attrConfig && attrConfig.example !== undefined) {
+      return JSON.parse(JSON.stringify(attrConfig.example));
+    }
+    
+    // Fallback defaults
+    switch (attr) {
+      case 'type': return 'text';
+      case 'accept': return ['image'];
+      case 'options': return [
+        { label: 'Option 1', value: 'option1' },
+        { label: 'Option 2', value: 'option2' }
+      ];
+      case 'fields': return [];
+      case 'filter': return { post_type: ['post'], post_status: 'publish' };
+      case 'api_prefix': return '/api/v1/';
+      case 'columns': return [
+        { label: 'Column 1', name: 'col1', type: 'text' },
+        { label: 'Column 2', name: 'col2', type: 'text' }
+      ];
+      default: return null;
+    }
+  }
+
+  /**
    * Generates a component for AntiCMS v3 template
    * @param {string} keyName - Component key name
    * @param {string} label - Component label
    * @param {string|number} section - Section number
    * @param {array} fields - Array of field definitions
+   * @param {object} options - Additional component options
    * @returns {object} - Complete component definition
    */
-  static generateComponent(keyName, label, section, fields) {
-    return {
+  static generateComponent(keyName, label, section, fields, options = {}) {
+    const component = {
       keyName,
       label,
       section: String(section),
       fields
     };
+    
+    // Add optional block property if provided
+    if (options.block) {
+      component.block = options.block;
+    }
+    
+    return component;
   }
 
   /**
@@ -271,27 +437,22 @@ export class AntiCMSComponentGenerator {
   /**
    * Generates a hero section component
    * @param {object} options - Hero section options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Hero section component
    */
-  static generateHeroSection(options = {}) {
+  static generateHeroSection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    const sectionNumber = options.sectionNumber || 1;
+    const context = 'hero';
+    
     const fields = [
       this.generateField('status', 'Status', 'toggle', {
         caption: 'Enable or disable the hero section',
         defaultValue: true
-      }),
-      this.generateField('title', 'Title', 'input', {
-        multilanguage: true,
-        inputType: 'text',
-        is_required: true,
-        placeholder: 'Enter main title',
-        maxLength: 100
-      }),
-      this.generateField('subtitle', 'Subtitle', 'textarea', {
-        multilanguage: true,
-        rows: 3,
-        max: 200,
-        placeholder: 'Enter subtitle'
-      }),
+      }, fieldTypes, context),
       this.generateField('background_image', 'Background Image', 'media', {
         accept: ['image'],
         resolution: {
@@ -299,119 +460,134 @@ export class AntiCMSComponentGenerator {
           maxWidth: 1920,
           minHeight: 600,
           maxHeight: 1080
-        }
-      })
+        },
+        caption: 'Recommended resolution: 1920x1080px'
+      }, fieldTypes, context),
+      this.generateField('scroll_indicator', 'Scroll Indicator', 'toggle', {
+        caption: 'Show/hide scroll indicator',
+        defaultValue: true
+      }, fieldTypes, context)
     ];
 
-    if (options.includeCTA) {
-      fields.push(
-        this.generateField('cta_button', 'Call to Action', 'group', {
-          fields: [
-            this.generateField('label', 'Button Label', 'input', {
-              multilanguage: true,
-              inputType: 'text',
-              placeholder: 'Button text'
-            }),
-            this.generateField('url', 'URL', 'input', {
-              inputType: 'url',
-              placeholder: 'https://example.com'
-            })
-          ]
-        })
-      );
-    }
-
-    return this.generateComponent('hero_section', 'Hero Section', '1', fields);
+    return this.generateComponent('hero_section', 'Hero Section', sectionNumber, fields, {
+      block: 'Hero'
+    });
   }
 
   /**
    * Generates a features section component
    * @param {object} options - Features section options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Features section component
    */
-  static generateFeaturesSection(options = {}) {
+  static generateFeaturesSection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
     const maxFeatures = options.maxFeatures || 6;
+    const sectionNumber = options.sectionNumber || 2;
+    const context = 'features';
     
     const fields = [
       this.generateField('section_title', 'Section Title', 'input', {
         multilanguage: true,
-        inputType: 'text',
+        type: 'text',
         placeholder: 'Features section title'
-      }),
+      }, fieldTypes, context),
       this.generateField('features', 'Features', 'repeater', {
         min: 1,
         max: maxFeatures,
         fields: [
           this.generateField('feature_title', 'Feature Title', 'input', {
             multilanguage: true,
-            inputType: 'text',
+            type: 'text',
             is_required: true,
             placeholder: 'Feature name'
-          }),
+          }, fieldTypes, context),
           this.generateField('feature_description', 'Feature Description', 'textarea', {
             multilanguage: true,
             rows: 3,
             max: 150,
             placeholder: 'Feature description'
-          }),
+          }, fieldTypes, context),
           this.generateField('feature_icon', 'Feature Icon', 'media', {
             accept: ['image']
-          })
+          }, fieldTypes, context)
         ]
-      })
+      }, fieldTypes, context)
     ];
 
-    return this.generateComponent('features_section', 'Features Section', '2', fields);
+    return this.generateComponent('features_section', 'Features Section', sectionNumber, fields, {
+      block: 'Features'
+    });
   }
 
   /**
    * Generates a contact section component
    * @param {object} options - Contact section options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Contact section component
    */
-  static generateContactSection(options = {}) {
+  static generateContactSection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    const sectionNumber = options.sectionNumber || 3;
+    const context = 'contact';
+    
     const fields = [
       this.generateField('section_title', 'Section Title', 'input', {
         multilanguage: true,
-        inputType: 'text',
+        type: 'text',
         placeholder: 'Contact section title'
-      }),
+      }, fieldTypes, context),
       this.generateField('contact_info', 'Contact Information', 'group', {
         fields: [
           this.generateField('email', 'Email', 'input', {
-            inputType: 'email',
+            type: 'email',
             placeholder: 'contact@example.com'
-          }),
+          }, fieldTypes, context),
           this.generateField('phone', 'Phone', 'input', {
-            inputType: 'text',
+            type: 'text',
             placeholder: '+1 (555) 123-4567'
-          }),
+          }, fieldTypes, context),
           this.generateField('address', 'Address', 'textarea', {
             multilanguage: true,
             rows: 3,
             placeholder: 'Company address'
-          })
+          }, fieldTypes, context)
         ]
-      })
+      }, fieldTypes, context)
     ];
 
-    return this.generateComponent('contact_section', 'Contact Section', '3', fields);
+    return this.generateComponent('contact_section', 'Contact Section', sectionNumber, fields, {
+      block: 'Contact'
+    });
   }
 
   /**
    * Generates a gallery section component
    * @param {object} options - Gallery section options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Gallery section component
    */
-  static generateGallerySection(options = {}) {
+  static generateGallerySection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
     const maxImages = options.maxImages || 12;
+    const sectionNumber = options.sectionNumber || 4;
+    const context = 'gallery';
     
     const fields = [
       this.generateField('section_title', 'Gallery Title', 'input', {
         multilanguage: true,
-        inputType: 'text',
+        type: 'text',
         placeholder: 'Gallery section title'
-      }),
+      }, fieldTypes, context),
       this.generateField('gallery_images', 'Gallery Images', 'repeater', {
         min: 1,
         max: maxImages,
@@ -424,58 +600,68 @@ export class AntiCMSComponentGenerator {
               minHeight: 300,
               maxHeight: 800
             }
-          }),
+          }, fieldTypes, context),
           this.generateField('caption', 'Image Caption', 'input', {
             multilanguage: true,
-            inputType: 'text',
+            type: 'text',
             placeholder: 'Optional image caption'
-          })
+          }, fieldTypes, context)
         ]
-      })
+      }, fieldTypes, context)
     ];
 
-    return this.generateComponent('gallery_section', 'Gallery Section', '4', fields);
+    return this.generateComponent('gallery_section', 'Gallery Section', sectionNumber, fields, {
+      block: 'Gallery'
+    });
   }
 
   /**
    * Generates a complex content parts section like in governance-scorecard.json
    * @param {object} options - Content parts options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Content parts component
    */
-  static generateContentPartsSection(options = {}) {
+  static generateContentPartsSection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    const sectionNumber = options.sectionNumber || 5;
+    const context = 'content_parts';
+    
     const fields = [
       this.generateField('status', 'Status', 'toggle', {
         caption: 'Enable or disable the content',
         defaultValue: true
-      }),
+      }, fieldTypes, context),
       this.generateField('parts', 'Parts', 'repeater', {
         fields: [
           this.generateField('title', 'Title', 'input', {
             multilanguage: true,
-            inputType: 'text',
+            type: 'text',
             placeholder: 'Part title'
-          }),
+          }, fieldTypes, context),
           // Nested repeater with various field types including table
           this.generateField('items', 'Items', 'repeater', {
             min: 1,
             fields: [
               this.generateField('number', 'Number', 'input', {
                 multilanguage: false,
-                inputType: 'text',
+                type: 'text',
                 placeholder: 'Input the number of the item'
-              }),
+              }, fieldTypes, context),
               this.generateField('title', 'Title', 'input', {
                 multilanguage: true,
-                inputType: 'text',
+                type: 'text',
                 placeholder: 'Item title'
-              }),
+              }, fieldTypes, context),
               this.generateField('description', 'Description', 'textarea', {
                 multilanguage: true,
                 rows: 3,
                 cols: 3,
                 max: 200,
                 placeholder: 'Item description'
-              }),
+              }, fieldTypes, context),
               this.generateField('table', 'Table', 'table', {
                 caption: 'input the table',
                 columns: [
@@ -503,27 +689,37 @@ export class AntiCMSComponentGenerator {
                 ],
                 min: 1,
                 max: 30
-              })
+              }, fieldTypes, context)
             ]
-          })
+          }, fieldTypes, context)
         ]
-      })
+      }, fieldTypes, context)
     ];
 
-    return this.generateComponent('content_parts', 'Content List Parts', '2', fields);
+    return this.generateComponent('content_parts', 'Content List Parts', sectionNumber, fields, {
+      block: 'Content'
+    });
   }
 
   /**
    * Generates a scorecard section with icon and title
    * @param {object} options - Scorecard options
+   * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Scorecard component
    */
-  static generateScorecardsSection(options = {}) {
+  static generateScorecardsSection(options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    const sectionNumber = options.sectionNumber || 6;
+    const context = 'scorecards';
+    
     const fields = [
       this.generateField('status', 'Status', 'toggle', {
         caption: 'Enable or disable the content',
         defaultValue: true
-      }),
+      }, fieldTypes, context),
       this.generateField('scorecards', 'Scorecards', 'repeater', {
         fields: [
           this.generateField('icon', 'Icon', 'media', {
@@ -537,17 +733,672 @@ export class AntiCMSComponentGenerator {
               minHeight: 0,
               maxHeight: 48
             }
-          }),
+          }, fieldTypes, context),
           this.generateField('title', 'Title', 'input', {
             multilanguage: true,
-            inputType: 'text',
+            type: 'text',
             placeholder: 'Scorecard title'
-          })
+          }, fieldTypes, context)
         ]
-      })
+      }, fieldTypes, context)
     ];
 
-    return this.generateComponent('content_scorecards', 'Content List Scorecards', '2', fields);
+    return this.generateComponent('content_scorecards', 'Content List Scorecards', sectionNumber, fields, {
+      block: 'Scorecards'
+    });
+  }
+
+  /**
+   * Generates a custom section based on section type name
+   * @param {string} sectionType - Custom section type
+   * @param {object} options - Section options
+   * @param {Object} fieldTypes - Field types configuration
+   * @returns {object} - Custom section component
+   */
+  static generateCustomSection(sectionType, options = {}, fieldTypes = null) {
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    // Validate and sanitize sectionType
+    if (!sectionType || typeof sectionType !== 'string') {
+      throw new Error('Section type must be a non-empty string');
+    }
+    
+    const sectionNumber = options.sectionNumber || 1;
+    const context = sectionType.toLowerCase();
+    
+    // Convert camelCase or snake_case to proper label with better handling
+    const label = sectionType
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/[_-]/g, ' ')
+      .replace(/^\w/, c => c.toUpperCase())
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    let fields = [];
+
+    try {
+      // Generate specific fields based on common section patterns
+      if (context.includes('testimonial')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the testimonials section',
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: 'What Our Clients Say',
+          defaultValue: 'What Our Clients Say'
+        }, fieldTypes, context),
+        this.generateField('testimonials', 'Testimonials', 'repeater', {
+          min: 1,
+          max: 6,
+          fields: this.generateContextualRepeaterFields('testimonials', context, fieldTypes)
+        }, fieldTypes, context)
+      ];
+    } else if (sectionType.toLowerCase().includes('team') || sectionType.toLowerCase().includes('about')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: `Enable or disable the ${sectionType} section`,
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: sectionType.includes('team') ? 'Meet Our Team' : 'About Us'
+        }, fieldTypes, context),
+        this.generateField('description', 'Description', 'textarea', {
+          multilanguage: true,
+          rows: 4,
+          placeholder: `Enter ${sectionType} description`
+        }, fieldTypes, context)
+      ];
+
+      if (sectionType.toLowerCase().includes('team')) {
+        fields.push(
+          this.generateField('team_members', 'Team Members', 'repeater', {
+            min: 1,
+            max: 12,
+            fields: this.generateContextualRepeaterFields('team_members', context, fieldTypes)
+          }, fieldTypes, context)
+        );
+      }
+    } else if (sectionType.toLowerCase().includes('pricing')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the pricing section',
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: 'Pricing Plans',
+          defaultValue: 'Pricing Plans'
+        }, fieldTypes, context),
+        this.generateField('subtitle', 'Subtitle', 'textarea', {
+          multilanguage: true,
+          rows: 2,
+          placeholder: 'Choose the plan that fits your needs'
+        }, fieldTypes, context),
+        this.generateField('pricing_plans', 'Pricing Plans', 'repeater', {
+          min: 1,
+          max: 5,
+          fields: this.generateContextualRepeaterFields('pricing_plans', context, fieldTypes)
+        }, fieldTypes, context)
+      ];
+    } else if (sectionType.toLowerCase().includes('faq')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the FAQ section',
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: 'Frequently Asked Questions',
+          defaultValue: 'Frequently Asked Questions'
+        }, fieldTypes, context),
+        this.generateField('faqs', 'FAQ Items', 'repeater', {
+          min: 1,
+          max: 15,
+          fields: this.generateContextualRepeaterFields('faqs', 'faq', fieldTypes)
+        }, fieldTypes, context)
+      ];
+    } else if (sectionType.toLowerCase().includes('process') || sectionType.toLowerCase().includes('step')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the process section',
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: 'How It Works',
+          defaultValue: 'How It Works'
+        }, fieldTypes, context),
+        this.generateField('steps', 'Process Steps', 'repeater', {
+          min: 1,
+          max: 8,
+          fields: this.generateContextualRepeaterFields('steps', context, fieldTypes)
+        }, fieldTypes, context)
+      ];
+    } else if (sectionType.toLowerCase().includes('news') || sectionType.toLowerCase().includes('blog')) {
+      const sectionLabel = sectionType.toLowerCase().includes('news') ? 'Latest News' : 'Blog Posts';
+      const itemLabel = sectionType.toLowerCase().includes('news') ? 'News Articles' : 'Blog Posts';
+      
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: `Enable or disable the ${sectionType} section`,
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: sectionLabel,
+          defaultValue: sectionLabel
+        }, fieldTypes, context),
+        this.generateField('subtitle', 'Subtitle', 'textarea', {
+          multilanguage: true,
+          rows: 2,
+          placeholder: `Brief description of ${sectionType.toLowerCase()}`
+        }, fieldTypes, context),
+        this.generateField('posts', 'Related Posts', 'post_related', {
+          post_type: sectionType.toLowerCase().includes('news') ? 'news' : 'post',
+          max: 6,
+          min: 1,
+          caption: `Select ${itemLabel.toLowerCase()} to display in this section`
+        }, fieldTypes, context),
+        this.generateField('show_more_link', 'Show More Link', 'group', {
+          fields: [
+            this.generateField('enabled', 'Show Link', 'toggle', {
+              caption: 'Show "View All" link',
+              defaultValue: true
+            }, fieldTypes, context),
+            this.generateField('label', 'Link Label', 'input', {
+              multilanguage: true,
+              type: 'text',
+              placeholder: `View All ${itemLabel}`,
+              defaultValue: `View All ${itemLabel}`
+            }, fieldTypes, context),
+            this.generateField('url', 'Link URL', 'input', {
+              type: 'url',
+              placeholder: `/${sectionType.toLowerCase()}`
+            }, fieldTypes, context)
+          ]
+        }, fieldTypes, context)
+      ];
+    } else if (sectionType.toLowerCase().includes('service')) {
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: 'Enable or disable the services section',
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: 'Our Services',
+          defaultValue: 'Our Services'
+        }, fieldTypes, context),
+        this.generateField('services', 'Services', 'repeater', {
+          min: 1,
+          max: 8,
+          fields: [
+            this.generateField('title', 'Service Title', 'input', {
+              multilanguage: true,
+              type: 'text',
+              is_required: true,
+              placeholder: 'Service name'
+            }, fieldTypes, context),
+            this.generateField('description', 'Service Description', 'textarea', {
+              multilanguage: true,
+              rows: 3,
+              placeholder: 'Service description'
+            }, fieldTypes, context),
+            this.generateField('icon', 'Service Icon', 'media', {
+              accept: ['image'],
+              resolution: {
+                minWidth: 32,
+                maxWidth: 64,
+                minHeight: 32,
+                maxHeight: 64
+              }
+            }, fieldTypes, context),
+            this.generateField('link', 'Learn More Link', 'input', {
+              type: 'url',
+              placeholder: '/services/service-name'
+            }, fieldTypes, context)
+          ]
+        }, fieldTypes, context)
+      ];
+    } else {
+      // Generate basic fields for unknown custom sections
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: `Enable or disable the ${sectionType} section`,
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: `Enter ${sectionType} section title`
+        }, fieldTypes, context),
+        this.generateField('content', 'Content', 'texteditor', {
+          multilanguage: true,
+          placeholder: `Enter ${sectionType} content`
+        }, fieldTypes, context)
+      ];
+    }
+
+    } catch (error) {
+      // Fallback for any errors during field generation
+      console.warn(`[generateCustomSection] Error generating fields for section "${sectionType}":`, error.message);
+      
+      // Generate basic fallback fields
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: `Enable or disable the ${sectionType} section`,
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: `Enter ${sectionType} section title`
+        }, fieldTypes, context),
+        this.generateField('content', 'Content', 'texteditor', {
+          multilanguage: true,
+          placeholder: `Enter ${sectionType} content`
+        }, fieldTypes, context)
+      ];
+    }
+
+    return this.generateComponent(
+      `${sectionType}_section`, 
+      `${label} Section`, 
+      sectionNumber, 
+      fields, 
+      { block: label }
+    );
+  }
+
+  /**
+   * Generates smart field attributes based on field name and context
+   * @param {string} fieldName - Field name for context
+   * @param {string} fieldType - Field type
+   * @param {string} context - Section context
+   * @param {Object} fieldTypes - Field types configuration
+   * @returns {object} - Smart attributes based on context
+   */
+  static generateSmartAttributes(fieldName, fieldType, context, fieldTypes) {
+    const smartAttributes = {};
+    
+    // Smart input type detection
+    if (fieldType === 'input') {
+      if (fieldName.includes('email')) {
+        smartAttributes.type = 'email';
+        smartAttributes.placeholder = fieldName.includes('contact') ? 'contact@example.com' : 'your@email.com';
+      } else if (fieldName.includes('phone') || fieldName.includes('tel')) {
+        smartAttributes.type = 'text';
+        smartAttributes.placeholder = '+1 (555) 123-4567';
+        smartAttributes.maxLength = 20;
+      } else if (fieldName.includes('url') || fieldName.includes('website') || fieldName.includes('link')) {
+        smartAttributes.type = 'url';
+        smartAttributes.placeholder = 'https://example.com';
+      } else if (fieldName.includes('number') || fieldName.includes('count') || fieldName.includes('quantity')) {
+        smartAttributes.type = 'number';
+        smartAttributes.min = 0;
+        smartAttributes.placeholder = 'Enter number';
+      } else if (fieldName.includes('title') || fieldName.includes('name')) {
+        smartAttributes.type = 'text';
+        smartAttributes.maxLength = fieldName.includes('title') ? 100 : 50;
+        smartAttributes.placeholder = `Enter ${fieldName.replace(/_/g, ' ')}`;
+      } else {
+        smartAttributes.type = 'text';
+        smartAttributes.placeholder = `Enter ${fieldName.replace(/_/g, ' ')}`;
+      }
+    }
+    
+    // Smart textarea attributes
+    if (fieldType === 'textarea') {
+      if (fieldName.includes('description') || fieldName.includes('content')) {
+        smartAttributes.rows = fieldName.includes('short') ? 3 : 5;
+        smartAttributes.max = fieldName.includes('short') ? 150 : 500;
+      } else if (fieldName.includes('address')) {
+        smartAttributes.rows = 3;
+        smartAttributes.placeholder = 'Enter address';
+      } else {
+        smartAttributes.rows = 4;
+        smartAttributes.placeholder = `Enter ${fieldName.replace(/_/g, ' ')}`;
+      }
+    }
+    
+    // Smart media attributes based on context
+    if (fieldType === 'media') {
+      if (fieldName.includes('image') || fieldName.includes('photo') || fieldName.includes('picture')) {
+        smartAttributes.accept = ['image'];
+        
+        // Context-specific image sizes
+        if (context === 'hero' || fieldName.includes('hero') || fieldName.includes('banner')) {
+          smartAttributes.resolution = {
+            minWidth: 1200,
+            maxWidth: 1920,
+            minHeight: 600,
+            maxHeight: 1080
+          };
+          smartAttributes.caption = 'Recommended resolution: 1920x1080px';
+        } else if (fieldName.includes('icon') || fieldName.includes('logo')) {
+          smartAttributes.resolution = {
+            minWidth: 16,
+            maxWidth: 128,
+            minHeight: 16,
+            maxHeight: 128
+          };
+          smartAttributes.caption = 'Icon size: 16x16 to 128x128px';
+        } else if (fieldName.includes('thumbnail') || fieldName.includes('preview')) {
+          smartAttributes.resolution = {
+            minWidth: 200,
+            maxWidth: 400,
+            minHeight: 150,
+            maxHeight: 300
+          };
+        } else if (context === 'gallery') {
+          smartAttributes.resolution = {
+            minWidth: 400,
+            maxWidth: 1200,
+            minHeight: 300,
+            maxHeight: 800
+          };
+        }
+      } else if (fieldName.includes('video')) {
+        smartAttributes.accept = ['video'];
+        smartAttributes.caption = 'Supported formats: MP4, WebM, OGV';
+      } else if (fieldName.includes('document') || fieldName.includes('file') || fieldName.includes('pdf')) {
+        smartAttributes.accept = ['document'];
+        smartAttributes.caption = 'Supported formats: PDF, DOC, DOCX';
+      } else {
+        smartAttributes.accept = ['image'];
+      }
+    }
+    
+    // Smart repeater limits based on context
+    if (fieldType === 'repeater') {
+      if (context === 'features' || fieldName.includes('feature')) {
+        smartAttributes.min = 1;
+        smartAttributes.max = 8;
+        smartAttributes.caption = 'Add feature items';
+      } else if (context === 'gallery' || fieldName.includes('gallery') || fieldName.includes('images')) {
+        smartAttributes.min = 1;
+        smartAttributes.max = 24;
+        smartAttributes.caption = 'Add gallery images';
+      } else if (fieldName.includes('testimonial')) {
+        smartAttributes.min = 1;
+        smartAttributes.max = 6;
+        smartAttributes.caption = 'Add testimonials';
+      } else if (fieldName.includes('team') || fieldName.includes('member')) {
+        smartAttributes.min = 1;
+        smartAttributes.max = 12;
+        smartAttributes.caption = 'Add team members';
+      } else if (fieldName.includes('pricing') || fieldName.includes('plan')) {
+        smartAttributes.min = 1;
+        smartAttributes.max = 5;
+        smartAttributes.caption = 'Add pricing plans';
+      } else {
+        smartAttributes.min = 1;
+        smartAttributes.max = 10;
+        smartAttributes.caption = `Add ${fieldName.replace(/_/g, ' ')} items`;
+      }
+    }
+    
+    // Smart toggle captions
+    if (fieldType === 'toggle') {
+      if (fieldName === 'status') {
+        smartAttributes.caption = `Enable or disable the ${context} section`;
+        smartAttributes.defaultValue = true;
+      } else {
+        smartAttributes.caption = `Enable or disable ${fieldName.replace(/_/g, ' ')}`;
+        smartAttributes.defaultValue = false;
+      }
+    }
+    
+    // Smart select options based on context
+    if (fieldType === 'select') {
+      if (fieldName.includes('style') || fieldName.includes('layout')) {
+        smartAttributes.options = [
+          { value: 'default', label: 'Default' },
+          { value: 'modern', label: 'Modern' },
+          { value: 'classic', label: 'Classic' }
+        ];
+      } else if (fieldName.includes('size')) {
+        smartAttributes.options = [
+          { value: 'small', label: 'Small' },
+          { value: 'medium', label: 'Medium' },
+          { value: 'large', label: 'Large' }
+        ];
+      } else if (fieldName.includes('color')) {
+        smartAttributes.options = [
+          { value: 'primary', label: 'Primary' },
+          { value: 'secondary', label: 'Secondary' },
+          { value: 'accent', label: 'Accent' }
+        ];
+      }
+    }
+    
+    return smartAttributes;
+  }
+
+  /**
+   * Generates context-specific nested fields for repeaters
+   * @param {string} parentFieldName - Parent field name
+   * @param {string} context - Section context
+   * @param {Object} fieldTypes - Field types configuration
+   * @returns {Array} - Array of nested fields
+   */
+  static generateContextualRepeaterFields(parentFieldName, context, fieldTypes) {
+    if (!parentFieldName || typeof parentFieldName !== 'string') {
+      console.warn('[generateContextualRepeaterFields] Invalid parentFieldName, using default fields');
+      return this.getDefaultRepeaterFields(fieldTypes, context);
+    }
+    
+    if (!fieldTypes) {
+      throw new Error('Field types configuration is required');
+    }
+    
+    const fields = [];
+    const safeName = parentFieldName.toLowerCase();
+    const safeContext = (context || '').toLowerCase();
+    
+    try {
+      // Common patterns for different repeater types
+      if (safeName.includes('testimonial') || safeContext === 'testimonials') {
+      fields.push(
+        this.generateField('name', 'Name', 'input', {
+          multilanguage: false,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Client name'
+        }, fieldTypes, context),
+        this.generateField('position', 'Position', 'input', {
+          multilanguage: false,
+          type: 'text',
+          placeholder: 'Job title'
+        }, fieldTypes, context),
+        this.generateField('company', 'Company', 'input', {
+          multilanguage: false,
+          type: 'text',
+          placeholder: 'Company name'
+        }, fieldTypes, context),
+        this.generateField('testimonial', 'Testimonial', 'textarea', {
+          multilanguage: true,
+          rows: 4,
+          is_required: true,
+          placeholder: 'Client testimonial text'
+        }, fieldTypes, context),
+        this.generateField('avatar', 'Avatar', 'media', {
+          accept: ['image'],
+          resolution: {
+            minWidth: 100,
+            maxWidth: 200,
+            minHeight: 100,
+            maxHeight: 200
+          }
+        }, fieldTypes, context)
+      );
+    } else if (parentFieldName.includes('team') || parentFieldName.includes('member')) {
+      fields.push(
+        this.generateField('name', 'Name', 'input', {
+          multilanguage: false,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Team member name'
+        }, fieldTypes, context),
+        this.generateField('position', 'Position', 'input', {
+          multilanguage: true,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Job title'
+        }, fieldTypes, context),
+        this.generateField('bio', 'Biography', 'textarea', {
+          multilanguage: true,
+          rows: 3,
+          placeholder: 'Brief biography'
+        }, fieldTypes, context),
+        this.generateField('photo', 'Photo', 'media', {
+          accept: ['image'],
+          resolution: {
+            minWidth: 200,
+            maxWidth: 400,
+            minHeight: 200,
+            maxHeight: 400
+          }
+        }, fieldTypes, context),
+        this.generateField('social_links', 'Social Links', 'group', {
+          fields: [
+            this.generateField('linkedin', 'LinkedIn', 'input', {
+              type: 'url',
+              placeholder: 'https://linkedin.com/in/username'
+            }, fieldTypes, context),
+            this.generateField('email', 'Email', 'input', {
+              type: 'email',
+              placeholder: 'email@company.com'
+            }, fieldTypes, context)
+          ]
+        }, fieldTypes, context)
+      );
+    } else if (parentFieldName.includes('pricing') || parentFieldName.includes('plan')) {
+      fields.push(
+        this.generateField('name', 'Plan Name', 'input', {
+          multilanguage: true,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Plan name'
+        }, fieldTypes, context),
+        this.generateField('price', 'Price', 'input', {
+          multilanguage: false,
+          type: 'text',
+          is_required: true,
+          placeholder: '$99/month'
+        }, fieldTypes, context),
+        this.generateField('description', 'Description', 'textarea', {
+          multilanguage: true,
+          rows: 2,
+          placeholder: 'Plan description'
+        }, fieldTypes, context),
+        this.generateField('features', 'Features', 'repeater', {
+          min: 1,
+          max: 10,
+          fields: [
+            this.generateField('feature', 'Feature', 'input', {
+              multilanguage: true,
+              type: 'text',
+              placeholder: 'Feature description'
+            }, fieldTypes, context)
+          ]
+        }, fieldTypes, context),
+        this.generateField('is_popular', 'Popular Plan', 'toggle', {
+          caption: 'Mark as most popular plan',
+          defaultValue: false
+        }, fieldTypes, context)
+      );
+    } else if (parentFieldName.includes('faq') || context === 'faq') {
+      fields.push(
+        this.generateField('question', 'Question', 'input', {
+          multilanguage: true,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Frequently asked question'
+        }, fieldTypes, context),
+        this.generateField('answer', 'Answer', 'textarea', {
+          multilanguage: true,
+          rows: 4,
+          is_required: true,
+          placeholder: 'Answer to the question'
+        }, fieldTypes, context)
+      );
+    } else if (parentFieldName.includes('step') || parentFieldName.includes('process')) {
+      fields.push(
+        this.generateField('step_number', 'Step Number', 'input', {
+          multilanguage: false,
+          type: 'number',
+          min: 1,
+          placeholder: '1'
+        }, fieldTypes, context),
+        this.generateField('title', 'Step Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Step title'
+        }, fieldTypes, context),
+        this.generateField('description', 'Description', 'textarea', {
+          multilanguage: true,
+          rows: 3,
+          placeholder: 'Step description'
+        }, fieldTypes, context),
+        this.generateField('icon', 'Icon', 'media', {
+          accept: ['image'],
+          resolution: {
+            minWidth: 32,
+            maxWidth: 64,
+            minHeight: 32,
+            maxHeight: 64
+          }
+        }, fieldTypes, context)
+      );
+    }
+    
+    } catch (error) {
+      console.warn(`[generateContextualRepeaterFields] Error generating fields for "${parentFieldName}":`, error.message);
+      return this.getDefaultRepeaterFields(fieldTypes, context);
+    }
+    
+    return fields;
+  }
+  
+  /**
+   * Get default repeater fields when context-specific generation fails
+   * @param {Object} fieldTypes - Field types configuration
+   * @param {string} context - Section context
+   * @returns {Array} - Default repeater fields
+   */
+  static getDefaultRepeaterFields(fieldTypes, context = '') {
+    try {
+      return [
+        this.generateField('title', 'Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          is_required: true,
+          placeholder: 'Enter title'
+        }, fieldTypes, context),
+        this.generateField('description', 'Description', 'textarea', {
+          multilanguage: true,
+          rows: 3,
+          placeholder: 'Enter description'
+        }, fieldTypes, context)
+      ];
+    } catch (error) {
+      console.error('[getDefaultRepeaterFields] Critical error:', error.message);
+      return [];
+    }
   }
 }
 
@@ -560,7 +1411,7 @@ export async function generateTemplate(args) {
   const {
     name: templateName,
     label,
-    description,
+    description: originalDescription,
     template_type = 'pages',
     is_content = false,
     multilanguage = true,
@@ -571,53 +1422,120 @@ export async function generateTemplate(args) {
     max_gallery_images = 12
   } = args;
 
+  let description = originalDescription;
+
+  // Load field types for generation
+  const fieldTypes = await loadFieldTypes();
+
+  // If description contains natural language patterns, parse description
+  let finalSections = sections;
+  
+  if (description) {
+    const parsed = parseNaturalLanguageTemplate(description, fieldTypes);
+    
+    // If parsed sections are different from provided sections, and parsed has more content, use parsed
+    const condition1 = parsed.sections.length > 0;
+    const condition2 = sections.length === 0;
+    const condition3 = sections.length === 1 && ['hero', 'features', 'contact'].includes(sections[0]);
+    
+    if (condition1 && (condition2 || condition3)) {
+      finalSections = parsed.sections;
+    }
+  }
+
   const components = [];
   let sectionCounter = 1;
 
-  // Generate requested sections
-  sections.forEach(sectionType => {
-    switch (sectionType) {
-      case 'hero':
-        const heroSection = AntiCMSComponentGenerator.generateHeroSection({
-          includeCTA: include_cta
-        });
-        heroSection.section = String(sectionCounter++);
-        components.push(heroSection);
-        break;
+  // Generate requested sections dynamically with better error handling
+  finalSections.forEach((sectionType, index) => {
+    if (!sectionType || typeof sectionType !== 'string') {
+      console.warn(`[generateTemplate] Skipping invalid section at index ${index}:`, sectionType);
+      return;
+    }
+    
+    const sectionOptions = { sectionNumber: sectionCounter++ };
+    let section;
+
+    try {
+      // Normalize section type for comparison
+      const normalizedType = sectionType.toLowerCase().trim();
       
-      case 'features':
-        const featuresSection = AntiCMSComponentGenerator.generateFeaturesSection({
-          maxFeatures: max_features
-        });
-        featuresSection.section = String(sectionCounter++);
-        components.push(featuresSection);
-        break;
+      switch (normalizedType) {
+        case 'hero':
+        case 'banner':
+        case 'header':
+          section = AntiCMSComponentGenerator.generateHeroSection({
+            includeCTA: include_cta,
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+        
+        case 'features':
+        case 'benefits':
+        case 'highlights':
+          section = AntiCMSComponentGenerator.generateFeaturesSection({
+            maxFeatures: max_features,
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+        
+        case 'contact':
+        case 'contact_us':
+        case 'get_in_touch':
+          section = AntiCMSComponentGenerator.generateContactSection({
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+          
+        case 'gallery':
+        case 'images':
+        case 'portfolio':
+          section = AntiCMSComponentGenerator.generateGallerySection({
+            maxImages: max_gallery_images,
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+        
+        case 'content_parts':
+        case 'content':
+          section = AntiCMSComponentGenerator.generateContentPartsSection({
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+        
+        case 'scorecards':
+        case 'cards':
+          section = AntiCMSComponentGenerator.generateScorecardsSection({
+            ...sectionOptions
+          }, fieldTypes);
+          break;
+          
+        default:
+          // Allow custom section types with fallback
+          section = AntiCMSComponentGenerator.generateCustomSection(sectionType, {
+            ...sectionOptions
+          }, fieldTypes);
+      }
+
+      if (section) {
+        components.push(section);
+      }
+    } catch (error) {
+      console.warn(`[generateTemplate] Error generating section "${sectionType}":`, error.message);
       
-      case 'contact':
-        const contactSection = AntiCMSComponentGenerator.generateContactSection();
-        contactSection.section = String(sectionCounter++);
-        components.push(contactSection);
-        break;
-      
-      case 'gallery':
-        const gallerySection = AntiCMSComponentGenerator.generateGallerySection({
-          maxImages: max_gallery_images
-        });
-        gallerySection.section = String(sectionCounter++);
-        components.push(gallerySection);
-        break;
-      
-      case 'content_parts':
-        const contentPartsSection = AntiCMSComponentGenerator.generateContentPartsSection();
-        contentPartsSection.section = String(sectionCounter++);
-        components.push(contentPartsSection);
-        break;
-      
-      case 'scorecards':
-        const scorecardsSection = AntiCMSComponentGenerator.generateScorecardsSection();
-        scorecardsSection.section = String(sectionCounter++);
-        components.push(scorecardsSection);
-        break;
+      // Generate a basic fallback section
+      try {
+        const fallbackSection = AntiCMSComponentGenerator.generateCustomSection(
+          sectionType || `section_${index + 1}`, 
+          { ...sectionOptions }, 
+          fieldTypes
+        );
+        if (fallbackSection) {
+          components.push(fallbackSection);
+        }
+      } catch (fallbackError) {
+        console.error(`[generateTemplate] Failed to create fallback section:`, fallbackError.message);
+      }
     }
   });
 
@@ -670,32 +1588,76 @@ export async function generateTemplate(args) {
   }
 }
 
+
 /**
- * Custom field generation tool handler
+ * List field types tool handler
  * @param {object} args - Tool arguments
  * @returns {object} - Tool response
  */
-export async function generateCustomField(args) {
+export async function listFieldTypes(args) {
   const {
-    name: fieldName,
-    label,
     field_type,
-    multilanguage = false,
-    attributes = {}
+    include_examples = true,
+    include_properties = true
   } = args;
 
-  const field = AntiCMSComponentGenerator.generateField(
-    fieldName,
-    label,
-    field_type,
-    { multilanguage, ...attributes }
-  );
+  // Load field types
+  const fieldTypes = await loadFieldTypes();
+
+  let result = {};
+
+  if (field_type) {
+    // Return specific field type
+    if (fieldTypes[field_type]) {
+      result[field_type] = {
+        name: fieldTypes[field_type].name,
+        label: fieldTypes[field_type].label,
+        description: fieldTypes[field_type].description,
+        field_type: fieldTypes[field_type].field_type
+      };
+
+      if (include_examples && fieldTypes[field_type].examples) {
+        result[field_type].examples = fieldTypes[field_type].examples;
+      }
+
+      if (include_properties && fieldTypes[field_type].properties) {
+        result[field_type].properties = fieldTypes[field_type].properties;
+      }
+    } else {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `❌ Field type "${field_type}" not found. Available types: ${Object.keys(fieldTypes).join(', ')}`
+          }
+        ]
+      };
+    }
+  } else {
+    // Return all field types
+    Object.keys(fieldTypes).forEach(type => {
+      result[type] = {
+        name: fieldTypes[type].name,
+        label: fieldTypes[type].label,
+        description: fieldTypes[type].description,
+        field_type: fieldTypes[type].field_type
+      };
+
+      if (include_examples && fieldTypes[type].examples) {
+        result[type].examples = fieldTypes[type].examples;
+      }
+
+      if (include_properties && fieldTypes[type].properties) {
+        result[type].properties = fieldTypes[type].properties;
+      }
+    });
+  }
 
   return {
     content: [
       {
         type: 'text',
-        text: `Generated ${field_type} field "${label}".\n\nJSON:\n\n${JSON.stringify(field, null, 2)}`
+        text: `📋 **AntiCMS v3 Field Types**\n\n${JSON.stringify(result, null, 2)}`
       }
     ]
   };
@@ -711,6 +1673,9 @@ export async function validateTemplate(args) {
   
   const errors = [];
   const warnings = [];
+
+  // Load field types for validation
+  const fieldTypes = await loadFieldTypes();
 
   // Basic structure validation
   const requiredKeys = ['name', 'label', 'is_content', 'multilanguage', 'is_multiple', 'description', 'components'];
@@ -732,7 +1697,7 @@ export async function validateTemplate(args) {
 
       // Validate fields
       if (Array.isArray(component.fields)) {
-        validateNestedFields(component.fields, `Component ${index + 1}`, errors);
+        validateNestedFields(component.fields, `Component ${index + 1}`, errors, fieldTypes);
       }
     });
   } else {
@@ -755,386 +1720,9 @@ export async function validateTemplate(args) {
   };
 }
 
-/**
- * List field types tool handler
- * @param {object} args - Tool arguments
- * @returns {object} - Tool response
- */
-export async function listFieldTypes(args) {
-  const fieldTypesList = Object.keys(FIELD_TYPES).map(type => ({
-    type,
-    attributes: FIELD_TYPES[type].attributes,
-    required_attributes: FIELD_TYPES[type].requiredAttributes
-  }));
 
-  return {
-    content: [
-      {
-        type: 'text',
-        text: `AntiCMS v3 Supported Field Types:\n\n${JSON.stringify(fieldTypesList, null, 2)}`
-      }
-    ]
-  };
-} 
 
-/**
- * Generate a single section component
- * @param {object} args - Section generation arguments
- * @returns {object} - Generated section component
- */
-export async function generateSection(args) {
-  const {
-    section_type,
-    key_name,
-    label,
-    position,
-    options = {}
-  } = args;
 
-  let section;
-
-  switch (section_type) {
-    case 'hero':
-      section = AntiCMSComponentGenerator.generateHeroSection({
-        includeCTA: options.include_cta || false
-      });
-      break;
-    
-    case 'features':
-      section = AntiCMSComponentGenerator.generateFeaturesSection({
-        maxFeatures: options.max_features || 6
-      });
-      break;
-    
-    case 'contact':
-      section = AntiCMSComponentGenerator.generateContactSection();
-      break;
-    
-    case 'gallery':
-      section = AntiCMSComponentGenerator.generateGallerySection({
-        maxImages: options.max_gallery_images || 12
-      });
-      break;
-    
-    case 'content_parts':
-      section = AntiCMSComponentGenerator.generateContentPartsSection();
-      break;
-    
-    case 'scorecards':
-      section = AntiCMSComponentGenerator.generateScorecardsSection();
-      break;
-    
-    default:
-      throw new Error(`Unsupported section type: ${section_type}`);
-  }
-
-  // Override keyName and label if provided
-  if (key_name) {
-    section.keyName = key_name;
-  }
-  
-  if (label) {
-    section.label = label;
-  }
-
-  // Set position if provided
-  if (position) {
-    section.section = String(position);
-  }
-
-  return {
-    content: [
-      {
-        type: 'text',
-        text: `Generated ${section_type} section "${section.label}".\n\nJSON:\n\n${JSON.stringify(section, null, 2)}`
-      }
-    ]
-  };
-}
-
-/**
- * Assign section to template file
- * @param {object} args - Assignment arguments
- * @returns {object} - Assignment result
- */
-export async function assignSectionToTemplate(args) {
-  const {
-    template_file,
-    section_json,
-    position
-  } = args;
-
-  // Import fs module for file operations
-  const fs = await import('fs/promises');
-  const path = await import('path');
-
-  try {
-    // Read the template file
-    const templatePath = path.join(process.cwd(), 'data', 'pages', `${template_file}.json`);
-    const templateContent = await fs.readFile(templatePath, 'utf8');
-    const template = JSON.parse(templateContent);
-
-    // Parse the section JSON
-    const section = typeof section_json === 'string' ? JSON.parse(section_json) : section_json;
-
-    // Set position if provided
-    if (position) {
-      section.section = String(position);
-    }
-
-    // Add section to components array
-    if (!template.components) {
-      template.components = [];
-    }
-
-    template.components.push(section);
-
-    // Sort components by section number
-    template.components.sort((a, b) => {
-      const sectionA = parseInt(a.section) || 0;
-      const sectionB = parseInt(b.section) || 0;
-      return sectionA - sectionB;
-    });
-
-    // Write back to file
-    await fs.writeFile(templatePath, JSON.stringify(template, null, 2));
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Successfully assigned section "${section.label}" to template "${template_file}.json" at position ${section.section}.\n\nUpdated template now has ${template.components.length} components.`
-        }
-      ]
-    };
-  } catch (error) {
-    throw new Error(`Failed to assign section to template: ${error.message}`);
-  }
-}
-
-/**
- * Fetch all pages from AntiCMS API
- * @param {object} args - API arguments
- * @returns {object} - API response with pages list
- */
-export async function getAllPages(args) {
-  const {
-    api_url,
-    api_key,
-    use_header = true,
-    ignore_ssl = false
-  } = args;
-
-  // Validate required parameters
-  if (!api_url) {
-    throw new Error('API URL is required');
-  }
-  
-  if (!api_key) {
-    throw new Error('API key is required');
-  }
-
-  try {
-    // Construct the URL
-    const baseUrl = api_url.endsWith('/') ? api_url.slice(0, -1) : api_url;
-    let url = `${baseUrl}/api/admin/pages`;
-    
-    // Add API key as query parameter if not using header
-    if (!use_header) {
-      url += `?api_key=${encodeURIComponent(api_key)}`;
-    }
-
-    // Prepare headers
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    };
-
-    // Add API key to header if using header authentication
-    if (use_header) {
-      headers['X-API-Key'] = api_key;
-    }
-
-    console.error(`[MCP] Fetching pages from: ${url}`);
-    console.error(`[MCP] Using header auth: ${use_header}`);
-
-    // Prepare fetch options
-    const fetchOptions = {
-      method: 'GET',
-      headers
-    };
-
-    // Add SSL ignore option for development/test domains
-    if (ignore_ssl) {
-      // Import https module for Node.js specific options
-      const https = await import('https');
-      fetchOptions.agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-      console.error(`[MCP] SSL certificate verification disabled for development`);
-    }
-
-    // Make the API request
-    const response = await fetch(url, fetchOptions);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    // Validate response structure
-    if (!data || typeof data !== 'object') {
-      throw new Error('Invalid response format from API');
-    }
-
-    // Format the response for display
-    let resultText = '';
-    
-    if (data.success) {
-      resultText = `✅ Successfully retrieved ${data.data?.length || 0} pages from AntiCMS API\n\n`;
-      
-      if (data.message) {
-        resultText += `**Message**: ${data.message}\n\n`;
-      }
-
-      if (data.data && Array.isArray(data.data)) {
-        resultText += `**Pages Found:**\n`;
-        data.data.forEach((page, index) => {
-          resultText += `${index + 1}. **${page.name}**\n`;
-          resultText += `   - Path: ${page.path}\n`;
-          resultText += `   - URL: ${page.url}\n\n`;
-        });
-      }
-
-      resultText += `**Raw API Response:**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
-    } else {
-      resultText = `❌ API request failed\n\n`;
-      resultText += `**Error**: ${data.message || 'Unknown error'}\n\n`;
-      resultText += `**Raw API Response:**\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
-    }
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: resultText
-        }
-      ]
-    };
-
-  } catch (error) {
-    console.error(`[MCP] getAllPages error:`, error);
-    
-    let errorMessage = error.message;
-    if (error.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE') {
-      errorMessage += '\n\n💡 **Tip**: For development/test domains with self-signed certificates, you can set `ignore_ssl: true` in the tool parameters.';
-    }
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `❌ Failed to fetch pages from AntiCMS API\n\n**Error**: ${errorMessage}\n\n**API URL**: ${api_url}\n**Using Header Auth**: ${use_header}`
-        }
-      ]
-    };
-  }
-}
-
-/**
- * Generate navigation menu JSON for AntiCMS v3
- * @param {object} args - Navigation generation arguments
- * @returns {object} - Generated navigation JSON
- */
-export async function generateNavigation(args) {
-  const {
-    name: menuName,
-    menu_items = []
-  } = args;
-
-  // Create slug from name
-  const slug = menuName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
-  // Process menu items to match AntiCMS v3 navigation structure
-  const processedItems = menu_items.map((item, index) => {
-    const menuItem = {
-      translations: {},
-      type: item.type || 'page',
-      url: item.url || null,
-      post_id: item.post_id || null,
-      parent_id: item.parent_id || null,
-      new_window: item.new_window || false,
-      sort: item.sort || (index + 1),
-      image: item.image || null,
-      children: item.children || []
-    };
-
-    // Handle translations
-    if (item.title) {
-      if (typeof item.title === 'string') {
-        // Simple string title - create default language
-        menuItem.translations.en = { title: item.title };
-      } else if (typeof item.title === 'object') {
-        // Multi-language object
-        Object.keys(item.title).forEach(lang => {
-          menuItem.translations[lang] = { title: item.title[lang] };
-        });
-      }
-    }
-
-    // Add default English translation if none provided
-    if (Object.keys(menuItem.translations).length === 0) {
-      menuItem.translations.en = { title: `Menu Item ${index + 1}` };
-    }
-
-    return menuItem;
-  });
-
-  const navigation = {
-    name: menuName,
-    slug: slug,
-    items: processedItems
-  };
-
-  // Auto-create navigation file
-  const fs = await import('fs/promises');
-  const path = await import('path');
-
-  try {
-    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'navigation');
-    const filePath = path.join(storageDir, `${slug}.nav.json`);
-
-    // Ensure target directory exists
-    await fs.mkdir(storageDir, { recursive: true });
-
-    // Write navigation file
-    await fs.writeFile(filePath, JSON.stringify(navigation, null, 2), 'utf8');
-
-    const relativePath = path.relative(process.cwd(), filePath);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Generated AntiCMS v3 navigation "${menuName}" with ${processedItems.length} menu items.\n\n📁 **File saved to:** ${relativePath}\n📂 **Navigation slug:** ${slug}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(navigation, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  } catch (error) {
-    // If file creation fails, still return the navigation JSON
-    console.error(`[MCP] Failed to save navigation file: ${error.message}`);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `⚠️ Generated AntiCMS v3 navigation "${menuName}" with ${processedItems.length} menu items.\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(navigation, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  }
-}
 
 /**
  * Parse instruction document (markdown format) to generate template structure
@@ -1330,252 +1918,8 @@ function parseInstructionDocument(instructionText) {
   return template;
 }
 
-/**
- * Generate template from instruction document
- * @param {object} args - Instruction generation arguments
- * @returns {object} - Generated template
- */
-export async function generateFromInstructions(args) {
-  const {
-    instruction_content,
-    instruction_file,
-    template_type = 'pages'
-  } = args;
 
-  let instructionText = instruction_content;
-  
-  // Read instruction file if provided
-  if (instruction_file && !instruction_content) {
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      
-      let filePath;
-      if (instruction_file.startsWith('/') || instruction_file.includes(':\\')) {
-        // Absolute path
-        filePath = instruction_file;
-      } else {
-        // Relative to workspace
-        filePath = path.join(process.cwd(), instruction_file);
-      }
-      
-      instructionText = await fs.readFile(filePath, 'utf8');
-    } catch (error) {
-      throw new Error(`Failed to read instruction file: ${error.message}`);
-    }
-  }
-  
-  if (!instructionText) {
-    throw new Error('No instruction content provided');
-  }
-  
-  // Parse the instruction document
-  const parsedTemplate = parseInstructionDocument(instructionText);
-  
-  // Create the complete template structure
-  const template = AntiCMSComponentGenerator.generateTemplate(
-    parsedTemplate.name || 'instruction_template',
-    parsedTemplate.label || 'Instruction Template',
-    {
-      is_content: parsedTemplate.is_content || false,
-      multilanguage: parsedTemplate.multilanguage !== false,
-      is_multiple: parsedTemplate.is_multiple || false,
-      description: parsedTemplate.description || 'Template generated from instruction document',
-      components: parsedTemplate.components || []
-    }
-  );
-  
-  // Auto-create template file
-  const fs = await import('fs/promises');
-  const path = await import('path');
 
-  try {
-    const targetDir = template_type;
-    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', targetDir);
-    const filePath = path.join(storageDir, `${template.name}.json`);
-
-    // Ensure target directory exists
-    await fs.mkdir(storageDir, { recursive: true });
-
-    // Write template file
-    await fs.writeFile(filePath, JSON.stringify(template, null, 2), 'utf8');
-
-    const relativePath = path.relative(process.cwd(), filePath);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Generated AntiCMS v3 template "${template.label}" from instruction document.\n\n📁 **File saved to:** ${relativePath}\n📂 **Template type:** ${template_type === 'posts' ? 'Post Template' : 'Page Template'}\n📋 **Components:** ${template.components.length}\n\n**Parsed Structure:**\n${template.components.map(comp => `- ${comp.label} (${comp.fields.length} fields)`).join('\n')}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  } catch (error) {
-    console.error(`[MCP] Failed to save instruction-based template: ${error.message}`);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `⚠️ Generated AntiCMS v3 template "${template.label}" from instruction document.\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(template, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  }
-}
-
-/**
- * Generate post type settings JSON for AntiCMS v3
- * @param {object} args - Post type generation arguments
- * @returns {object} - Generated post type settings
- */
-export async function generatePostType(args) {
-  const {
-    name,
-    slug,
-    is_show = true,
-    is_category = true,
-    is_tags = true,
-    is_featured_image = true,
-    is_content = true,
-    is_enable_seo = true,
-    is_edit_date = true,
-    have_permission = true,
-    have_custom_fields = true
-  } = args;
-
-  const postType = {
-    name,
-    slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
-    cpt: {
-      is_show,
-      is_category,
-      is_tags,
-      is_featured_image,
-      is_content,
-      is_enable_seo,
-      is_edit_date,
-      have_permission,
-      have_custom_fields
-    }
-  };
-
-  // Auto-create post type file
-  const fs = await import('fs/promises');
-  const path = await import('path');
-
-  try {
-    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'posts-type');
-    const filePath = path.join(storageDir, `${postType.slug}.setting.json`);
-
-    // Ensure target directory exists
-    await fs.mkdir(storageDir, { recursive: true });
-
-    // Write post type file
-    await fs.writeFile(filePath, JSON.stringify(postType, null, 2), 'utf8');
-
-    const relativePath = path.relative(process.cwd(), filePath);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Generated AntiCMS v3 post type "${name}".\n\n📁 **File saved to:** ${relativePath}\n📂 **Post type slug:** ${postType.slug}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(postType, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  } catch (error) {
-    console.error(`[MCP] Failed to save post type file: ${error.message}`);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `⚠️ Generated AntiCMS v3 post type "${name}".\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(postType, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  }
-}
-
-/**
- * Generate post detail custom fields JSON for AntiCMS v3
- * @param {object} args - Post detail generation arguments
- * @returns {object} - Generated post detail fields
- */
-export async function generatePostDetails(args) {
-  const {
-    post_type_name,
-    sections = []
-  } = args;
-
-  const components = [];
-  
-  // Generate detail section with provided fields
-  sections.forEach((section, index) => {
-    const component = {
-      keyName: section.keyName || `section_${index + 1}`,
-      label: section.label || `Section ${index + 1}`,
-      section: String(index + 1),
-      fields: section.fields || []
-    };
-    
-    components.push(component);
-  });
-
-  // If no sections provided, create a default detail section
-  if (components.length === 0) {
-    components.push({
-      keyName: "detail",
-      label: "Detail",
-      section: "1",
-      fields: [
-        AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
-          caption: 'Enable or disable the content',
-          defaultValue: true
-        })
-      ]
-    });
-  }
-
-  // Auto-create post detail file
-  const fs = await import('fs/promises');
-  const path = await import('path');
-
-  try {
-    const slug = post_type_name.toLowerCase().replace(/\s+/g, '_');
-    const storageDir = path.join(process.cwd(), 'storage', 'app', 'json', 'posts');
-    const filePath = path.join(storageDir, `${slug}.json`);
-
-    // Ensure target directory exists
-    await fs.mkdir(storageDir, { recursive: true });
-
-    // Write post detail file
-    await fs.writeFile(filePath, JSON.stringify(components, null, 2), 'utf8');
-
-    const relativePath = path.relative(process.cwd(), filePath);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Generated AntiCMS v3 post detail fields for "${post_type_name}".\n\n📁 **File saved to:** ${relativePath}\n📋 **Components:** ${components.length}\n\n**Structure:**\n${components.map(comp => `- ${comp.label} (${comp.fields.length} fields)`).join('\n')}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(components, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  } catch (error) {
-    console.error(`[MCP] Failed to save post detail file: ${error.message}`);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `⚠️ Generated AntiCMS v3 post detail fields for "${post_type_name}".\n\n❌ **File creation failed:** ${error.message}\n\n**JSON Content:**\n\`\`\`json\n${JSON.stringify(components, null, 2)}\n\`\`\``
-        }
-      ]
-    };
-  }
-}
 
 /**
  * Detect if a section is a post collection based on keywords and context
@@ -1736,1005 +2080,188 @@ function convertToCollectionReference(section, postTypeName) {
 }
 
 /**
- * Smart template generator that analyzes prompts and Figma links
- * @param {object} args - Smart generation arguments
- * @returns {object} - Generation results
+ * Generate template from natural language description
+ * @param {string} description - Natural language description of the template
+ * @param {Object} fieldTypes - Field types configuration
+ * @returns {object} - Parsed template structure with sections
  */
-export async function smartGenerate(args) {
+function parseNaturalLanguageTemplate(description, fieldTypes) {
+  const template = {
+    sections: [],
+    metadata: {}
+  };
+
+  const text = description.toLowerCase();
+  
+  // Simple keyword detection for testing
+  if (text.includes('about')) {
+    template.sections.push('about');
+  }
+  if (text.includes('news')) {
+    template.sections.push('news');
+  }
+  if (text.includes('blog')) {
+    template.sections.push('blog');
+  }
+  if (text.includes('contact')) {
+    template.sections.push('contact');
+  }
+  
+  // Detect CTA requirement
+  if (text.includes('cta') || text.includes('call to action') || text.includes('button') || 
+      text.includes('sign up') || text.includes('get started')) {
+    template.metadata.include_cta = true;
+  }
+
+  // Detect template type
+  if (text.includes('blog') || text.includes('article') || text.includes('post')) {
+    template.metadata.template_type = 'posts';
+  } else {
+    template.metadata.template_type = 'pages';
+  }
+
+  // Detect multilanguage
+  if (text.includes('multilingual') || text.includes('multi-language') || 
+      text.includes('multiple languages') || text.includes('international')) {
+    template.metadata.multilanguage = true;
+  }
+
+  return template;
+}
+
+/**
+ * Enhanced template generation with natural language support
+ * @param {object} args - Tool arguments including natural language description
+ * @returns {object} - Tool response
+ */
+export async function generateTemplateFromDescription(args) {
   const {
-    prompt,
-    figma_link,
-    instruction_file,
-    instruction_content,
-    auto_detect = true
+    description,
+    name: templateName,
+    label
   } = args;
 
-  let results = [];
-  
-  try {
-    // Check if instruction document is provided
-    if (instruction_file || instruction_content) {
-      // Use instruction-based generation with post collection detection
-      try {
-        let instructionText = instruction_content;
-        
-        // Read instruction file if provided
-        if (instruction_file && !instruction_content) {
-          const fs = await import('fs/promises');
-          const path = await import('path');
-          
-          let filePath;
-          if (instruction_file.startsWith('/') || instruction_file.includes(':\\')) {
-            filePath = instruction_file;
-          } else {
-            filePath = path.join(process.cwd(), instruction_file);
-          }
-          
-          instructionText = await fs.readFile(filePath, 'utf8');
-        }
-        
-        // Parse instruction to detect post collections
-        const parsedTemplate = parseInstructionDocument(instructionText);
-        let detectedPostTypes = [];
-        let modifiedComponents = [];
-        
-        // Analyze each component for post collection patterns
-        parsedTemplate.components?.forEach(component => {
-          const componentText = `${component.label} ${JSON.stringify(component.fields)}`;
-          
-          if (isPostCollectionSection(componentText, component)) {
-            // This is a post collection section
-            const postTypeName = component.label.replace(/\s+(section|list|items?)$/i, '');
-            const postTypeSlug = postTypeName.toLowerCase().replace(/\s+/g, '-');
-            
-            detectedPostTypes.push({
-              name: postTypeName,
-              slug: postTypeSlug,
-              originalComponent: component
-            });
-            
-            // Convert to simple reference section for page template
-            const referenceComponent = convertToCollectionReference(component, postTypeName);
-            modifiedComponents.push(referenceComponent);
-          } else {
-            // Regular component - keep as is
-            modifiedComponents.push(component);
-          }
-        });
-        
-        // Generate main template with modified components
-        const templateResult = await generateFromInstructions({
-          instruction_content: instructionText,
-          template_type: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
-        });
-       
-        // generate clone repositories
-        results.push({
-          type: 'text',
-          text: `🔄 **Cloning Repositories...**\n\n${cloneRepositoriesResult.content[0].text}`
-        });
+  // Load field types for generation
+  const fieldTypes = await loadFieldTypes();
 
-        // run composer install
-        results.push({
-          type: 'text',
-          text: `🔄 **Running Composer Install...**\n\n${composerInstallResult.content[0].text}`
-        });
+  // Parse natural language description
+  const parsed = parseNaturalLanguageTemplate(description, fieldTypes);
 
-        // run npm install
-        results.push({
-          type: 'text',
-          text: `🔄 **Running NPM Install...**\n\n${npmInstallResult.content[0].text}`
-        });
+  // Generate template using parsed sections
+  const templateArgs = {
+    name: templateName || parsed.sections.join('_').replace(/\s+/g, '_'),
+    label: label || parsed.sections.join(' & ').replace(/\b\w/g, l => l.toUpperCase()),
+    description: description,
+    template_type: parsed.metadata.template_type || 'pages',
+    is_content: false,
+    multilanguage: parsed.metadata.multilanguage !== false,
+    is_multiple: false,
+    sections: parsed.sections,
+    include_cta: parsed.metadata.include_cta || false,
+    max_features: 6,
+    max_gallery_images: 12
+  };
 
-        results.push({
-          type: 'text',
-          text: `📋 **Instruction-Based Template Generated**\n\n${templateResult.content[0].text}`
-        });
-        
-        // Generate post types for detected collections
-        for (const postType of detectedPostTypes) {
-          try {
-            // Generate post type settings
-            const postTypeResult = await generatePostType({
-              name: postType.name,
-              slug: postType.slug
-            });
-            
-            results.push({
-              type: 'text',
-              text: `📮 **Post Type Generated from Instructions**\n\n${postTypeResult.content[0].text}`
-            });
-            
-            // Generate post detail fields using original component structure
-            const postDetailResult = await generatePostDetails({
-              post_type_name: postType.name,
-              sections: [
-                {
-                  keyName: postType.originalComponent.keyName || 'detail',
-                  label: postType.originalComponent.label || 'Detail',
-                  fields: postType.originalComponent.fields || [
-                    AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
-                      caption: 'Enable or disable the content',
-                      defaultValue: true
-                    })
-                  ]
-                }
-              ]
-            });
-            
-            results.push({
-              type: 'text',
-              text: `📋 **Post Detail Fields Generated from Instructions**\n\n${postDetailResult.content[0].text}`
-            });
-          } catch (error) {
-            results.push({
-              type: 'text',
-              text: `❌ **Post Type Generation Failed for ${postType.name}:** ${error.message}`
-            });
-          }
-        }
-        
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `✨ **Smart Generation Complete (Instruction-Based)**\n\n📝 **Original Prompt:** "${prompt}"\n📄 **Instruction Source:** ${instruction_file || 'Direct content'}\n🎯 **Generated:** Template${detectedPostTypes.length > 0 ? ` + ${detectedPostTypes.length} Post Type(s)` : ''}\n${detectedPostTypes.length > 0 ? `📮 **Post Collections:** ${detectedPostTypes.map(pt => pt.name).join(', ')}\n` : ''}\n---\n`
-            },
-            ...results
-          ]
-        };
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `❌ **Instruction Generation Failed:** ${error.message}\n\nFalling back to prompt-based generation...`
-        });
-      }
-    }
-    
-    // Extract template name from prompt
-    const templateNameMatch = prompt.match(/template\s+called\s+"([^"]+)"/i) || 
-                             prompt.match(/template\s+"([^"]+)"/i) ||
-                             prompt.match(/create\s+([a-zA-Z0-9_-]+)/i);
-    
-    const templateName = templateNameMatch ? templateNameMatch[1].toLowerCase().replace(/\s+/g, '_') : 'untitled_template';
-    
-    // Analyze Figma content if link provided
-    let figmaData = null;
-    if (figma_link) {
-      try {
-        // Extract node ID from Figma URL if present
-        const nodeIdMatch = figma_link.match(/node-id=([^&]+)/);
-        const nodeId = nodeIdMatch ? nodeIdMatch[1].replace(/-/g, ':') : '';
-        
-        results.push({
-          type: 'text',
-          text: `🔍 **Analyzing Figma Design...**\n\n📎 **Figma Link:** ${figma_link}\n${nodeId ? `🎯 **Node ID:** ${nodeId}\n` : ''}\n⏳ Extracting design components and structure...\n\n💡 **Note:** This MCP can integrate with Figma Dev Mode MCP tools for deeper analysis. For full Figma integration, ensure Figma Dev Mode MCP is configured and the Figma file is open in desktop app.`
-        });
+  return await generateTemplate(templateArgs);
+}
 
-        // Enhanced analysis based on prompt keywords and Figma context
-        const hasNavigationKeywords = prompt.toLowerCase().includes('navigation') || 
-                                    prompt.toLowerCase().includes('menu') || 
-                                    prompt.toLowerCase().includes('nav') ||
-                                    prompt.toLowerCase().includes('footer nav') ||
-                                    prompt.toLowerCase().includes('header');
-        
-        const hasHeroKeywords = prompt.toLowerCase().includes('hero') || 
-                              prompt.toLowerCase().includes('banner') ||
-                              prompt.toLowerCase().includes('landing');
-                              
-        const hasFeaturesKeywords = prompt.toLowerCase().includes('features') || 
-                                  prompt.toLowerCase().includes('services') ||
-                                  prompt.toLowerCase().includes('benefits');
-                                  
-        const hasContactKeywords = prompt.toLowerCase().includes('contact') || 
-                                 prompt.toLowerCase().includes('footer');
-                                 
-        const hasGalleryKeywords = prompt.toLowerCase().includes('gallery') || 
-                                 prompt.toLowerCase().includes('portfolio') ||
-                                 prompt.toLowerCase().includes('showcase');
+/**
+ * Get comprehensive field type examples and usage patterns
+ * @param {object} args - Tool arguments
+ * @returns {object} - Tool response with examples
+ */
+export async function getFieldTypeExamples(args) {
+  const {
+    field_type,
+    show_usage_patterns = true,
+    show_best_practices = true
+  } = args;
 
-        // Determine sections based on keywords and common patterns
-        let detectedSections = [];
-        if (hasHeroKeywords || prompt.toLowerCase().includes('agency') || prompt.toLowerCase().includes('landing')) {
-          detectedSections.push('hero');
-        }
-        if (hasFeaturesKeywords || prompt.toLowerCase().includes('agency') || prompt.toLowerCase().includes('business')) {
-          detectedSections.push('features');
-        }
-        if (hasContactKeywords || detectedSections.length > 0) {
-          detectedSections.push('contact');
-        }
-        if (hasGalleryKeywords) {
-          detectedSections.push('gallery');
-        }
-        
-        // Enhanced detection for post collection sections
-        const hasProjectsKeywords = prompt.toLowerCase().includes('projects') || 
-                                  prompt.toLowerCase().includes('portfolio') ||
-                                  prompt.toLowerCase().includes('showcase') ||
-                                  prompt.toLowerCase().includes('work');
-                                  
-        const hasTestimonialsKeywords = prompt.toLowerCase().includes('testimonials') ||
-                                      prompt.toLowerCase().includes('reviews') ||
-                                      prompt.toLowerCase().includes('feedback');
-                                      
-        const hasTeamKeywords = prompt.toLowerCase().includes('team') ||
-                              prompt.toLowerCase().includes('staff') ||
-                              prompt.toLowerCase().includes('members');
-                              
-        // Add post collection sections that will be converted to post types
-        if (hasProjectsKeywords) {
-          detectedSections.push('projects');
-        }
-        if (hasTestimonialsKeywords) {
-          detectedSections.push('testimonials');
-        }
-        if (hasTeamKeywords) {
-          detectedSections.push('team');
-        }
-        
-        // Default sections if none detected
-        if (detectedSections.length === 0) {
-          detectedSections = ['hero', 'features', 'contact'];
-        }
+  // Load field types
+  const fieldTypes = await loadFieldTypes();
 
-        figmaData = {
-          hasNavigation: hasNavigationKeywords,
-          sections: detectedSections,
-          templateType: prompt.toLowerCase().includes('post') || prompt.toLowerCase().includes('blog') ? 'posts' : 'pages',
-          nodeId: nodeId
-        };
-        
-        results.push({
-          type: 'text',
-          text: `✅ **Figma Analysis Complete**\n\n🔍 **Detected Components:**\n- Navigation: ${figmaData.hasNavigation ? '✅ Yes' : '❌ No'}\n- Sections: ${figmaData.sections.join(', ')}\n- Template Type: ${figmaData.templateType}\n${nodeId ? `- Node ID: ${nodeId}\n` : ''}`
-        });
-        
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `⚠️ **Figma Analysis Warning:** ${error.message}\n\nContinuing with prompt-based generation...`
-        });
-        
-        // Fallback analysis
-        figmaData = {
-          hasNavigation: prompt.toLowerCase().includes('navigation') || prompt.toLowerCase().includes('menu'),
-          sections: ['hero', 'features', 'contact'],
-          templateType: prompt.toLowerCase().includes('post') ? 'posts' : 'pages'
-        };
-      }
-    }
+  let result = {
+    field_types: {},
+    usage_patterns: {},
+    best_practices: {}
+  };
 
-    // Detect what needs to be generated based on prompt and Figma analysis
-    const needsNavigation = prompt.toLowerCase().includes('navigation') || 
-                           prompt.toLowerCase().includes('menu') || 
-                           prompt.toLowerCase().includes('nav') ||
-                           prompt.toLowerCase().includes('footer nav') ||
-                           prompt.toLowerCase().includes('header') ||
-                           (figmaData && figmaData.hasNavigation);
-
-    const needsTemplate = prompt.toLowerCase().includes('template') || 
-                         prompt.toLowerCase().includes('page') ||
-                         prompt.toLowerCase().includes('component');
-    
-    // Detect post type generation needs
-    const needsPostType = prompt.toLowerCase().includes('post type') ||
-                         prompt.toLowerCase().includes('custom post') ||
-                         prompt.toLowerCase().includes('cpt') ||
-                         isPostCollectionSection(prompt);
-    
-    // Detect instruction generation needs
-    const needsInstructions = prompt.toLowerCase().includes('instruction') ||
-                             prompt.toLowerCase().includes('rules') ||
-                             prompt.toLowerCase().includes('documentation') ||
-                             prompt.toLowerCase().includes('generate instructions') ||
-                             prompt.toLowerCase().includes('create instructions');
-
-    // Generate navigation if detected
-    if (needsNavigation) {
-      const navName = `${templateName.charAt(0).toUpperCase() + templateName.slice(1)} Menu`;
-      
-      // Default menu items that can be enhanced with Figma data
-      const defaultMenuItems = [
-        { title: "Home", type: "page" },
-        { title: "About", type: "page" },
-        { title: "Services", type: "page" },
-        { title: "Contact", type: "page" }
-      ];
-
-      try {
-        const navResult = await generateNavigation({
-          name: navName,
-          menu_items: defaultMenuItems
-        });
-        
-        results.push({
-          type: 'text',
-          text: `🧭 **Navigation Generated**\n\n${navResult.content[0].text}`
-        });
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `❌ **Navigation Generation Failed:** ${error.message}`
-        });
-      }
-    }
-
-    // Generate template if detected
-    if (needsTemplate) {
-      const templateType = prompt.toLowerCase().includes('post') ? 'posts' : 'pages';
-      const sections = figmaData?.sections || ['hero', 'features', 'contact'];
-      
-      // Check for post collection sections and handle them intelligently
-      let detectedPostTypes = [];
-      let processedSections = [];
-      
-      sections.forEach(sectionName => {
-        // Check if this specific section should be a post collection
-        // Only if "see more" appears near the section name or if it's a known collection type
-        const promptLower = prompt.toLowerCase();
-        const sectionIndex = promptLower.indexOf(sectionName.toLowerCase());
-        let promptHasSeeMoreForSection = false;
-        
-        if (sectionIndex !== -1) {
-          // Check if "see more" appears within 50 characters of the section name
-          const sectionContext = promptLower.substring(Math.max(0, sectionIndex - 25), sectionIndex + sectionName.length + 25);
-          promptHasSeeMoreForSection = sectionContext.includes('see more') || 
-                                      sectionContext.includes('view more');
-          
-          // Special case: if section contains "showcase" directly with the section name
-          if (sectionContext.includes(`${sectionName} showcase`) || sectionContext.includes(`${sectionName}showcase`)) {
-            promptHasSeeMoreForSection = true;
-          }
-        }
-        
-        const isKnownCollectionSection = ['projects', 'portfolio', 'testimonials', 'team', 'work', 'case_studies'].includes(sectionName.toLowerCase());
-        
-        if (promptHasSeeMoreForSection || isKnownCollectionSection) {
-          // This section represents a post collection
-          const postTypeName = `${sectionName}_posts`;
-          detectedPostTypes.push({
-            name: sectionName.charAt(0).toUpperCase() + sectionName.slice(1),
-            slug: sectionName.toLowerCase().replace(/_/g, '-'),
-            originalSection: sectionName
-          });
-          
-          // For page template, create simple reference section
-          processedSections.push(sectionName + '_reference');
-        } else {
-          // Regular section
-          processedSections.push(sectionName);
-        }
-      });
-      
-      try {
-        // For sections that are post collections, we need to manually create the template
-        // and replace repeater sections with post_related sections
-        let templateSections = [];
-        
-        sections.forEach(sectionName => {
-          // Use the same logic as above
-          const promptLower = prompt.toLowerCase();
-          const sectionIndex = promptLower.indexOf(sectionName.toLowerCase());
-          let promptHasSeeMoreForSection = false;
-          
-                     if (sectionIndex !== -1) {
-             // Check if "see more" appears within 50 characters of the section name
-             const sectionContext = promptLower.substring(Math.max(0, sectionIndex - 25), sectionIndex + sectionName.length + 25);
-             promptHasSeeMoreForSection = sectionContext.includes('see more') || 
-                                         sectionContext.includes('view more');
-             
-             // Special case: if section contains "showcase" directly with the section name
-             if (sectionContext.includes(`${sectionName} showcase`) || sectionContext.includes(`${sectionName}showcase`)) {
-               promptHasSeeMoreForSection = true;
-             }
-           }
-          
-          const isKnownCollectionSection = ['projects', 'portfolio', 'testimonials', 'team', 'work', 'case_studies'].includes(sectionName.toLowerCase());
-          
-          if (promptHasSeeMoreForSection || isKnownCollectionSection) {
-            // Don't include this section in the automatic generation
-            // We'll handle it manually below
-          } else {
-            templateSections.push(sectionName);
-          }
-        });
-
-        const templateResult = await generateTemplate({
-          name: templateName,
-          label: templateName.charAt(0).toUpperCase() + templateName.slice(1).replace(/_/g, ' '),
-          description: `Template generated from ${figma_link ? 'Figma design' : 'user prompt'}`,
-          template_type: templateType,
-          sections: templateSections,
-          include_cta: true,
-          max_features: 6,
-          max_gallery_images: 12
-        });
-        
-        results.push({
-          type: 'text',
-          text: `📄 **Template Generated**\n\n${templateResult.content[0].text}`
-        });
-        
-        // Generate post types for detected collections
-        for (const postType of detectedPostTypes) {
-          try {
-            const postTypeResult = await generatePostType({
-              name: postType.name,
-              slug: postType.slug
-            });
-            
-            results.push({
-              type: 'text',
-              text: `📮 **Post Type Generated**\n\n${postTypeResult.content[0].text}`
-            });
-            
-            // Generate basic post detail structure
-            const postDetailResult = await generatePostDetails({
-              post_type_name: postType.name,
-              sections: [
-                {
-                  keyName: 'detail',
-                  label: 'Detail',
-                  fields: [
-                    AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
-                      caption: 'Enable or disable the content',
-                      defaultValue: true
-                    })
-                  ]
-                }
-              ]
-            });
-            
-            results.push({
-              type: 'text',
-              text: `📋 **Post Detail Fields Generated**\n\n${postDetailResult.content[0].text}`
-            });
-          } catch (error) {
-            results.push({
-              type: 'text',
-              text: `❌ **Post Type Generation Failed for ${postType.name}:** ${error.message}`
-            });
-          }
-        }
-        
-        // Now add post_related sections to the template file for each detected post collection
-        if (detectedPostTypes.length > 0) {
-          try {
-            // We need to read and modify the generated template to add post_related sections
-            const fs = await import('fs/promises');
-            const path = await import('path');
-            
-            const templateFilePath = path.join(process.cwd(), 'storage', 'app', 'json', 'pages', `${templateName}.json`);
-            
-            // Read the generated template
-            const templateContent = await fs.readFile(templateFilePath, 'utf8');
-            const templateJson = JSON.parse(templateContent);
-            
-            // Add post_related sections for each detected post type
-            for (const postType of detectedPostTypes) {
-              const postRelatedSection = convertToCollectionReference({
-                keyName: `${postType.originalSection}_section`,
-                label: `${postType.name} Section`,
-                section: String(templateJson.components.length + 1)
-              }, postType.slug);
-              
-              templateJson.components.push(postRelatedSection);
-            }
-            
-            // Write back the modified template
-            await fs.writeFile(templateFilePath, JSON.stringify(templateJson, null, 2));
-            
-            results.push({
-              type: 'text',
-              text: `✅ **Template Updated with Post Collections**\n\nAdded post_related sections for: ${detectedPostTypes.map(pt => pt.name).join(', ')}`
-            });
-            
-          } catch (error) {
-            results.push({
-              type: 'text',
-              text: `⚠️ **Template Post Collection Update Warning:** ${error.message}\nPost types were created but template sections may need manual integration.`
-            });
-          }
-        }
-        
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `❌ **Template Generation Failed:** ${error.message}`
-        });
-      }
-    }
-
-    // Generate standalone post type if explicitly requested
-    if (needsPostType && !needsTemplate) {
-      // Extract post type name from prompt
-      const postTypeMatch = prompt.match(/(?:post type|custom post|cpt)\s+(?:for\s+)?["']?([^"'\s]+)["']?/i) ||
-                           prompt.match(/create\s+["']?([^"'\s]+)["']?\s+(?:post type|custom post|cpt)/i) ||
-                           prompt.match(/["']?([^"'\s]+)["']?\s+posts?/i);
-      
-      const postTypeName = postTypeMatch ? 
-        postTypeMatch[1].charAt(0).toUpperCase() + postTypeMatch[1].slice(1) : 
-        'Custom Posts';
-      
-      try {
-        const postTypeResult = await generatePostType({
-          name: postTypeName,
-          slug: postTypeName.toLowerCase().replace(/\s+/g, '-')
-        });
-        
-        results.push({
-          type: 'text',
-          text: `📮 **Standalone Post Type Generated**\n\n${postTypeResult.content[0].text}`
-        });
-        
-        // Generate basic post detail structure
-        const postDetailResult = await generatePostDetails({
-          post_type_name: postTypeName,
-          sections: [
-            {
-              keyName: 'detail',
-              label: 'Detail',
-              fields: [
-                AntiCMSComponentGenerator.generateField('status', 'Status', 'toggle', {
-                  caption: 'Enable or disable the content',
-                  defaultValue: true
-                })
-              ]
-            }
-          ]
-        });
-        
-        results.push({
-          type: 'text',
-          text: `📋 **Post Detail Fields Generated**\n\n${postDetailResult.content[0].text}`
-        });
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `❌ **Standalone Post Type Generation Failed:** ${error.message}`
-        });
-      }
-    }
-
-    // Generate instructions if detected
-    if (needsInstructions) {
-      try {
-        const instructionResult = await generateInstructions({
-          prompt,
-          figma_link,
-          is_content: prompt.toLowerCase().includes('post') || prompt.toLowerCase().includes('blog')
-        });
-        
-        results.push({
-          type: 'text',
-          text: `📄 **Instructions Generated**\n\n${instructionResult.content[0].text}`
-        });
-      } catch (error) {
-        results.push({
-          type: 'text',
-          text: `❌ **Instruction Generation Failed:** ${error.message}`
-        });
-      }
-    }
-
-    // Summary
-    if (results.length === 0) {
-      results.push({
-        type: 'text',
-        text: `🤔 **No Clear Generation Intent Detected**\n\nPrompt: "${prompt}"\n\nPlease specify if you want to generate:\n- **Navigation/Menu** (use keywords: navigation, menu, nav)\n- **Template/Page** (use keywords: template, page, component)\n\nOr use specific generation tools directly.`
-      });
+  if (field_type) {
+    // Return specific field type with detailed info
+    if (fieldTypes[field_type]) {
+      result.field_types[field_type] = fieldTypes[field_type];
     } else {
-      const generatedItems = [];
-      if (needsNavigation) generatedItems.push('Navigation');
-      if (needsTemplate) generatedItems.push('Template');
-      if (needsPostType) generatedItems.push('Post Type');
-      if (needsInstructions) generatedItems.push('Instructions');
-      
-      results.unshift({
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `❌ Field type "${field_type}" not found. Available types: ${Object.keys(fieldTypes).join(', ')}`
+          }
+        ]
+      };
+    }
+  } else {
+    // Return all field types
+    result.field_types = fieldTypes;
+  }
+
+  if (show_usage_patterns) {
+    result.usage_patterns = {
+      hero_sections: {
+        common_fields: ['status', 'title', 'subtitle', 'background_image', 'cta_button'],
+        field_types: ['toggle', 'input', 'textarea', 'media', 'group']
+      },
+      features_sections: {
+        common_fields: ['section_title', 'features'],
+        repeater_fields: ['feature_title', 'feature_description', 'feature_icon'],
+        field_types: ['input', 'repeater', 'textarea', 'media']
+      },
+      contact_sections: {
+        common_fields: ['section_title', 'contact_info'],
+        group_fields: ['email', 'phone', 'address'],
+        field_types: ['input', 'group', 'textarea']
+      },
+      testimonials: {
+        common_fields: ['status', 'section_title', 'testimonials'],
+        repeater_fields: ['name', 'position', 'company', 'testimonial', 'avatar'],
+        field_types: ['toggle', 'input', 'repeater', 'textarea', 'media']
+      }
+    };
+  }
+
+  if (show_best_practices) {
+    result.best_practices = {
+      naming_conventions: {
+        fields: 'Use snake_case for field names (e.g., section_title, feature_icon)',
+        sections: 'Use descriptive section names (e.g., hero_section, features_section)',
+        labels: 'Use human-readable labels (e.g., "Section Title", "Feature Icon")'
+      },
+      multilanguage: {
+        when_to_use: 'Enable for text content that needs translation',
+        when_not_to_use: 'Avoid for technical fields like URLs, numbers, or toggles'
+      },
+      field_organization: {
+        status_fields: 'Always include status toggle as first field in sections',
+        grouping: 'Use group fields for related information (e.g., contact info)',
+        repeaters: 'Use repeaters for collections of similar items'
+      },
+      performance: {
+        media_fields: 'Set appropriate resolution constraints for images',
+        repeater_limits: 'Set reasonable min/max limits based on use case',
+        required_fields: 'Mark essential fields as required'
+      }
+    };
+  }
+
+  return {
+    content: [
+      {
         type: 'text',
-        text: `✨ **Smart Generation Complete**\n\n📝 **Original Prompt:** "${prompt}"\n${figma_link ? `🎨 **Figma Source:** ${figma_link}\n` : ''}🎯 **Generated:** ${generatedItems.join(' + ')}\n${needsPostType ? `📮 **Post Collections Detected:** Auto-generated post types and details\n` : ''}${needsInstructions ? `📄 **Instructions Created:** Auto-saved to storage/app/rules/\n` : ''}\n---\n`
-      });
-    }
-
-    return {
-      content: results
-    };
-
-  } catch (error) {
-    console.error(`[MCP] smartGenerate error:`, error);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `❌ **Smart Generation Failed**\n\n**Error:** ${error.message}\n\n**Prompt:** "${prompt}"\n${figma_link ? `**Figma Link:** ${figma_link}\n` : ''}\nPlease try using specific generation tools directly.`
-        }
-      ]
-    };
-  }
-}
-
-/**
- * Generate instruction document from prompt or Figma analysis
- * @param {object} args - Instruction generation arguments
- * @returns {object} - Generated instruction document
- */
-export async function generateInstructions(args) {
-  const {
-    prompt,
-    figma_link,
-    template_name,
-    template_label,
-    sections = [],
-    is_content = false,
-    multilanguage = true,
-    is_multiple = false,
-    description
-  } = args;
-
-  // Extract template information from prompt if not provided
-  let finalTemplateName = template_name;
-  let finalTemplateLabel = template_label;
-  let finalDescription = description;
-
-  if (!finalTemplateName && prompt) {
-    const nameMatch = prompt.match(/template\s+called\s+"([^"]+)"/i) || 
-                     prompt.match(/template\s+"([^"]+)"/i) ||
-                     prompt.match(/create\s+([a-zA-Z0-9_-]+)/i);
-    finalTemplateName = nameMatch ? nameMatch[1].toLowerCase().replace(/\s+/g, '_') : 'custom_template';
-  }
-
-  if (!finalTemplateLabel) {
-    finalTemplateLabel = finalTemplateName ? 
-      finalTemplateName.charAt(0).toUpperCase() + finalTemplateName.slice(1).replace(/_/g, ' ') + ' Page' :
-      'Custom Page';
-  }
-
-  if (!finalDescription && prompt) {
-    finalDescription = `Template generated from prompt: "${prompt}"${figma_link ? ` with Figma design integration` : ''}`;
-  }
-
-  // Analyze prompt for sections if not provided
-  let finalSections = sections;
-  if (finalSections.length === 0 && prompt) {
-    const detectedSections = [];
-    
-    // Analyze prompt for common section types
-    const promptLower = prompt.toLowerCase();
-    
-    if (promptLower.includes('hero') || promptLower.includes('banner') || promptLower.includes('landing')) {
-      detectedSections.push({
-        name: 'hero',
-        label: 'Hero Section',
-        keyName: 'hero_section',
-        order: detectedSections.length + 1,
-        fields: [
-          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the hero section' },
-          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Welcome to Our Website' },
-          { name: 'subtitle', type: 'textarea', multilanguage: true, required: false, default: 'Discover amazing features and services' },
-          { name: 'background_image', type: 'media', required: false, caption: 'Hero background image' }
-        ]
-      });
-    }
-
-    if (promptLower.includes('services') || promptLower.includes('features') || promptLower.includes('benefits')) {
-      const sectionName = promptLower.includes('services') ? 'services' : 'features';
-      detectedSections.push({
-        name: sectionName,
-        label: `${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)} Section`,
-        keyName: `section_${sectionName}`,
-        order: detectedSections.length + 1,
-        fields: [
-          { name: 'status', type: 'toggle', required: false, default: 'true', caption: `Enable or disable the ${sectionName} section` },
-          { name: 'title', type: 'input', multilanguage: true, required: true, default: `Our ${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}` },
-          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: `Explore our amazing ${sectionName}` },
-          { 
-            name: sectionName, 
-            type: 'repeater', 
-            min: 1, 
-            max: 8,
-            fields: [
-              { name: 'icon', type: 'input', required: true, caption: 'Icon name (Lucide React icons)' },
-              { name: 'title', type: 'input', multilanguage: true, required: true },
-              { name: 'description', type: 'textarea', multilanguage: true, required: false }
-            ]
-          }
-        ]
-      });
-    }
-
-    if (promptLower.includes('contact') || promptLower.includes('footer')) {
-      detectedSections.push({
-        name: 'contact',
-        label: 'Contact Section',
-        keyName: 'contact_section',
-        order: detectedSections.length + 1,
-        fields: [
-          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the contact section' },
-          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Contact Us' },
-          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: 'Get in touch with us' },
-          {
-            name: 'contact_info',
-            type: 'group',
-            fields: [
-              { name: 'email', type: 'input', inputType: 'email', required: false },
-              { name: 'phone', type: 'input', required: false },
-              { name: 'address', type: 'textarea', multilanguage: true, required: false }
-            ]
-          }
-        ]
-      });
-    }
-
-    if (promptLower.includes('gallery') || promptLower.includes('portfolio')) {
-      detectedSections.push({
-        name: 'gallery',
-        label: 'Gallery Section',
-        keyName: 'gallery_section',
-        order: detectedSections.length + 1,
-        fields: [
-          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the gallery section' },
-          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Our Gallery' },
-          { name: 'description', type: 'textarea', multilanguage: true, required: false, default: 'Explore our work' },
-          {
-            name: 'gallery_items',
-            type: 'repeater',
-            min: 1,
-            max: 12,
-            fields: [
-              { name: 'image', type: 'media', required: true },
-              { name: 'caption', type: 'input', multilanguage: true, required: false }
-            ]
-          }
-        ]
-      });
-    }
-
-    // Default sections if none detected
-    if (detectedSections.length === 0) {
-      detectedSections.push({
-        name: 'content',
-        label: 'Content Section',
-        keyName: 'content_section',
-        order: 1,
-        fields: [
-          { name: 'status', type: 'toggle', required: false, default: 'true', caption: 'Enable or disable the content section' },
-          { name: 'title', type: 'input', multilanguage: true, required: true, default: 'Page Title' },
-          { name: 'content', type: 'texteditor', multilanguage: true, required: false, default: 'Page content goes here...' }
-        ]
-      });
-    }
-
-    finalSections = detectedSections;
-  }
-
-  // Generate instruction document content
-  let instructionContent = `# ${finalTemplateLabel}\n\n`;
-  instructionContent += `- Name: ${finalTemplateName}\n`;
-  instructionContent += `- Label: ${finalTemplateLabel}\n`;
-  instructionContent += `- Multilanguage: ${multilanguage}\n`;
-  instructionContent += `- Is Content: ${is_content}\n`;
-  instructionContent += `- Is Multiple: ${is_multiple}\n`;
-  instructionContent += `- Description: ${finalDescription}\n\n`;
-
-  // Add sections
-  finalSections.forEach((section, index) => {
-    if (index > 0) instructionContent += `---\n\n`;
-    
-    instructionContent += `## Section: ${section.label} (\`${section.keyName}\`)\n`;
-    instructionContent += `- Block: ${section.name.charAt(0).toUpperCase() + section.name.slice(1)}\n`;
-    instructionContent += `- Order: ${section.order}\n\n`;
-    instructionContent += `### Fields:\n`;
-
-    section.fields.forEach(field => {
-      let fieldLine = `- \`${field.name}\`: ${field.type}`;
-      
-      if (field.multilanguage) {
-        fieldLine += ' (multilanguage)';
-      }
-      
-      if (field.min !== undefined && field.max !== undefined) {
-        fieldLine += ` (min: ${field.min}, max: ${field.max})`;
-      }
-      
-      instructionContent += fieldLine + '\n';
-
-      // Add field properties
-      if (field.required !== undefined) {
-        instructionContent += `  - Required: ${field.required}\n`;
-      }
-      if (field.default) {
-        instructionContent += `  - Default: ${field.default}\n`;
-      }
-      if (field.caption) {
-        instructionContent += `  - Caption: ${field.caption}\n`;
-      }
-
-      // Add nested fields for repeaters and groups
-      if (field.fields && field.fields.length > 0) {
-        field.fields.forEach(nestedField => {
-          let nestedLine = `  - \`${nestedField.name}\`: ${nestedField.type}`;
-          if (nestedField.multilanguage) {
-            nestedLine += ' (multilanguage)';
-          }
-          instructionContent += nestedLine + '\n';
-          
-          if (nestedField.required !== undefined) {
-            instructionContent += `    - Required: ${nestedField.required}\n`;
-          }
-          if (nestedField.caption) {
-            instructionContent += `    - Caption: ${nestedField.caption}\n`;
-          }
-        });
-      }
-
-      instructionContent += '\n';
-    });
-  });
-
-  // Auto-create instruction file
-  const fs = await import('fs/promises');
-  const path = await import('path');
-
-  try {
-    const storageDir = path.join(process.cwd(), 'storage', 'app', 'rules');
-    const filePath = path.join(storageDir, `${finalTemplateName}.instructions.md`);
-
-    // Ensure target directory exists
-    await fs.mkdir(storageDir, { recursive: true });
-
-    // Write instruction file
-    await fs.writeFile(filePath, instructionContent, 'utf8');
-
-    const relativePath = path.relative(process.cwd(), filePath);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `✅ Generated instruction document "${finalTemplateLabel}".\n\n📁 **File saved to:** ${relativePath}\n📋 **Sections:** ${finalSections.length}\n${figma_link ? `🎨 **Figma Integration:** ${figma_link}\n` : ''}\n**Generated Structure:**\n${finalSections.map(s => `- ${s.label} (${s.fields.length} fields)`).join('\n')}\n\n**Instruction Content:**\n\`\`\`markdown\n${instructionContent}\n\`\`\``
-        }
-      ]
-    };
-  } catch (error) {
-    console.error(`[MCP] Failed to save instruction file: ${error.message}`);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `⚠️ Generated instruction document "${finalTemplateLabel}".\n\n❌ **File creation failed:** ${error.message}\n\n**Instruction Content:**\n\`\`\`markdown\n${instructionContent}\n\`\`\``
-        }
-      ]
-    };
-  }
-}
-
-/**
- * Get random inspirational quotes from famous figures
- * @param {Object} args - Arguments object
- * @returns {Object} Random quote content
- */
-export async function getRandomQuote(args) {
-  const { category, figure } = args;
-  
-  const quotes = {
-    'steve-jobs': [
-      {
-        quote: "Design is not just what it looks like and feels like. Design is how it works.",
-        context: "Apple's design philosophy"
-      },
-      {
-        quote: "Simple can be harder than complex: You have to work hard to get your thinking clean to make it simple.",
-        context: "On simplicity in design"
-      },
-      {
-        quote: "Innovation distinguishes between a leader and a follower.",
-        context: "On innovation and leadership"
-      },
-      {
-        quote: "The people who are crazy enough to think they can change the world are the ones who do.",
-        context: "Apple's \"Think Different\" campaign"
-      },
-      {
-        quote: "Quality is more important than quantity. One home run is much better than two doubles.",
-        context: "On product quality"
-      }
-    ],
-    'design-leaders': [
-      {
-        quote: "Good design is obvious. Great design is transparent.",
-        author: "Joe Sparano",
-        context: "Design philosophy"
-      },
-      {
-        quote: "Design creates culture. Culture shapes values. Values determine the future.",
-        author: "Robert L. Peters",
-        context: "Impact of design"
-      },
-      {
-        quote: "The best way to predict the future is to invent it.",
-        author: "Alan Kay",
-        context: "Innovation mindset"
-      },
-      {
-        quote: "Design is the silent ambassador of your brand.",
-        author: "Paul Rand",
-        context: "Brand design"
-      },
-      {
-        quote: "Simplicity is the ultimate sophistication.",
-        author: "Leonardo da Vinci",
-        context: "Design principle"
-      }
-    ],
-    'business': [
-      {
-        quote: "The best way to get started is to quit talking and begin doing.",
-        author: "Walt Disney",
-        context: "Taking action"
-      },
-      {
-        quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-        author: "Winston Churchill",
-        context: "Persistence"
-      },
-      {
-        quote: "The future belongs to those who believe in the beauty of their dreams.",
-        author: "Eleanor Roosevelt",
-        context: "Vision and dreams"
-      },
-      {
-        quote: "Don't watch the clock; do what it does. Keep going.",
-        author: "Sam Levenson",
-        context: "Persistence"
-      },
-      {
-        quote: "The only way to do great work is to love what you do.",
-        author: "Steve Jobs",
-        context: "Passion for work"
-      }
-    ],
-    'creativity': [
-      {
-        quote: "Creativity is intelligence having fun.",
-        author: "Albert Einstein",
-        context: "Creative thinking"
-      },
-      {
-        quote: "The creative adult is the child who survived.",
-        author: "Ursula K. Le Guin",
-        context: "Maintaining creativity"
-      },
-      {
-        quote: "Art is not what you see, but what you make others see.",
-        author: "Edgar Degas",
-        context: "Artistic expression"
-      },
-      {
-        quote: "Creativity takes courage.",
-        author: "Henri Matisse",
-        context: "Creative courage"
-      },
-      {
-        quote: "The world is but a canvas to the imagination.",
-        author: "Henry David Thoreau",
-        context: "Creative potential"
+        text: `📋 **AntiCMS v3 Field Types & Examples**\n\n${JSON.stringify(result, null, 2)}`
       }
     ]
   };
+}
 
-  const selectedCategory = category || 'steve-jobs';
-  const categoryQuotes = quotes[selectedCategory] || quotes['steve-jobs'];
-  const randomQuote = categoryQuotes[Math.floor(Math.random() * categoryQuotes.length)];
 
-  const authorText = randomQuote.author ? ` - ${randomQuote.author}` : '';
-  
-  return {
-    content: [{
-      type: "text",
-      text: `💭 **Inspirational Quote**\n\n**"${randomQuote.quote}"**${authorText}\n\n**Context:** ${randomQuote.context}\n\n**Application to Your Project:**\n• Let this wisdom guide your design decisions\n• Apply the underlying principles to your template\n• Use it as motivation for creating something great\n• Remember that great work comes from passion and purpose\n\n**Design Inspiration:**\n• How can you make your template "work" beautifully?\n• What would make your design "transparent" to users?\n• How can you create something that others will love?\n\nLet this quote inspire your AntiCMS template creation! ✨`
-    }]
-  };
-} 
+
