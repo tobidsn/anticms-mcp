@@ -1,10 +1,10 @@
 {
-  "name": "homepage",
-  "label": "Business Agency Homepage",
+  "name": "mcp_parameter_test",
+  "label": "MCP Parameter Test",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "Complete homepage template with hero section, partner logos, services, why choose us, project gallery, testimonials, and contact form",
+  "description": "Testing MCP parameter recognition",
   "components": [
     {
       "keyName": "hero_section",

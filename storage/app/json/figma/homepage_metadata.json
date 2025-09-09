@@ -1,0 +1,399 @@
+{
+  "figma_code_response": {
+    "nodeId": "2-2",
+    "extractedAt": "2024-12-30T17:10:00Z",
+    "sections": {
+      "hero": {
+        "navigation": {
+          "logo": "PEBISNIS ULUNG.",
+          "menu_items": ["Services", "Resources", "Company", "Blog", "Contact Us"],
+          "cta_button": "Let's Talk"
+        },
+        "main_content": {
+          "world_record_badge": "Best Business Platform - World Record 2021",
+          "headline": "Reach Your Business Goals in Record Time",
+          "description": "Support small business and join the nationwide movement to encourage commercial support for the millions of minority owned businesses helping world economy.",
+          "primary_cta": "Get Started",
+          "secondary_cta": "Watch Video"
+        },
+        "rating_display": {
+          "score": "4.9",
+          "stars": 5,
+          "avatars": 4
+        }
+      },
+      "partners": {
+        "total_companies": 4,
+        "companies": [
+          {
+            "name": "Slack",
+            "logo_placeholder": "slack-2 1"
+          },
+          {
+            "name": "Prudential",
+            "logo_placeholder": "prudential-7"
+          },
+          {
+            "name": "Company 3",
+            "logo_placeholder": "Group 651"
+          },
+          {
+            "name": "Zoover",
+            "logo_placeholder": "zoover 1"
+          }
+        ]
+      },
+      "services": {
+        "section_label": "SERVICES",
+        "title": "Our Capabilities",
+        "description": "We will bring the breathe of our experience and industry knowledge to help you succeed",
+        "services": [
+          {
+            "icon": "vuesax/bulk/shop",
+            "title": "Market Forcest",
+            "description": "Leverage agile framework to provide a robust high level synopsys overviews"
+          },
+          {
+            "icon": "vuesax/bulk/cards",
+            "title": "Fund Raising",
+            "description": "Bring to the table survival strategies to ensure proactive domination"
+          },
+          {
+            "icon": "vuesax/bulk/favorite-chart",
+            "title": "Cash Flow",
+            "description": "Grow the holistic world view of disruptive innovation workspace"
+          }
+        ]
+      },
+      "why_choose_us": {
+        "section_label": "WHY CHOOSE US",
+        "title": "Take on any Challenge of the Digital World",
+        "features": [
+          {
+            "icon": "Checklist-Circle",
+            "text": "Corporate Financial Advisory"
+          },
+          {
+            "icon": "Checklist-Circle",
+            "text": "Development of Financial Models"
+          },
+          {
+            "icon": "Checklist-Circle",
+            "text": "Deal Structuring"
+          }
+        ],
+        "cta_button": "Get Started",
+        "background_graphics": true
+      },
+      "work": {
+        "section_label": "PROJECTS",
+        "title": "Selected Works from Us",
+        "cta_button": "See More",
+        "projects": [
+          {
+            "title": "Cosmetic Forcest Marketing",
+            "image_placeholder": "Rectangle 1041"
+          },
+          {
+            "title": "Sales Analytic",
+            "image_placeholder": "Rectangle 1041"
+          },
+          {
+            "title": "Fashion Store Mobile Apps",
+            "image_placeholder": "Rectangle 1041"
+          },
+          {
+            "title": "Laura's Clore Branding Identity",
+            "image_placeholder": "Rectangle 1041"
+          },
+          {
+            "title": "SEO Marketing 4.0",
+            "image_placeholder": "Rectangle 1041"
+          }
+        ]
+      },
+      "testimonials": {
+        "section_label": "TESTIMONIAL",
+        "title": "What Our Customer's Say",
+        "testimonial": {
+          "quote": "I really like the team for example, a relationship-focused performance expectation might be that the employee sustain collegial working relationships with her peers, subordinates and customers.",
+          "author": "Gloria Jessica",
+          "avatar_placeholder": "Ellipse 180"
+        }
+      },
+      "contact": {
+        "section_label": "CONTACT US",
+        "title": "Let's Collaborate Now!",
+        "form_fields": [
+          {
+            "type": "text",
+            "label": "Full Name",
+            "placeholder": "Input Your Name"
+          },
+          {
+            "type": "email",
+            "label": "Email",
+            "placeholder": "Input Your Email"
+          },
+          {
+            "type": "date",
+            "label": "Date",
+            "placeholder": "Select Date",
+            "icon": "Iconly/Bold/Calendar"
+          },
+          {
+            "type": "textarea",
+            "label": "Message",
+            "placeholder": "Write Message..."
+          }
+        ],
+        "submit_button": "Send Message",
+        "background_images": true
+      },
+      "footer": {
+        "logo": "PEBISNIS ULUNG.",
+        "social_links": [
+          {
+            "platform": "facebook",
+            "icon": "facebook (2)"
+          },
+          {
+            "platform": "twitter",
+            "icon": "linkedin 1"
+          },
+          {
+            "platform": "instagram",
+            "icon": "instagram"
+          }
+        ],
+        "links": [
+          "Privacy Policy",
+          "Terms",
+          "Deskripsi"
+        ],
+        "copyright": "Copyright Pebisnis Ulung. All right reserved"
+      }
+    }
+  },
+  "figma_metadata_response": {
+    "nodeId": "2-2",
+    "name": "Homepage",
+    "dimensions": {
+      "width": 1440,
+      "height": 4579
+    },
+    "sections_hierarchy": [
+      {
+        "id": "5:213",
+        "name": "Hero",
+        "y": 0,
+        "height": 780,
+        "components": [
+          "navigation",
+          "main_content",
+          "rating_display",
+          "hero_graphics"
+        ]
+      },
+      {
+        "id": "5:211",
+        "name": "Partners",
+        "y": 780,
+        "height": 140,
+        "components": [
+          "company_logos"
+        ]
+      },
+      {
+        "id": "5:544",
+        "name": "Services",
+        "y": 920,
+        "height": 441,
+        "components": [
+          "service_cards",
+          "section_header"
+        ]
+      },
+      {
+        "id": "5:608",
+        "name": "Why Choose Us",
+        "y": 1361,
+        "height": 592,
+        "components": [
+          "feature_checklist",
+          "background_graphics",
+          "cta_button"
+        ]
+      },
+      {
+        "id": "5:786",
+        "name": "Work",
+        "y": 1953,
+        "height": 710,
+        "components": [
+          "project_gallery",
+          "section_header",
+          "cta_button"
+        ]
+      },
+      {
+        "id": "5:5248",
+        "name": "Testimonials",
+        "y": 2663,
+        "height": 924,
+        "components": [
+          "testimonial_card",
+          "section_header",
+          "decorative_graphics"
+        ]
+      },
+      {
+        "id": "5:5388",
+        "name": "Contact Us",
+        "y": 3587,
+        "height": 832,
+        "components": [
+          "contact_form",
+          "background_images",
+          "section_header"
+        ]
+      },
+      {
+        "id": "5:5449",
+        "name": "Footer",
+        "y": 4419,
+        "height": 160,
+        "components": [
+          "logo",
+          "social_links",
+          "footer_links",
+          "copyright"
+        ]
+      }
+    ]
+  },
+  "anticms_analysis": {
+    "template_type": "pages",
+    "total_sections": 8,
+    "identified_sections": {
+      "hero": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": [
+          "navigation_logo",
+          "navigation_menu",
+          "world_record_badge",
+          "main_headline",
+          "description",
+          "primary_cta",
+          "secondary_cta",
+          "rating_score",
+          "rating_avatars"
+        ]
+      },
+      "partners": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "company_logos (repeater, max 4)"
+        ]
+      },
+      "services": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": [
+          "section_label",
+          "section_title",
+          "section_description",
+          "service_cards (repeater, max 3)",
+          "service_icon",
+          "service_title",
+          "service_description"
+        ]
+      },
+      "why_choose_us": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "section_label",
+          "section_title",
+          "feature_checklist (repeater, max 3)",
+          "feature_text",
+          "cta_button",
+          "background_graphics"
+        ]
+      },
+      "work": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "section_label",
+          "section_title",
+          "projects (repeater, max 5)",
+          "project_title",
+          "project_image",
+          "cta_button"
+        ]
+      },
+      "testimonials": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": [
+          "section_label",
+          "section_title",
+          "testimonial_quote",
+          "testimonial_author",
+          "testimonial_avatar"
+        ]
+      },
+      "contact": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": [
+          "section_label",
+          "section_title",
+          "form_fields (repeater, max 4)",
+          "field_type",
+          "field_label",
+          "field_placeholder",
+          "submit_button",
+          "background_images"
+        ]
+      },
+      "footer": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": [
+          "logo",
+          "social_links (repeater, max 3)",
+          "footer_links (repeater, max 3)",
+          "copyright_text"
+        ]
+      }
+    },
+    "complexity_score": "high",
+    "custom_sections_needed": 3,
+    "built_in_sections": 5,
+    "estimated_fields": 45,
+    "multilanguage_recommended": true
+  },
+  "context_for_template_generation": {
+    "page_rules_file": ".cursor/rules/pages/homepage.mdc",
+    "matches_defined_sections": true,
+    "section_mapping_accuracy": "100%",
+    "ready_for_template_generation": true,
+    "next_steps": [
+      "Generate AntiCMS template using mcp_anticms-mcp_generate_template",
+      "Create mock data for all 8 sections",
+      "Generate final page structure"
+    ]
+  }
+}

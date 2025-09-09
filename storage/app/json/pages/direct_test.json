@@ -1,10 +1,10 @@
 {
-  "name": "homepage",
-  "label": "Business Agency Homepage",
+  "name": "direct_test",
+  "label": "Direct Test",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "Complete homepage template with hero section, partner logos, services, why choose us, project gallery, testimonials, and contact form",
+  "description": "Direct template generation test",
   "components": [
     {
       "keyName": "hero_section",
@@ -22,8 +22,8 @@
           }
         },
         {
-          "name": "logo",
-          "label": "Logo",
+          "name": "navigation_logo",
+          "label": "Navigation Logo",
           "field": "media",
           "attribute": {
             "accept": [
@@ -38,28 +38,13 @@
           }
         },
         {
-          "name": "menu_items",
-          "label": "Menu Items",
+          "name": "navigation_menu",
+          "label": "Navigation Menu",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
-            "placeholder": "Enter menu items",
-            "is_required": false,
-            "defaultValue": "",
-            "value": null,
-            "maxLength": 50,
-            "minLength": 1
-          }
-        },
-        {
-          "name": "cta_button",
-          "label": "Cta Button",
-          "field": "input",
-          "multilanguage": true,
-          "attribute": {
-            "type": "text",
-            "placeholder": "Enter cta button",
+            "placeholder": "Enter navigation menu",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -83,13 +68,13 @@
           }
         },
         {
-          "name": "headline",
-          "label": "Headline",
+          "name": "main_headline",
+          "label": "Main Headline",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
-            "placeholder": "Enter headline",
+            "placeholder": "Enter main headline",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -145,38 +130,23 @@
           }
         },
         {
-          "name": "score",
-          "label": "Score",
+          "name": "rating_score",
+          "label": "Rating Score",
           "field": "input",
+          "multilanguage": true,
           "attribute": {
-            "type": "number",
-            "placeholder": "Enter score",
+            "type": "text",
+            "placeholder": "Enter rating score",
             "is_required": false,
             "defaultValue": "",
             "value": null,
             "maxLength": 50,
-            "minLength": 1,
-            "min": 0
+            "minLength": 1
           }
         },
         {
-          "name": "stars",
-          "label": "Stars",
-          "field": "input",
-          "attribute": {
-            "type": "number",
-            "placeholder": "Enter stars",
-            "is_required": false,
-            "defaultValue": "",
-            "value": null,
-            "maxLength": 50,
-            "minLength": 1,
-            "min": 0
-          }
-        },
-        {
-          "name": "avatars",
-          "label": "Avatars",
+          "name": "rating_avatars",
+          "label": "Rating Avatars",
           "field": "media",
           "attribute": {
             "accept": [
@@ -209,38 +179,23 @@
           }
         },
         {
-          "name": "total_companies",
-          "label": "Total Companies",
-          "field": "input",
-          "attribute": {
-            "type": "number",
-            "placeholder": "Enter total companies",
-            "is_required": false,
-            "defaultValue": "",
-            "value": null,
-            "maxLength": 50,
-            "minLength": 1,
-            "min": 0
-          }
-        },
-        {
-          "name": "companies",
-          "label": "Companies",
+          "name": "company_logos",
+          "label": "Company Logos",
           "field": "repeater",
           "attribute": {
             "min": 1,
-            "max": 10,
-            "caption": "Add companies items",
+            "max": 4,
+            "caption": "Add company logos items",
             "fields": [
               {
-                "name": "name",
-                "label": "Name",
+                "name": "title",
+                "label": "Title",
                 "field": "input",
                 "multilanguage": true,
                 "attribute": {
                   "type": "text",
-                  "maxLength": 50,
-                  "placeholder": "Enter name",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
                   "is_required": false,
                   "defaultValue": "",
                   "value": null,
@@ -248,8 +203,24 @@
                 }
               },
               {
-                "name": "logo_placeholder",
-                "label": "Logo Placeholder",
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
                 "field": "media",
                 "attribute": {
                   "accept": [
@@ -261,6 +232,21 @@
                     "minHeight": 300,
                     "maxHeight": 1080
                   }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
                 }
               }
             ]
@@ -300,14 +286,14 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
+          "name": "section_title",
+          "label": "Section Title",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
             "maxLength": 100,
-            "placeholder": "Enter title",
+            "placeholder": "Enter section title",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -315,8 +301,8 @@
           }
         },
         {
-          "name": "description",
-          "label": "Description",
+          "name": "section_description",
+          "label": "Section Description",
           "field": "texteditor",
           "multilanguage": true,
           "attribute": {
@@ -324,22 +310,52 @@
             "rows": 10,
             "cols": 10,
             "is_required": false,
-            "caption": "Short description of the testimonial",
             "defaultValue": "",
             "value": null,
             "max": 255,
-            "placeholder": "Enter description"
+            "placeholder": "Enter section description"
           }
         },
         {
-          "name": "services",
-          "label": "Services",
+          "name": "service_cards",
+          "label": "Service Cards",
           "field": "repeater",
           "attribute": {
             "min": 1,
-            "max": 10,
-            "caption": "Add services items",
+            "max": 3,
+            "caption": "Add service cards items",
             "fields": [
+              {
+                "name": "title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Service name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Service description"
+                }
+              },
               {
                 "name": "icon",
                 "label": "Icon",
@@ -355,40 +371,55 @@
                     "maxHeight": 64
                   }
                 }
-              },
-              {
-                "name": "title",
-                "label": "Title",
-                "field": "input",
-                "multilanguage": true,
-                "attribute": {
-                  "type": "text",
-                  "maxLength": 100,
-                  "placeholder": "Enter title",
-                  "is_required": false,
-                  "defaultValue": "",
-                  "value": null,
-                  "minLength": 1
-                }
-              },
-              {
-                "name": "description",
-                "label": "Description",
-                "field": "texteditor",
-                "multilanguage": true,
-                "attribute": {
-                  "type": "full",
-                  "rows": 10,
-                  "cols": 10,
-                  "is_required": false,
-                  "caption": "Short description of the testimonial",
-                  "defaultValue": "",
-                  "value": null,
-                  "max": 255,
-                  "placeholder": "Enter description"
-                }
               }
             ]
+          }
+        },
+        {
+          "name": "service_icon",
+          "label": "Service Icon",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 32,
+              "maxWidth": 64,
+              "minHeight": 32,
+              "maxHeight": 64
+            }
+          }
+        },
+        {
+          "name": "service_title",
+          "label": "Service Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter service title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "service_description",
+          "label": "Service Description",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter service description"
           }
         }
       ],
@@ -425,14 +456,14 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
+          "name": "section_title",
+          "label": "Section Title",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
             "maxLength": 100,
-            "placeholder": "Enter title",
+            "placeholder": "Enter section title",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -440,38 +471,69 @@
           }
         },
         {
-          "name": "features",
-          "label": "Features",
+          "name": "feature_checklist",
+          "label": "Feature Checklist",
           "field": "repeater",
           "attribute": {
             "min": 1,
-            "max": 10,
-            "caption": "Add features items",
+            "max": 3,
+            "caption": "Add feature checklist items",
             "fields": [
               {
-                "name": "icon",
-                "label": "Icon",
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
                 "field": "media",
                 "attribute": {
                   "accept": [
                     "image"
                   ],
                   "resolution": {
-                    "minWidth": 32,
-                    "maxWidth": 64,
-                    "minHeight": 32,
-                    "maxHeight": 64
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
                   }
                 }
               },
               {
-                "name": "text",
-                "label": "Text",
+                "name": "link",
+                "label": "Link",
                 "field": "input",
                 "multilanguage": true,
                 "attribute": {
-                  "type": "text",
-                  "placeholder": "Enter text",
+                  "type": "url",
+                  "placeholder": "https://example.com",
                   "is_required": false,
                   "defaultValue": "",
                   "value": null,
@@ -483,6 +545,21 @@
           }
         },
         {
+          "name": "feature_text",
+          "label": "Feature Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter feature text",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
           "name": "cta_button",
           "label": "Cta Button",
           "field": "input",
@@ -490,6 +567,21 @@
           "attribute": {
             "type": "text",
             "placeholder": "Enter cta button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "background_graphics",
+          "label": "Background Graphics",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter background graphics",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -531,18 +623,106 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
+          "name": "section_title",
+          "label": "Section Title",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
             "maxLength": 100,
-            "placeholder": "Enter title",
+            "placeholder": "Enter section title",
             "is_required": false,
             "defaultValue": "",
             "value": null,
             "minLength": 1
+          }
+        },
+        {
+          "name": "projects",
+          "label": "Projects",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 5,
+            "caption": "Add projects items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Project Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Project name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Project Link",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "project_title",
+          "label": "Project Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter project title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "project_image",
+          "label": "Project Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
           }
         },
         {
@@ -558,49 +738,6 @@
             "value": null,
             "maxLength": 50,
             "minLength": 1
-          }
-        },
-        {
-          "name": "projects",
-          "label": "Projects",
-          "field": "repeater",
-          "attribute": {
-            "min": 1,
-            "max": 10,
-            "caption": "Add projects items",
-            "fields": [
-              {
-                "name": "title",
-                "label": "Title",
-                "field": "input",
-                "multilanguage": true,
-                "attribute": {
-                  "type": "text",
-                  "maxLength": 100,
-                  "placeholder": "Enter title",
-                  "is_required": false,
-                  "defaultValue": "",
-                  "value": null,
-                  "minLength": 1
-                }
-              },
-              {
-                "name": "image_placeholder",
-                "label": "Image Placeholder",
-                "field": "media",
-                "attribute": {
-                  "accept": [
-                    "image"
-                  ],
-                  "resolution": {
-                    "minWidth": 400,
-                    "maxWidth": 1920,
-                    "minHeight": 300,
-                    "maxHeight": 1080
-                  }
-                }
-              }
-            ]
           }
         }
       ],
@@ -637,14 +774,14 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
+          "name": "section_title",
+          "label": "Section Title",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
             "maxLength": 100,
-            "placeholder": "Enter title",
+            "placeholder": "Enter section title",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -652,8 +789,8 @@
           }
         },
         {
-          "name": "quote",
-          "label": "Quote",
+          "name": "testimonial_quote",
+          "label": "Testimonial Quote",
           "field": "texteditor",
           "multilanguage": true,
           "attribute": {
@@ -664,27 +801,28 @@
             "defaultValue": "",
             "value": null,
             "max": 255,
-            "placeholder": "Enter quote"
+            "placeholder": "Enter testimonial quote"
           }
         },
         {
-          "name": "author",
-          "label": "Author",
-          "field": "input",
+          "name": "testimonial_author",
+          "label": "Testimonial Author",
+          "field": "texteditor",
           "multilanguage": true,
           "attribute": {
-            "type": "text",
-            "placeholder": "Enter author",
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
             "is_required": false,
             "defaultValue": "",
             "value": null,
-            "maxLength": 50,
-            "minLength": 1
+            "max": 255,
+            "placeholder": "Enter testimonial author"
           }
         },
         {
-          "name": "avatar_placeholder",
-          "label": "Avatar Placeholder",
+          "name": "testimonial_avatar",
+          "label": "Testimonial Avatar",
           "field": "media",
           "attribute": {
             "accept": [
@@ -732,14 +870,14 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
+          "name": "section_title",
+          "label": "Section Title",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
             "maxLength": 100,
-            "placeholder": "Enter title",
+            "placeholder": "Enter section title",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -752,42 +890,43 @@
           "field": "repeater",
           "attribute": {
             "min": 1,
-            "max": 10,
+            "max": 4,
             "caption": "Add form fields items",
             "fields": [
               {
-                "name": "type",
-                "label": "Type",
+                "name": "title",
+                "label": "Title",
                 "field": "input",
                 "multilanguage": true,
                 "attribute": {
                   "type": "text",
-                  "placeholder": "Enter type",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
                   "is_required": false,
                   "defaultValue": "",
                   "value": null,
-                  "maxLength": 50,
                   "minLength": 1
                 }
               },
               {
-                "name": "label",
-                "label": "Label",
-                "field": "input",
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
                 "multilanguage": true,
                 "attribute": {
-                  "type": "text",
-                  "placeholder": "Enter label",
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
                   "is_required": false,
+                  "caption": "Short description of the our services section",
                   "defaultValue": "",
                   "value": null,
-                  "maxLength": 50,
-                  "minLength": 1
+                  "placeholder": "Enter description"
                 }
               },
               {
-                "name": "placeholder",
-                "label": "Placeholder",
+                "name": "image",
+                "label": "Image",
                 "field": "media",
                 "attribute": {
                   "accept": [
@@ -800,8 +939,68 @@
                     "maxHeight": 1080
                   }
                 }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
               }
             ]
+          }
+        },
+        {
+          "name": "field_type",
+          "label": "Field Type",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field type",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "field_label",
+          "label": "Field Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "field_placeholder",
+          "label": "Field Placeholder",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field placeholder",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
           }
         },
         {
@@ -817,6 +1016,22 @@
             "value": null,
             "maxLength": 50,
             "minLength": 1
+          }
+        },
+        {
+          "name": "background_images",
+          "label": "Background Images",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
           }
         }
       ],
@@ -859,60 +1074,64 @@
           "field": "repeater",
           "attribute": {
             "min": 1,
-            "max": 10,
+            "max": 3,
             "caption": "Add social links items",
             "fields": [
               {
-                "name": "platform",
-                "label": "Platform",
+                "name": "title",
+                "label": "Title",
                 "field": "input",
                 "multilanguage": true,
                 "attribute": {
                   "type": "text",
-                  "placeholder": "Enter platform",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
                   "is_required": false,
                   "defaultValue": "",
                   "value": null,
-                  "maxLength": 50,
                   "minLength": 1
                 }
               },
               {
-                "name": "icon",
-                "label": "Icon",
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
                 "field": "media",
                 "attribute": {
                   "accept": [
                     "image"
                   ],
                   "resolution": {
-                    "minWidth": 32,
-                    "maxWidth": 64,
-                    "minHeight": 32,
-                    "maxHeight": 64
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
                   }
                 }
-              }
-            ]
-          }
-        },
-        {
-          "name": "links",
-          "label": "Links",
-          "field": "repeater",
-          "attribute": {
-            "min": 1,
-            "max": 10,
-            "caption": "Add links items",
-            "fields": [
+              },
               {
-                "name": "item",
-                "label": "Item",
+                "name": "link",
+                "label": "Link",
                 "field": "input",
                 "multilanguage": true,
                 "attribute": {
-                  "type": "text",
-                  "placeholder": "Enter item",
+                  "type": "url",
+                  "placeholder": "https://example.com",
                   "is_required": false,
                   "defaultValue": "",
                   "value": null,
@@ -924,13 +1143,87 @@
           }
         },
         {
-          "name": "copyright",
-          "label": "Copyright",
+          "name": "footer_links",
+          "label": "Footer Links",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 3,
+            "caption": "Add footer links items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "copyright_text",
+          "label": "Copyright Text",
           "field": "input",
           "multilanguage": true,
           "attribute": {
             "type": "text",
-            "placeholder": "Enter copyright",
+            "placeholder": "Enter copyright text",
             "is_required": false,
             "defaultValue": "",
             "value": null,

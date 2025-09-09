@@ -1,10 +1,10 @@
 {
-  "name": "homepage",
-  "label": "Business Agency Homepage",
+  "name": "debug_test",
+  "label": "Debug Test",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "Complete homepage template with hero section, partner logos, services, why choose us, project gallery, testimonials, and contact form",
+  "description": "Debugging why MCP tool is not using enhanced path",
   "components": [
     {
       "keyName": "hero_section",

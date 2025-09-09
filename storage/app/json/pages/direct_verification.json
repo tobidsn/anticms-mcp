@@ -1,10 +1,10 @@
 {
-  "name": "homepage",
-  "label": "Business Agency Homepage",
+  "name": "direct_verification",
+  "label": "Direct Verification",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "Complete homepage template with hero section, partner logos, services, why choose us, project gallery, testimonials, and contact form",
+  "description": "Testing direct function call with enhanced metadata analysis",
   "components": [
     {
       "keyName": "hero_section",
@@ -189,6 +189,83 @@
               "maxHeight": 200
             }
           }
+        },
+        {
+          "name": "navigation_logo",
+          "label": "Navigation Logo",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "navigation_menu",
+          "label": "Navigation Menu",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter navigation menu",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "main_headline",
+          "label": "Main Headline",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter main headline",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "rating_score",
+          "label": "Rating Score",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter rating score",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "rating_avatars",
+          "label": "Rating Avatars",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 100,
+              "maxWidth": 200,
+              "minHeight": 100,
+              "maxHeight": 200
+            }
+          }
         }
       ],
       "block": "Hero"
@@ -261,6 +338,80 @@
                     "minHeight": 300,
                     "maxHeight": 1080
                   }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "company_logos",
+          "label": "Company Logos",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 4,
+            "caption": "Add company logos items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
                 }
               }
             ]
@@ -390,6 +541,143 @@
               }
             ]
           }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "section_description",
+          "label": "Section Description",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter section description"
+          }
+        },
+        {
+          "name": "service_cards",
+          "label": "Service Cards",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 3,
+            "caption": "Add service cards items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Service name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Service description"
+                }
+              },
+              {
+                "name": "icon",
+                "label": "Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "service_icon",
+          "label": "Service Icon",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 32,
+              "maxWidth": 64,
+              "minHeight": 32,
+              "maxHeight": 64
+            }
+          }
+        },
+        {
+          "name": "service_title",
+          "label": "Service Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter service title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "service_description",
+          "label": "Service Description",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter service description"
+          }
         }
       ],
       "block": "Services"
@@ -490,6 +778,125 @@
           "attribute": {
             "type": "text",
             "placeholder": "Enter cta button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "feature_checklist",
+          "label": "Feature Checklist",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 3,
+            "caption": "Add feature checklist items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "feature_text",
+          "label": "Feature Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter feature text",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "background_graphics",
+          "label": "Background Graphics",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter background graphics",
             "is_required": false,
             "defaultValue": "",
             "value": null,
@@ -602,6 +1009,52 @@
               }
             ]
           }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "project_title",
+          "label": "Project Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter project title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "project_image",
+          "label": "Project Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
+          }
         }
       ],
       "block": "Work"
@@ -685,6 +1138,69 @@
         {
           "name": "avatar_placeholder",
           "label": "Avatar Placeholder",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 100,
+              "maxWidth": 200,
+              "minHeight": 100,
+              "maxHeight": 200
+            }
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "testimonial_quote",
+          "label": "Testimonial Quote",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter testimonial quote"
+          }
+        },
+        {
+          "name": "testimonial_author",
+          "label": "Testimonial Author",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter testimonial author"
+          }
+        },
+        {
+          "name": "testimonial_avatar",
+          "label": "Testimonial Avatar",
           "field": "media",
           "attribute": {
             "accept": [
@@ -818,6 +1334,82 @@
             "maxLength": 50,
             "minLength": 1
           }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "field_type",
+          "label": "Field Type",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field type",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "field_label",
+          "label": "Field Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "field_placeholder",
+          "label": "Field Placeholder",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter field placeholder",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "background_images",
+          "label": "Background Images",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
+          }
         }
       ],
       "block": "Contact"
@@ -931,6 +1523,95 @@
           "attribute": {
             "type": "text",
             "placeholder": "Enter copyright",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "footer_links",
+          "label": "Footer Links",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 3,
+            "caption": "Add footer links items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Enter description"
+                }
+              },
+              {
+                "name": "image",
+                "label": "Image",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "https://example.com",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "copyright_text",
+          "label": "Copyright Text",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter copyright text",
             "is_required": false,
             "defaultValue": "",
             "value": null,

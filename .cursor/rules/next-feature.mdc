@@ -1,0 +1,171 @@
+
+# Figma Content Integration Rules
+
+## Purpose
+Update mock JSON data with real content extracted from Figma designs and enhance AntiCMS MCP with Figma context.
+
+## Enhanced Integration Process
+
+### Step 1: Extract Complete Figma Context
+- **Get Figma Code**: Use `mcp_figma_get_code` to extract HTML/CSS structure
+- **Get Figma Metadata**: Use `mcp_figma_get_metadata` to get component hierarchy
+- **Get Visual Reference**: Use `mcp_figma_get_image` for design context
+- **Parse Content Structure**: Identify sections, repeated elements, content patterns
+
+### Step 2: Pass Figma Context to AntiCMS MCP
+```javascript
+// Enhanced AntiCMS MCP call with Figma context
+mcp_anticms_generate_template_with_context({
+  pageName: "homepage",
+  figmaData: {
+    code: figmaCodeResponse,        // HTML/CSS structure
+    metadata: figmaMetadataResponse, // Component hierarchy  
+    sections: extractedSections,     // Parsed section list
+    contentPatterns: {              // Detected patterns
+      repeaters: ["services", "testimonials", "partners"],
+      groups: ["contact_info", "cta_buttons"],
+      singleFields: ["hero_title", "hero_description"]
+    }
+  }
+})
+```
+
+### Step 3: Enhanced Template Generation
+With Figma context, AntiCMS MCP can:
+- **Auto-detect field types** based on Figma content structure
+- **Set appropriate field limits** based on design capacity
+- **Generate proper field names** from Figma layer names
+- **Create accurate descriptions** from actual content
+- **Handle custom sections** intelligently
+
+### Step 4: Context-Aware Field Mapping
+
+#### Figma Structure Analysis
+```json
+{
+  "figmaAnalysis": {
+    "sections": [
+      {
+        "name": "Hero Section",
+        "elements": [
+          {"type": "text", "content": "Reach Your Business Goals", "role": "heading"},
+          {"type": "text", "content": "We support small businesses...", "role": "description"},
+          {"type": "button", "content": "Get Started", "role": "primary_cta"},
+          {"type": "button", "content": "Watch Video", "role": "secondary_cta"}
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### AntiCMS Field Generation
+```json
+{
+  "hero_section": {
+    "fields": [
+      {
+        "name": "title",
+        "field": "input",
+        "figmaContext": {
+          "sourceElement": "heading",
+          "originalContent": "Reach Your Business Goals"
+        }
+      },
+      {
+        "name": "description", 
+        "field": "textarea",
+        "figmaContext": {
+          "sourceElement": "description",
+          "originalContent": "We support small businesses..."
+        }
+      }
+    ]
+  }
+}
+```
+
+## Enhanced AntiCMS MCP Server Functions
+
+### New Function: `generate_template_with_figma_context`
+```javascript
+function generateTemplateWithFigmaContext(request) {
+  const { pageName, figmaData } = request;
+  
+  // Analyze Figma structure
+  const sections = parseFigmaSections(figmaData.code, figmaData.metadata);
+  
+  // Map to AntiCMS components
+  const components = sections.map(section => {
+    if (isBuiltInSection(section.name)) {
+      return generateBuiltInSection(section.name, section.content);
+    } else {
+      return generateCustomSection(section.name, section.elements, figmaData.contentPatterns);
+    }
+  });
+  
+  return {
+    name: pageName,
+    components: components,
+    figmaSource: figmaData.metadata.node_id
+  };
+}
+```
+
+### Enhanced Field Detection
+```javascript
+function detectFieldType(figmaElement, contentPatterns) {
+  const content = figmaElement.content;
+  const role = figmaElement.role;
+  
+  // Smart field type detection based on Figma context
+  if (content.length > 300) return "texteditor";
+  if (content.length > 100) return "textarea"; 
+  if (role === "image" || role === "icon") return "media";
+  if (role === "button") return createButtonGroup(figmaElement);
+  if (contentPatterns.repeaters.includes(figmaElement.parent)) {
+    return createRepeaterField(figmaElement);
+  }
+  
+  return "input"; // Default
+}
+```
+
+## Updated Workflow Integration
+
+### Step 2: Enhanced Template Generation (Updated)
+```markdown
+6. **Extract complete Figma context** - Get code, metadata, and visual structure
+7. **Pass to AntiCMS MCP with context** - Enhanced template generation with Figma data
+8. **Generate intelligent templates** - Field types, limits, and structure based on actual design
+9. **Save context-aware template** - Include Figma source references for future updates
+```
+
+### Step 3: Context-Aware Mock Data Generation
+```markdown
+9. **Run enhanced payload command** - `php artisan app:payload-page {pageName} --save --figma-context`
+10. **Auto-populate with Figma content** - Use extracted content immediately, no dummy data
+11. **Validate against Figma source** - Ensure all design elements are captured
+```
+
+## Benefits of Figma Context Integration
+
+### ✅ **Intelligent Template Generation**
+- **Accurate field types** based on actual content length and type
+- **Proper field limits** based on design element capacity  
+- **Smart section detection** from actual Figma layer hierarchy
+- **Context-aware field names** from Figma layer names
+
+### ✅ **Enhanced Content Mapping**
+- **Direct content extraction** - No guessing or manual mapping needed
+- **Structured data parsing** - Automatic detection of repeaters, groups, singles
+- **Design-first approach** - Template structure follows design exactly
+- **Future-proof updates** - Can regenerate templates when Figma changes
+
+### ✅ **Reduced Manual Work**
+- **No manual field configuration** - All derived from Figma automatically
+- **Accurate content limits** - Field max lengths based on design capacity
+- **Proper multilanguage setup** - Auto-detect which fields need translation
+- **Consistent naming** - Field names derived from design layer names
+
+This approach makes your AntiCMS MCP server much more intelligent by giving it the full context of the actual design, resulting in better templates and more accurate content integration! 🚀

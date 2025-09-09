@@ -1,10 +1,10 @@
 {
-  "name": "about",
-  "label": "Business About Page",
+  "name": "sophisticated_homepage",
+  "label": "Sophisticated Homepage Analysis",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "About page template with hero section, testimonials, contact form, and footer",
+  "description": "Template generated from Figma metadata: Sophisticated Homepage Analysis",
   "components": [
     {
       "keyName": "hero_section",
@@ -52,9 +52,262 @@
       "block": "Hero"
     },
     {
+      "keyName": "partners_section",
+      "label": "Partners Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the partners section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter partners section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter partners content"
+          }
+        }
+      ],
+      "block": "Partners"
+    },
+    {
+      "keyName": "services_section",
+      "label": "Services Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the services section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Our Services",
+            "is_required": false,
+            "defaultValue": "Our Services",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "services",
+          "label": "Services",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 8,
+            "caption": "Add services items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Service name",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Service Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Service description"
+                }
+              },
+              {
+                "name": "icon",
+                "label": "Service Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Learn More Link",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/services/service-name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Services"
+    },
+    {
+      "keyName": "why_choose_us_section",
+      "label": "Why choose us Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the why_choose_us section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter why_choose_us section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter why_choose_us content"
+          }
+        }
+      ],
+      "block": "Why choose us"
+    },
+    {
+      "keyName": "work_section",
+      "label": "Work Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the work section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter work section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter work content"
+          }
+        }
+      ],
+      "block": "Work"
+    },
+    {
       "keyName": "testimonials_section",
       "label": "Testimonials Section",
-      "section": "2",
+      "section": "6",
       "fields": [
         {
           "name": "status",
@@ -176,7 +429,7 @@
     {
       "keyName": "contact_section",
       "label": "Contact Section",
-      "section": "3",
+      "section": "7",
       "fields": [
         {
           "name": "section_title",
@@ -249,7 +502,7 @@
     {
       "keyName": "footer_section",
       "label": "Footer Section",
-      "section": "4",
+      "section": "8",
       "fields": [
         {
           "name": "status",
