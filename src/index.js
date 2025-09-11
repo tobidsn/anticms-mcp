@@ -10,21 +10,11 @@ import { z } from 'zod';
 // Import tools and definitions
 import {
   generateTemplate,
-  generateCustomField,
   validateTemplate,
   listFieldTypes,
-  // getRandomQuote, // Disabled for this version
-  generateSection,
-  assignSectionToTemplate,
-  generateNavigation,
-  smartGenerate,
-  generateFromInstructions,
-  generatePostType,
-  generatePostDetails,
-  generateInstructions,
-  // getAllPages, // Disabled for this version
+  generateTemplateFromDescription,
+  getFieldTypeExamples,
 } from './tools/templateGenerator.js';
-import { extractApiKey, extractApiUrl, setApiContext, needsApiContext } from './tools/apiContext.js';
 import { registerResources } from './tools/resources.js';
 import { registerPrompts } from './tools/prompts.js';
 
@@ -71,10 +61,11 @@ class AntiCMSServer {
           is_content: z.boolean().optional().default(false).describe('Whether this is a content template'),
           multilanguage: z.boolean().optional().default(true).describe('Enable multilanguage support'),
           is_multiple: z.boolean().optional().default(false).describe('Allow multiple instances'),
-          sections: z.array(z.enum(['hero', 'features', 'contact', 'gallery', 'content_parts', 'scorecards'])).describe('Array of section types to include'),
+          sections: z.array(z.string()).describe('Array of section types to include. Built-in types: hero, features, contact, gallery, content_parts, scorecards. Custom section names are also supported.'),
           include_cta: z.boolean().optional().default(false).describe('Include call-to-action in hero section'),
           max_features: z.number().optional().default(6).describe('Maximum number of features'),
-          max_gallery_images: z.number().optional().default(12).describe('Maximum number of gallery images')
+          max_gallery_images: z.number().optional().default(12).describe('Maximum number of gallery images'),
+          figma_metadata_file: z.string().optional().describe('Path to Figma metadata JSON file for enhanced field detection'),
         }
       },
       async (args) => {
@@ -87,25 +78,6 @@ class AntiCMSServer {
           console.error(`[MCP] generate_template error:`, error);
           throw error;
         }
-      }
-    );
-
-    // Register generate_custom_field tool
-    this.server.registerTool(
-      'generate_custom_field',
-      {
-        title: 'Generate Custom Field',
-        description: 'Generate a custom field with specific type and attributes',
-        inputSchema: {
-          name: z.string().describe('Field identifier (snake_case)'),
-          label: z.string().describe('Human-readable field label'),
-          field_type: z.enum(['input', 'textarea', 'texteditor', 'select', 'toggle', 'media', 'repeater', 'group', 'relationship', 'post_object', 'post_related', 'table']).describe('AntiCMS v3 field type'),
-          multilanguage: z.boolean().optional().default(false).describe('Enable multilanguage support'),
-          attributes: z.object({}).optional().describe('Field-specific attributes (varies by field type)')
-        }
-      },
-      async (args) => {
-        return await generateCustomField(args);
       }
     );
 
@@ -137,334 +109,39 @@ class AntiCMSServer {
       }
     );
 
-    // Register get_random_quote tool - DISABLED FOR THIS VERSION
-    /*
+    // Register generate_template_from_description tool
     this.server.registerTool(
-      'get_random_quote',
+      'generate_template_from_description',
       {
-        title: 'Get Random Quote',
-        description: 'Get inspirational quotes from Steve Jobs and other famous figures',
+        title: 'Generate Template from Description',
+        description: 'Generate a template from natural language description',
         inputSchema: {
-          category: z.enum(['steve-jobs', 'design-leaders', 'business', 'creativity']).optional().default('steve-jobs').describe('Category of quotes'),
-          figure: z.string().optional().describe('Specific figure to quote (if applicable)')
+          description: z.string().describe('Natural language description of the desired template'),
+          name: z.string().optional().describe('Template identifier (will be auto-generated if not provided)'),
+          label: z.string().optional().describe('Template label (will be auto-generated if not provided)')
         }
       },
       async (args) => {
-        console.error(`[MCP] get_random_quote called with args:`, args);
-        try {
-          const result = await getRandomQuote(args);
-          console.error(`[MCP] get_random_quote result:`, result);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] get_random_quote error:`, error);
-          throw error;
-        }
+        return await generateTemplateFromDescription(args);
       }
     );
-    */
 
-    // Register generate_section tool
+    // Register get_field_type_examples tool
     this.server.registerTool(
-      'generate_section',
+      'get_field_type_examples',
       {
-        title: 'Generate Section',
-        description: 'Generate a single section component for AntiCMS v3 template',
+        title: 'Get Field Type Examples',
+        description: 'Get comprehensive examples and usage patterns for field types',
         inputSchema: {
-          section_type: z.enum(['hero', 'features', 'contact', 'gallery', 'content_parts', 'scorecards']).describe('Type of section to generate'),
-          key_name: z.string().optional().describe('Custom key name for the section'),
-          label: z.string().optional().describe('Custom label for the section'),
-          position: z.number().optional().describe('Position/section number'),
-          options: z.object({
-            include_cta: z.boolean().optional().describe('Include call-to-action in hero section'),
-            max_features: z.number().optional().describe('Maximum number of features'),
-            max_gallery_images: z.number().optional().describe('Maximum number of gallery images')
-          }).optional().describe('Section-specific options')
+          field_type: z.string().optional().describe('Specific field type to get examples for'),
+          show_usage_patterns: z.boolean().optional().default(true).describe('Include usage patterns'),
+          show_best_practices: z.boolean().optional().default(true).describe('Include best practices')
         }
       },
       async (args) => {
-        console.error(`[MCP] generate_section called with args:`, args);
-        try {
-          const result = await generateSection(args);
-          console.error(`[MCP] generate_section completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_section error:`, error);
-          throw error;
-        }
+        return await getFieldTypeExamples(args);
       }
     );
-
-    // Register assign_section_to_template tool
-    this.server.registerTool(
-      'assign_section_to_template',
-      {
-        title: 'Assign Section to Template',
-        description: 'Assign a generated section to a template file with position',
-        inputSchema: {
-          template_file: z.string().describe('Template file name (without .json extension)'),
-          section_json: z.string().describe('Section JSON string to assign'),
-          position: z.number().optional().describe('Position/section number to assign')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] assign_section_to_template called with args:`, args);
-        try {
-          const result = await assignSectionToTemplate(args);
-          console.error(`[MCP] assign_section_to_template completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] assign_section_to_template error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register generate_navigation tool
-    this.server.registerTool(
-      'generate_navigation',
-      {
-        title: 'Generate Navigation',
-        description: 'Generate JSON AntiCMS v3 navigation/menu/nav',
-        inputSchema: {
-          name: z.string().describe('Menu name'),
-          menu_items: z.array(z.object({
-            title: z.union([z.string(), z.object({}).passthrough()]).describe('Menu item title (string or multilingual object)'),
-            type: z.enum(['page', 'url', 'post']).optional().default('page').describe('Menu item type'),
-            url: z.string().optional().describe('URL for link type items'),
-            post_id: z.number().optional().describe('Post ID for post type items'),
-            parent_id: z.number().optional().describe('Parent menu item ID for nested items'),
-            new_window: z.boolean().optional().default(false).describe('Open in new window'),
-            sort: z.number().optional().describe('Sort order (auto-generated if not provided)'),
-            image: z.string().optional().describe('Menu item image'),
-            children: z.array(z.any()).optional().default([]).describe('Child menu items')
-          })).describe('Array of menu items')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] generate_navigation called with args:`, args);
-        try {
-          const result = await generateNavigation(args);
-          console.error(`[MCP] generate_navigation completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_navigation error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register smart_generate tool
-    this.server.registerTool(
-      'smart_generate',
-      {
-        title: 'Smart Generate from Prompt',
-        description: 'Intelligently analyze user prompts and Figma links to automatically generate navigation and templates',
-        inputSchema: {
-          prompt: z.string().describe('User prompt describing what to generate (e.g., "Create an AntiCMS v3 template called agency")'),
-          figma_link: z.string().optional().describe('Figma design link to analyze and extract components from'),
-          instruction_file: z.string().optional().describe('Path to instruction document file (.md format)'),
-          instruction_content: z.string().optional().describe('Direct instruction document content (markdown format)'),
-          auto_detect: z.boolean().optional().default(true).describe('Enable automatic detection of generation needs')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] smart_generate called with args:`, args);
-        try {
-          const result = await smartGenerate(args);
-          console.error(`[MCP] smart_generate completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] smart_generate error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register generate_from_instructions tool
-    this.server.registerTool(
-      'generate_from_instructions',
-      {
-        title: 'Generate from Instructions',
-        description: 'Generate AntiCMS v3 template from structured instruction document (markdown format)',
-        inputSchema: {
-          instruction_file: z.string().optional().describe('Path to instruction document file (.md format)'),
-          instruction_content: z.string().optional().describe('Direct instruction document content (markdown format)'),
-          template_type: z.enum(['pages', 'posts']).optional().default('pages').describe('Template type: "pages" or "posts"')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] generate_from_instructions called with args:`, args);
-        try {
-          const result = await generateFromInstructions(args);
-          console.error(`[MCP] generate_from_instructions completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_from_instructions error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register generate_post_type tool
-    this.server.registerTool(
-      'generate_post_type',
-      {
-        title: 'Generate Post Type',
-        description: 'Generate AntiCMS v3 post type settings (saves to posts-type folder)',
-        inputSchema: {
-          name: z.string().describe('Post type name (e.g., "Events")'),
-          slug: z.string().optional().describe('Post type slug (auto-generated if not provided)'),
-          is_show: z.boolean().optional().default(true).describe('Show in admin menu'),
-          is_category: z.boolean().optional().default(true).describe('Enable categories'),
-          is_tags: z.boolean().optional().default(true).describe('Enable tags'),
-          is_featured_image: z.boolean().optional().default(true).describe('Enable featured image'),
-          is_content: z.boolean().optional().default(true).describe('Enable content editor'),
-          is_enable_seo: z.boolean().optional().default(true).describe('Enable SEO settings'),
-          is_edit_date: z.boolean().optional().default(true).describe('Enable date editing'),
-          have_permission: z.boolean().optional().default(true).describe('Enable permissions'),
-          have_custom_fields: z.boolean().optional().default(true).describe('Enable custom fields')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] generate_post_type called with args:`, args);
-        try {
-          const result = await generatePostType(args);
-          console.error(`[MCP] generate_post_type completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_post_type error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register generate_post_details tool
-    this.server.registerTool(
-      'generate_post_details',
-      {
-        title: 'Generate Post Details',
-        description: 'Generate AntiCMS v3 post detail custom fields (saves to posts folder)',
-        inputSchema: {
-          post_type_name: z.string().describe('Post type name'),
-          sections: z.array(z.object({
-            keyName: z.string().optional().describe('Section key name'),
-            label: z.string().optional().describe('Section label'),
-            fields: z.array(z.any()).optional().describe('Array of field objects')
-          })).optional().describe('Array of sections with custom fields')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] generate_post_details called with args:`, args);
-        try {
-          const result = await generatePostDetails(args);
-          console.error(`[MCP] generate_post_details completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_post_details error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register generate_instructions tool
-    this.server.registerTool(
-      'generate_instructions',
-      {
-        title: 'Generate Instructions',
-        description: 'Generate instruction document (.md) from prompt or Figma analysis (saves to storage/app/rules/)',
-        inputSchema: {
-          prompt: z.string().optional().describe('User prompt describing the template structure'),
-          figma_link: z.string().optional().describe('Figma design link to analyze'),
-          template_name: z.string().optional().describe('Template identifier (snake_case, auto-generated if not provided)'),
-          template_label: z.string().optional().describe('Human-readable template name (auto-generated if not provided)'),
-          sections: z.array(z.object({
-            name: z.string().describe('Section name'),
-            label: z.string().describe('Section label'),
-            keyName: z.string().describe('Section key name'),
-            order: z.number().describe('Section order'),
-            fields: z.array(z.object({
-              name: z.string().describe('Field name'),
-              type: z.string().describe('Field type'),
-              multilanguage: z.boolean().optional().describe('Multilanguage support'),
-              required: z.boolean().optional().describe('Required field'),
-              default: z.string().optional().describe('Default value'),
-              caption: z.string().optional().describe('Field caption'),
-              min: z.number().optional().describe('Minimum value/length'),
-              max: z.number().optional().describe('Maximum value/length'),
-              fields: z.array(z.any()).optional().describe('Nested fields for repeater/group')
-            })).describe('Array of field definitions')
-          })).optional().describe('Array of sections (auto-detected from prompt if not provided)'),
-          is_content: z.boolean().optional().default(false).describe('Whether this is a content template'),
-          multilanguage: z.boolean().optional().default(true).describe('Enable multilanguage support'),
-          is_multiple: z.boolean().optional().default(false).describe('Allow multiple instances'),
-          description: z.string().optional().describe('Template description (auto-generated if not provided)')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] generate_instructions called with args:`, args);
-        try {
-          const result = await generateInstructions(args);
-          console.error(`[MCP] generate_instructions completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] generate_instructions error:`, error);
-          throw error;
-        }
-      }
-    );
-
-    // Register get_all_pages tool - DISABLED FOR THIS VERSION
-    /*
-    this.server.registerTool(
-      'get_all_pages',
-      {
-        title: 'Get All Pages',
-        description: 'Fetch all pages from AntiCMS API (supports ANTICMS_ADMIN_URL and ANTICMS_ADMIN_API_KEY HTTP headers)',
-        inputSchema: {
-          api_url: z.string().optional().describe('AntiCMS API base URL (default from ANTICMS_ADMIN_URL env or HTTP header)'),
-          api_key: z.string().optional().describe('API key for authentication (default from ANTICMS_ADMIN_API_KEY env or HTTP header)'),
-          use_header: z.boolean().optional().default(true).describe('Use HTTP headers (true) or query parameter (false)'),
-          ignore_ssl: z.boolean().optional().default(false).describe('Ignore SSL certificate errors for development/test domains')
-        }
-      },
-      async (args) => {
-        console.error(`[MCP] get_all_pages called with args:`, args);
-        try {
-          // Extract API key and URL using the new context-aware functions
-          const apiKey = extractApiKey(args);
-          const apiUrl = extractApiUrl(args);
-          
-          const finalArgs = {
-            api_url: apiUrl,
-            api_key: apiKey,
-            use_header: args.use_header !== undefined ? args.use_header : true,
-            ignore_ssl: args.ignore_ssl !== undefined ? args.ignore_ssl : false
-          };
-
-          // Validate that we have required parameters
-          if (!finalArgs.api_url) {
-            const errorMsg = 'API URL is required. Please provide api_url parameter, set ANTICMS_ADMIN_URL environment variable, or use ANTICMS_ADMIN_URL HTTP header.';
-            console.error(`[MCP] get_all_pages error: ${errorMsg}`);
-            throw new Error(errorMsg);
-          }
-          
-          if (!finalArgs.api_key) {
-            const errorMsg = 'API key is required. Please provide api_key parameter, set ANTICMS_ADMIN_API_KEY environment variable, or use ANTICMS_ADMIN_API_KEY HTTP header.';
-            console.error(`[MCP] get_all_pages error: ${errorMsg}`);
-            throw new Error(errorMsg);
-          }
-          
-          console.error(`[MCP] get_all_pages final args:`, finalArgs);
-          const result = await getAllPages(finalArgs);
-          console.error(`[MCP] get_all_pages completed successfully`);
-          return result;
-        } catch (error) {
-          console.error(`[MCP] get_all_pages error:`, error);
-          throw error;
-        }
-      }
-    );
-    */
   }
 
   /**
@@ -534,16 +211,6 @@ class AntiCMSServer {
         console.error(`[MCP] Processing POST request: ${JSON.stringify(req.body, null, 2)}`);
         
         const sessionId = req.headers['mcp-session-id'];
-        
-        // Check if this is a tool call that needs API context
-        const isToolCall = req.body.method === 'tools/call';
-        const toolName = req.body.params?.name;
-        
-        if (isToolCall && toolName && needsApiContext(toolName)) {
-          // Set API context with headers for API tools only
-          setApiContext(req.headers, sessionId);
-          console.error(`[MCP] API context set for tool: ${toolName}`);
-        }
         
         let transport;
 
@@ -706,4 +373,4 @@ process.on('SIGTERM', () => {
 main().catch((error) => {
   console.error('Server error:', error);
   process.exit(1);
-}); 
+});

@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "anticms-mcp": {
+      "command": "node",
+      "args": [
+        "/Users/tobi/Sites/Anticms-MCP/src/index.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1191 @@
+{
+  "name": "cta_group_test",
+  "label": "CTA Group Test",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Testing CTA group generation instead of separate fields",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "logo",
+          "label": "Logo",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "menu_items",
+          "label": "Menu Items",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter menu items",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Cta Button",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter cta button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "world_record_badge",
+          "label": "World Record Badge",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter world record badge",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "headline",
+          "label": "Headline",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter headline",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the testimonial",
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter description"
+          }
+        },
+        {
+          "name": "primary_cta",
+          "label": "Primary Cta",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter primary cta",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "secondary_cta",
+          "label": "Secondary Cta",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter secondary cta",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "score",
+          "label": "Score",
+          "field": "input",
+          "attribute": {
+            "type": "number",
+            "placeholder": "Enter score",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1,
+            "min": 0
+          }
+        },
+        {
+          "name": "stars",
+          "label": "Stars",
+          "field": "input",
+          "attribute": {
+            "type": "number",
+            "placeholder": "Enter stars",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1,
+            "min": 0
+          }
+        },
+        {
+          "name": "avatars",
+          "label": "Avatars",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 100,
+              "maxWidth": 200,
+              "minHeight": 100,
+              "maxHeight": 200
+            }
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "partners_section",
+      "label": "Partners Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the partners section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "total_companies",
+          "label": "Total Companies",
+          "field": "input",
+          "attribute": {
+            "type": "number",
+            "placeholder": "Enter total companies",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1,
+            "min": 0
+          }
+        },
+        {
+          "name": "companies",
+          "label": "Companies",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add companies items",
+            "fields": [
+              {
+                "name": "name",
+                "label": "Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Enter name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "logo_placeholder",
+                "label": "Logo Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Partners"
+    },
+    {
+      "keyName": "services_section",
+      "label": "Services Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the services section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter section label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the testimonial",
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter description"
+          }
+        },
+        {
+          "name": "services",
+          "label": "Services",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add services items",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              },
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Description",
+                "field": "texteditor",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "full",
+                  "rows": 10,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the testimonial",
+                  "defaultValue": "",
+                  "value": null,
+                  "max": 255,
+                  "placeholder": "Enter description"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Services"
+    },
+    {
+      "keyName": "why_choose_us_section",
+      "label": "Why Choose Us Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the why_choose_us section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter section label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "features",
+          "label": "Features",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add features items",
+            "fields": [
+              {
+                "name": "icon",
+                "label": "Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              },
+              {
+                "name": "text",
+                "label": "Text",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter text",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Cta Button",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter cta button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Why Choose Us"
+    },
+    {
+      "keyName": "work_section",
+      "label": "Work Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the work section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter section label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "cta_button",
+          "label": "Cta Button",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter cta button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "projects",
+          "label": "Projects",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add projects items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Enter title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "image_placeholder",
+                "label": "Image Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Work"
+    },
+    {
+      "keyName": "testimonials_section",
+      "label": "Testimonials Section",
+      "section": "6",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the testimonials section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter section label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "quote",
+          "label": "Quote",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter quote"
+          }
+        },
+        {
+          "name": "author",
+          "label": "Author",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter author",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "avatar_placeholder",
+          "label": "Avatar Placeholder",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 100,
+              "maxWidth": 200,
+              "minHeight": 100,
+              "maxHeight": 200
+            }
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Testimonials"
+    },
+    {
+      "keyName": "contact_section",
+      "label": "Contact Section",
+      "section": "7",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the contact section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_label",
+          "label": "Section Label",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter section label",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "form_fields",
+          "label": "Form Fields",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add form fields items",
+            "fields": [
+              {
+                "name": "type",
+                "label": "Type",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter type",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "placeholder",
+                "label": "Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 400,
+                    "maxWidth": 1920,
+                    "minHeight": 300,
+                    "maxHeight": 1080
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "submit_button",
+          "label": "Submit Button",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter submit button",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Contact"
+    },
+    {
+      "keyName": "footer_section",
+      "label": "Footer Section",
+      "section": "8",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the footer section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "logo",
+          "label": "Logo",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 400,
+              "maxWidth": 1920,
+              "minHeight": 300,
+              "maxHeight": 1080
+            }
+          }
+        },
+        {
+          "name": "social_links",
+          "label": "Social Links",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add social links items",
+            "fields": [
+              {
+                "name": "platform",
+                "label": "Platform",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter platform",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "icon",
+                "label": "Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "links",
+          "label": "Links",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 10,
+            "caption": "Add links items",
+            "fields": [
+              {
+                "name": "item",
+                "label": "Item",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter item",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "copyright",
+          "label": "Copyright",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "placeholder": "Enter copyright",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "maxLength": 50,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "button_group",
+          "label": "Button Group",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "label",
+                "label": "Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Button Label",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "link",
+                "label": "Link",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "Enter link",
+                  "is_required": false,
+                  "defaultValue": "#",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ],
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "block": "Footer"
+    }
+  ]
+}

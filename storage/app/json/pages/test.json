@@ -1,0 +1,275 @@
+{
+  "name": "test",
+  "label": "Test",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "I need a landing page for a web design agency with about, news section, blog section [DEBUG: Input sections: ] [DEBUG: Parsed sections: about,news,blog] [DEBUG: condition1=true, condition2=true, condition3=false] [DEBUG: Using parsed sections] ",
+  "components": [
+    {
+      "keyName": "about_section",
+      "label": "About Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the about section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "About Us",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "max": 500,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the our services section",
+            "defaultValue": "",
+            "value": null,
+            "placeholder": "Enter about description"
+          }
+        }
+      ],
+      "block": "About"
+    },
+    {
+      "keyName": "news_section",
+      "label": "News Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the news section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Latest News",
+            "is_required": false,
+            "defaultValue": "Latest News",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Brief description of news",
+            "cols": 50,
+            "max": 1000,
+            "min": 10,
+            "is_required": true,
+            "defaultValue": "",
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "news",
+            "max": 6,
+            "min": 1,
+            "caption": "Select news articles to display in this section"
+          }
+        },
+        {
+          "name": "show_more_link",
+          "label": "Show More Link",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "enabled",
+                "label": "Show Link",
+                "field": "toggle",
+                "attribute": {
+                  "caption": "Show \"View All\" link",
+                  "defaultValue": true,
+                  "value": null
+                }
+              },
+              {
+                "name": "label",
+                "label": "Link Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "View All News Articles",
+                  "is_required": false,
+                  "defaultValue": "View All News Articles",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "url",
+                "label": "Link URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/news",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "News"
+    },
+    {
+      "keyName": "blog_section",
+      "label": "Blog Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the blog section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Blog Posts",
+            "is_required": false,
+            "defaultValue": "Blog Posts",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Brief description of blog",
+            "cols": 50,
+            "max": 1000,
+            "min": 10,
+            "is_required": true,
+            "defaultValue": "",
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "post",
+            "max": 6,
+            "min": 1,
+            "caption": "Select blog posts to display in this section"
+          }
+        },
+        {
+          "name": "show_more_link",
+          "label": "Show More Link",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "enabled",
+                "label": "Show Link",
+                "field": "toggle",
+                "attribute": {
+                  "caption": "Show \"View All\" link",
+                  "defaultValue": true,
+                  "value": null
+                }
+              },
+              {
+                "name": "label",
+                "label": "Link Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "View All Blog Posts",
+                  "is_required": false,
+                  "defaultValue": "View All Blog Posts",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "url",
+                "label": "Link URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/blog",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Blog"
+    }
+  ]
+}

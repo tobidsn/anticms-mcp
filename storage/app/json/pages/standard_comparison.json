@@ -1,0 +1,405 @@
+{
+  "name": "standard_comparison",
+  "label": "Standard Comparison",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Standard template generation for comparison",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            },
+            "caption": "Recommended resolution: 1920x1080px"
+          }
+        },
+        {
+          "name": "scroll_indicator",
+          "label": "Scroll Indicator",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Show/hide scroll indicator",
+            "defaultValue": true,
+            "value": null
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "partners_section",
+      "label": "Partners Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the partners section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter partners section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter partners content"
+          }
+        }
+      ],
+      "block": "Partners"
+    },
+    {
+      "keyName": "services_section",
+      "label": "Services Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the services section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Our Services",
+            "is_required": false,
+            "defaultValue": "Our Services",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "services",
+          "label": "Services",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 8,
+            "caption": "Add services items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Service name",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Service Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Service description"
+                }
+              },
+              {
+                "name": "icon",
+                "label": "Service Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Learn More Link",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/services/service-name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Services"
+    },
+    {
+      "keyName": "testimonials_section",
+      "label": "Testimonials Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the testimonials section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "What Our Clients Say",
+            "is_required": false,
+            "defaultValue": "What Our Clients Say",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "testimonials",
+          "label": "Testimonials",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 6,
+            "caption": "Add testimonials",
+            "fields": [
+              {
+                "name": "name",
+                "label": "Name",
+                "field": "input",
+                "multilanguage": false,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Client name",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "position",
+                "label": "Position",
+                "field": "input",
+                "multilanguage": false,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Job title",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "company",
+                "label": "Company",
+                "field": "input",
+                "multilanguage": false,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Company name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "testimonial",
+                "label": "Testimonial",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 4,
+                  "placeholder": "Client testimonial text",
+                  "cols": 50,
+                  "max": 1000,
+                  "min": 10,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null
+                }
+              },
+              {
+                "name": "avatar",
+                "label": "Avatar",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 200,
+                    "minHeight": 100,
+                    "maxHeight": 200
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Testimonials"
+    },
+    {
+      "keyName": "contact_section",
+      "label": "Contact Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Contact section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "contact_info",
+          "label": "Contact Information",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "email",
+                "label": "Email",
+                "field": "input",
+                "attribute": {
+                  "type": "email",
+                  "placeholder": "contact@example.com",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null
+                }
+              },
+              {
+                "name": "phone",
+                "label": "Phone",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "+1 (555) 123-4567",
+                  "maxLength": 20,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null
+                }
+              },
+              {
+                "name": "address",
+                "label": "Address",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "placeholder": "Company address",
+                  "cols": 50,
+                  "max": 1000,
+                  "min": 10,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Contact"
+    }
+  ]
+}

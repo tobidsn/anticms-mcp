@@ -1,0 +1,363 @@
+{
+  "page_name": "about",
+  "figma_node_id": "131-146",
+  "figma_url": "https://figma.com/design/fileKey/fileName?node-id=131-146",
+  "extracted_at": "2024-12-30T02:30:00Z",
+  "figma_data": {
+    "code_response": {
+      "sections_identified": [
+        "Hero",
+        "Testimonials",
+        "Contact Us",
+        "Footer"
+      ],
+      "key_elements": {
+        "hero_section": {
+          "main_title": "Reach Your Business Goals in Record Time",
+          "description": "Support small business and join the nationwide movement to encourage commercial support for the millions of minority owned businesses helping world economy.",
+          "badge": "Best Business Platform - World Record 2021",
+          "buttons": [
+            {
+              "type": "primary",
+              "text": "Get Started"
+            },
+            {
+              "type": "secondary",
+              "text": "Watch Video",
+              "icon": "video-circle"
+            }
+          ],
+          "rating_display": "4.9",
+          "company_logo": "PEBISNIS ULUNG."
+        },
+        "testimonials_section": {
+          "title": "What Our Customer's Say",
+          "subtitle": "TESTIMONIAL",
+          "testimonial": {
+            "name": "Gloria Jessica",
+            "text": "I really like the team for example, a relationship-focused performance expectation might be that the employee sustain collegial working relationships with her peers, subordinates and customers.",
+            "avatar": true
+          }
+        },
+        "contact_section": {
+          "title": "Let's Collaborate Now!",
+          "subtitle": "CONTACT US",
+          "form_fields": [
+            {
+              "name": "full_name",
+              "label": "Full Name",
+              "placeholder": "Input Your Name",
+              "type": "text"
+            },
+            {
+              "name": "email",
+              "label": "Email",
+              "placeholder": "Input Your Email",
+              "type": "email"
+            },
+            {
+              "name": "date",
+              "label": "Date",
+              "placeholder": "Select Date",
+              "type": "date"
+            },
+            {
+              "name": "message",
+              "label": "Message",
+              "placeholder": "Write Message...",
+              "type": "textarea"
+            }
+          ],
+          "submit_button": "Send Message"
+        },
+        "footer_section": {
+          "company_name": "PEBISNIS ULUNG.",
+          "copyright": "Copyright Pebisnis Ulung. All right reserved",
+          "links": ["Privacy Policy", "Terms"],
+          "social_media": ["twitter", "facebook", "instagram"],
+          "description": "Deskripsi"
+        }
+      },
+      "images_identified": [
+        "Hero background with business woman",
+        "Contact section background image",
+        "Testimonial avatar image",
+        "Social media icons",
+        "Rating stars display"
+      ],
+      "color_scheme": {
+        "primary": "Pink/Red gradient buttons",
+        "secondary": "Blue accent colors",
+        "background": "Light/white sections",
+        "text": "Dark text on light backgrounds"
+      }
+    },
+    "metadata_response": {
+      "structure": {
+        "root_frame": {
+          "id": "131:146",
+          "name": "About",
+          "dimensions": {
+            "width": 1429,
+            "height": 2639,
+            "x": 958,
+            "y": -428
+          }
+        },
+        "main_sections": [
+          {
+            "id": "131:2611",
+            "name": "Hero",
+            "dimensions": {
+              "width": 1440,
+              "height": 780,
+              "x": 0,
+              "y": 0
+            },
+            "child_elements": [
+              {
+                "id": "131:2618",
+                "name": "Group 2055",
+                "type": "main_content",
+                "contains": ["title", "description", "buttons", "badge"]
+              },
+              {
+                "id": "131:2634",
+                "name": "Group 650",
+                "type": "navigation",
+                "contains": ["logo", "menu_items", "cta_button"]
+              },
+              {
+                "id": "131:2645",
+                "name": "Group 2052",
+                "type": "hero_image",
+                "contains": ["business_woman_image", "rating_display"]
+              }
+            ]
+          },
+          {
+            "id": "131:175",
+            "name": "Testimonials",
+            "dimensions": {
+              "width": 1440,
+              "height": 1107.5018310546875,
+              "x": -16,
+              "y": 596.4981689453125
+            },
+            "child_elements": [
+              {
+                "id": "131:2405",
+                "name": "Group 9139",
+                "type": "section_header",
+                "contains": ["title", "subtitle"]
+              },
+              {
+                "id": "131:2396",
+                "name": "Group 9140",
+                "type": "testimonial_card",
+                "contains": ["testimonial_text", "author_info", "avatar"]
+              }
+            ]
+          },
+          {
+            "id": "131:2408",
+            "name": "Contact Us",
+            "dimensions": {
+              "width": 1440,
+              "height": 1325.7138671875,
+              "x": -18,
+              "y": 1210.2861328125
+            },
+            "child_elements": [
+              {
+                "id": "131:2411",
+                "name": "Group 9148",
+                "type": "contact_form",
+                "contains": ["form_fields", "submit_button"]
+              },
+              {
+                "id": "131:2434",
+                "name": "Group 9146",
+                "type": "contact_image",
+                "contains": ["background_image"]
+              }
+            ]
+          },
+          {
+            "id": "131:147",
+            "name": "Footer",
+            "dimensions": {
+              "width": 1440,
+              "height": 1199.8563232421875,
+              "x": -14,
+              "y": 1496
+            },
+            "child_elements": [
+              {
+                "id": "131:174",
+                "name": "PEBISNIS ULUNG.",
+                "type": "logo"
+              },
+              {
+                "id": "131:152",
+                "name": "Group 9150",
+                "type": "footer_content",
+                "contains": ["social_links", "copyright", "legal_links"]
+              }
+            ]
+          }
+        ]
+      },
+      "total_elements": 2684,
+      "complex_components": [
+        "Navigation menu with CTA button",
+        "Hero section with image overlay and rating display",
+        "Testimonial card with avatar and quote",
+        "Multi-field contact form",
+        "Footer with social media links"
+      ]
+    }
+  },
+  "anticms_analysis": {
+    "template_type": "pages",
+    "recommended_sections": [
+      {
+        "section_type": "hero",
+        "key_name": "hero_section",
+        "fields_detected": [
+          {
+            "name": "main_title",
+            "type": "input",
+            "label": "Main Title"
+          },
+          {
+            "name": "description",
+            "type": "textarea",
+            "label": "Description"
+          },
+          {
+            "name": "badge_text",
+            "type": "input",
+            "label": "Badge Text"
+          },
+          {
+            "name": "primary_button_text",
+            "type": "input",
+            "label": "Primary Button Text"
+          },
+          {
+            "name": "secondary_button_text",
+            "type": "input",
+            "label": "Secondary Button Text"
+          },
+          {
+            "name": "hero_image",
+            "type": "media",
+            "label": "Hero Image"
+          }
+        ]
+      },
+      {
+        "section_type": "testimonials",
+        "key_name": "testimonials_section",
+        "fields_detected": [
+          {
+            "name": "section_title",
+            "type": "input",
+            "label": "Section Title"
+          },
+          {
+            "name": "section_subtitle",
+            "type": "input",
+            "label": "Section Subtitle"
+          },
+          {
+            "name": "testimonials",
+            "type": "repeater",
+            "label": "Testimonials",
+            "sub_fields": [
+              {
+                "name": "author_name",
+                "type": "input",
+                "label": "Author Name"
+              },
+              {
+                "name": "testimonial_text",
+                "type": "textarea",
+                "label": "Testimonial Text"
+              },
+              {
+                "name": "author_avatar",
+                "type": "media",
+                "label": "Author Avatar"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "section_type": "contact",
+        "key_name": "contact_section",
+        "fields_detected": [
+          {
+            "name": "section_title",
+            "type": "input",
+            "label": "Section Title"
+          },
+          {
+            "name": "section_subtitle",
+            "type": "input",
+            "label": "Section Subtitle"
+          },
+          {
+            "name": "form_fields",
+            "type": "group",
+            "label": "Contact Form Configuration",
+            "sub_fields": [
+              {
+                "name": "show_name_field",
+                "type": "toggle",
+                "label": "Show Name Field"
+              },
+              {
+                "name": "show_email_field",
+                "type": "toggle",
+                "label": "Show Email Field"
+              },
+              {
+                "name": "show_date_field",
+                "type": "toggle",
+                "label": "Show Date Field"
+              },
+              {
+                "name": "show_message_field",
+                "type": "toggle",
+                "label": "Show Message Field"
+              }
+            ]
+          },
+          {
+            "name": "submit_button_text",
+            "type": "input",
+            "label": "Submit Button Text"
+          },
+          {
+            "name": "background_image",
+            "type": "media",
+            "label": "Background Image"
+          }
+        ]
+      }
+    ],
+    "complexity_score": 8.5,
+    "multilanguage_support": true,
+    "responsive_design": true,
+    "custom_styling_needed": true
+  },
+  "generation_context": {
+    "figma_framework_context": "laravel",
+    "figma_languages_context": "php,json",
+    "extraction_method": "figma_dev_mode_mcp",
+    "cache_purpose": "template_generation_reference"
+  }
+}

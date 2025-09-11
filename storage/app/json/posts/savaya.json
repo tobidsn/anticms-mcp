@@ -1,0 +1,167 @@
+{
+  "name": "savaya",
+  "label": "Savaya Group",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Create a sophisticated hospitality website template for Savaya Group based on the Figma design. The template should include:\n\n1. Hero section with large background image and tagline \"High above the cliffs, deep within the cities, amidst the nightlife\" with scroll indicator\n2. Image gallery/slider section with multiple images in a grid layout\n3. Brands showcase section featuring partner restaurants like The Nineteen steakhouse with description and arrow navigation\n4. Services section highlighting \"Private Events\" with compelling copy about special occasions and call-to-action button\n5. Events listing section with \"Gather, celebrate & connect at our events\" featuring event dates, names, descriptions and view detail buttons  \n6. Our Stories section showcasing news articles with images, titles, and dates in a card layout\n7. Closing section with \"Celebrate Life, The Savaya Way\" message and call-to-action button\n8. Footer with company information, social links, and newsletter signup\n\nThe template should reflect luxury hospitality branding with sophisticated typography, elegant layouts, and premium imagery showcasing restaurants, events, and lifestyle content.",
+  "components": [
+    {
+      "keyName": "about_section",
+      "label": "About Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the about section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "About Us",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "max": 500,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the our services section",
+            "defaultValue": "",
+            "value": null,
+            "placeholder": "Enter about description"
+          }
+        }
+      ],
+      "block": "About"
+    },
+    {
+      "keyName": "news_section",
+      "label": "News Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the news section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Latest News",
+            "is_required": false,
+            "defaultValue": "Latest News",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "subtitle",
+          "label": "Subtitle",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 2,
+            "placeholder": "Brief description of news",
+            "cols": 50,
+            "max": 1000,
+            "min": 10,
+            "is_required": true,
+            "defaultValue": "",
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "news",
+            "max": 6,
+            "min": 1,
+            "caption": "Select news articles to display in this section"
+          }
+        },
+        {
+          "name": "show_more_link",
+          "label": "Show More Link",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "enabled",
+                "label": "Show Link",
+                "field": "toggle",
+                "attribute": {
+                  "caption": "Show \"View All\" link",
+                  "defaultValue": true,
+                  "value": null
+                }
+              },
+              {
+                "name": "label",
+                "label": "Link Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "View All News Articles",
+                  "is_required": false,
+                  "defaultValue": "View All News Articles",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "url",
+                "label": "Link URL",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/news",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "News"
+    }
+  ]
+}

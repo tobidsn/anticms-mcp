@@ -1,280 +1,406 @@
 {
-    "name": "about",
-    "label": "About",
-    "is_content": false,
-    "multilanguage": true,
-    "is_multiple" : false,
-    "description": "Template containing all components used on the About Page",
-    "components": [
+  "name": "about",
+  "label": "About Page",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "About page template",
+  "components": [
+    {
+      "keyName": "Call to Action_section",
+      "label": "Call to Action Section",
+      "section": "1",
+      "fields": [
         {
-            "keyName": "section_1",
-            "label": "Section 1",
-            "section": "1",
-            "fields": [
-                {
-                    "name": "status",
-                    "label": "Status",
-                    "field": "toggle",
-                    "attribute": {
-                        "caption": "",
-                        "defaultValue": true,
-                        "value": null
-                    }
-                },
-                {
-                    "name": "small_title",
-                    "label": "Small Title",
-                    "field": "input",
-                    "multilanguage": true,
-                    "attribute": {
-                        "type": "text",
-                        "is_required": false,
-                        "placeholder": "Enter small title",
-                        "defaultValue": "",
-                        "maxLength": 50,
-                        "minLength": 1,
-                        "caption": ""
-                    }
-                },
-                {
-                    "name": "title",
-                    "label": "Title",
-                    "field": "input",
-                    "multilanguage": true,
-                    "attribute": {
-                        "type": "text",
-                        "is_required": false,
-                        "placeholder": "Enter title",
-                        "defaultValue": "",
-                        "value": null
-                    }
-                },
-                {
-                    "name": "description",
-                    "label": "Description",
-                    "field": "texteditor",
-                    "multilanguage": true,
-                    "attribute": {
-                        "type": "full",
-                        "rows": 10,
-                        "cols": 10,
-                        "max": 50,
-                        "is_required": false,
-                        "placeholder": "Enter description",
-                        "caption": "",
-                        "defaultValue": ""
-                    }
-                },
-                {
-                    "name": "banner_image",
-                    "label": "Banner Image",
-                    "field": "image",
-                    "attribute": {
-                        "caption": "",
-                        "accept": ["image/jpeg", "image/png", "image/jpg"],
-                        "fileSize": 5120,
-                        "resolution": {
-                            "minWidth": 3,
-                            "maxWidth": 300,
-                            "minHeight": 2.21,
-                            "maxHeight": 221
-                        }
-                    }
-                },
-                {
-                    "name": "small_image",
-                    "label": "Small Image",
-                    "field": "image",
-                    "attribute": {
-                        "caption": "",
-                        "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
-                        "fileSize": 512,
-                        "convertToWebp": true,
-                        "resolution": {
-                            "minWidth": 3,
-                            "maxWidth": 300,
-                            "minHeight": 2.21,
-                            "maxHeight": 221
-                        }
-                    }
-                },
-                {
-                    "name": "video",
-                    "label": "Video",
-                    "field": "file",
-                    "attribute": {
-                        "type": "video",
-                        "caption": "Upload video max. size 500kb",
-                        "accept": "video/*",
-                        "fileSize": 512
-                    }
-                },
-                {
-                    "name": "audio",
-                    "label": "Audio",
-                    "field": "file",
-                    "attribute": {
-                        "type": "audio",
-                        "caption": "Upload audio max. size 500kb",
-                        "accept": "audio/mp3",
-                        "fileSize": 512
-                    }
-                },
-                {
-                    "name": "document",
-                    "label": "Document",
-                    "field": "file",
-                    "multilanguage": true,
-                    "attribute": {
-                        "type": "document",
-                        "caption": "Upload doc max. size 500kb",
-                        "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        "fileSize": 512
-                    }
-                },
-                {
-                    "field": "repeater",
-                    "name": "slider",
-                    "label": "Slider",
-                    "attribute": {
-                        "min": 1,
-                        "max": 5,
-                        "fields": [
-                            {
-                                "field": "input",
-                                "name": "title",
-                                "label": "Title",
-                                "multilanguage": true,
-                                "attribute": {
-                                    "is_required": true,
-                                    "type": "text",
-                                    "placeholder": "Enter title"
-                                }
-                            },
-                            {
-                                "name": "description",
-                                "label": "Description",
-                                "field": "texteditor",
-                                "multilanguage": true,
-                                "attribute": {
-                                    "type": "simple",
-                                    "rows": 10,
-                                    "cols": 10,
-                                    "max": 50,
-                                    "is_required": false,
-                                    "placeholder": "Enter description",
-                                    "caption": "",
-                                    "defaultValue": ""
-                                }
-                            },
-                            {
-                                "name": "small_image",
-                                "label": "Small Image",
-                                "field": "image",
-                                "multilanguage": true,
-                                "attribute": {
-                                    "caption": "Resolution 300px x 221px",
-                                    "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
-                                    "fileSize": 512,
-                                    "convertToWebp": true,
-                                    "resolution": {
-                                        "minWidth": 3,
-                                        "maxWidth": 300,
-                                        "minHeight": 2.21,
-                                        "maxHeight": 221
-                                    }
-                                }
-                            },
-                            {
-                                "name": "document",
-                                "label": "Document",
-                                "field": "file",
-                                "multilanguage": true,
-                                "attribute": {
-                                    "type": "document",
-                                    "caption": "Upload doc max. size 500kb",
-                                    "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                    "fileSize": 512
-                                }
-                            },
-                            {
-                                "name": "video",
-                                "label": "Video",
-                                "field": "file",
-                                "attribute": {
-                                    "type": "video",
-                                    "caption": "Upload video max. size 500kb",
-                                    "accept": "video/*",
-                                    "fileSize": 512
-                                }
-                            },
-                            {
-                                "field": "repeater",
-                                "name": "images",
-                                "label": "Images",
-                                "attribute": {
-                                    "min": 1,
-                                    "max": 5,
-                                    "fields": [
-                                        {
-                                            "field": "input",
-                                            "name": "title",
-                                            "label": "Title",
-                                            "multilanguage": true,
-                                            "attribute": {
-                                                "is_required": true,
-                                                "type": "text",
-                                                "placeholder": "Enter title"
-                                            }
-                                        },
-                                        {
-                                            "name": "small_image",
-                                            "label": "Small Image",
-                                            "field": "image",
-                                            "multilanguage": true,
-                                            "attribute": {
-                                                "caption": "Resolution 300px x 221px",
-                                                "accept": ["image/jpeg", "image/png", "image/jpg", "image/gif"],
-                                                "fileSize": 512,
-                                                "convertToWebp": true,
-                                                "resolution": {
-                                                    "minWidth": 3,
-                                                    "maxWidth": 300,
-                                                    "minHeight": 2.21,
-                                                    "maxHeight": 221
-                                                }
-                                            }
-                                        },
-                                        {
-                                            "name": "document",
-                                            "label": "Document",
-                                            "field": "file",
-                                            "multilanguage": true,
-                                            "attribute": {
-                                                "type": "document",
-                                                "caption": "Upload doc max. size 500kb",
-                                                "accept": "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                                "fileSize": 512
-                                            }
-                                        },
-                                        {
-                                            "name": "video",
-                                            "label": "Video",
-                                            "field": "file",
-                                            "attribute": {
-                                                "type": "video",
-                                                "caption": "Upload video max. size 500kb",
-                                                "accept": "video/*",
-                                                "fileSize": 512
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Call to Action section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter Call to Action section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter Call to Action content"
+          }
         }
-    ]
+      ],
+      "block": "Call to Action"
+    },
+    {
+      "keyName": "Footer_section",
+      "label": "Footer Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Footer section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter Footer section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter Footer content"
+          }
+        }
+      ],
+      "block": "Footer"
+    },
+    {
+      "keyName": "Services_section",
+      "label": "Services Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the services section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Our Services",
+            "is_required": false,
+            "defaultValue": "Our Services",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "services",
+          "label": "Services",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 8,
+            "caption": "Add services items",
+            "fields": [
+              {
+                "name": "title",
+                "label": "Service Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Service name",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "description",
+                "label": "Service Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 500,
+                  "cols": 10,
+                  "is_required": false,
+                  "caption": "Short description of the our services section",
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Service description"
+                }
+              },
+              {
+                "name": "icon",
+                "label": "Service Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 32,
+                    "maxWidth": 64,
+                    "minHeight": 32,
+                    "maxHeight": 64
+                  }
+                }
+              },
+              {
+                "name": "link",
+                "label": "Learn More Link",
+                "field": "input",
+                "attribute": {
+                  "type": "url",
+                  "placeholder": "/services/service-name",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Services"
+    },
+    {
+      "keyName": "Slider_section",
+      "label": "Slider Section",
+      "section": "4",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Slider section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter Slider section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter Slider content"
+          }
+        }
+      ],
+      "block": "Slider"
+    },
+    {
+      "keyName": "About_section",
+      "label": "About Section",
+      "section": "5",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the About section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "About Us",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "max": 500,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the our services section",
+            "defaultValue": "",
+            "value": null,
+            "placeholder": "Enter About description"
+          }
+        }
+      ],
+      "block": "About"
+    },
+    {
+      "keyName": "hero_section",
+      "label": "Hero Section",
+      "section": "6",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            },
+            "caption": "Recommended resolution: 1920x1080px"
+          }
+        },
+        {
+          "name": "scroll_indicator",
+          "label": "Scroll Indicator",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Show/hide scroll indicator",
+            "defaultValue": true,
+            "value": null
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "Navigation desktop_section",
+      "label": "Navigation desktop Section",
+      "section": "7",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Navigation desktop section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter Navigation desktop section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "content",
+          "label": "Content",
+          "field": "texteditor",
+          "multilanguage": true,
+          "attribute": {
+            "type": "full",
+            "rows": 10,
+            "cols": 10,
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "max": 255,
+            "placeholder": "Enter Navigation desktop content"
+          }
+        }
+      ],
+      "block": "Navigation desktop"
+    }
+  ]
 }
