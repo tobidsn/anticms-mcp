@@ -135,6 +135,35 @@ function validateNestedFields(fields, parentPath, errors, fieldTypes) {
 }
 
 /**
+ * Convert string to snake_case format
+ * @param {string} str - String to convert
+ * @returns {string} - Snake case string
+ */
+function toSnakeCase(str) {
+  return str
+    .replace(/\s+/g, '_')           // Replace spaces with underscores
+    .replace(/([A-Z])/g, '_$1')     // Add underscore before capital letters
+    .toLowerCase()                  // Convert to lowercase
+    .replace(/^_+|_+$/g, '')        // Remove leading/trailing underscores
+    .replace(/_+/g, '_');           // Replace multiple underscores with single
+}
+
+/**
+ * Convert string to PascalCase format
+ * @param {string} str - String to convert
+ * @returns {string} - PascalCase string
+ */
+function toPascalCase(str) {
+  return str
+    .replace(/_/g, ' ')             // Replace underscores with spaces
+    .replace(/\s+/g, ' ')           // Normalize multiple spaces to single
+    .trim()                         // Remove leading/trailing spaces
+    .split(' ')                     // Split by spaces
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+    .join('');                      // Join without spaces
+}
+
+/**
  * AntiCMS Component Generator Class
  * Provides methods for generating AntiCMS v3 template components and fields
  */
@@ -1014,11 +1043,11 @@ export class AntiCMSComponentGenerator {
     }
 
     return this.generateComponent(
-      `${sectionType}_section`, 
+      `${toSnakeCase(sectionType)}_section`, 
       `${label} Section`, 
       sectionNumber, 
       fields, 
-      { block: label }
+      { block: toPascalCase(label) }
     );
   }
 
@@ -2224,11 +2253,11 @@ function generateSectionFromFigma(figmaSection, contentPatterns, options, fieldT
   }
 
   return AntiCMSComponentGenerator.generateComponent(
-    `${sectionName}_section`,
+    `${toSnakeCase(sectionName)}_section`,
     originalName || sectionName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Section',
     sectionCounter,
     fields,
-    { block: originalName || sectionName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }
+    { block: toPascalCase(originalName || sectionName) }
   );
 }
 
@@ -3104,11 +3133,11 @@ function generateSectionFromFigmaMetadata(sectionType, figmaMetadata, options, f
   fields.push(...ctaFields);
 
   return AntiCMSComponentGenerator.generateComponent(
-    `${sectionType}_section`,
+    `${toSnakeCase(sectionType)}_section`,
     sectionType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Section',
     options.sectionNumber,
     fields,
-    { block: sectionType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }
+    { block: toPascalCase(sectionType) }
   );
 }
 
