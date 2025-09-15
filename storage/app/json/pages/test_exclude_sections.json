@@ -1,0 +1,186 @@
+{
+  "name": "test_exclude_sections",
+  "label": "Test Exclude Sections",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Test template with excluded sections",
+  "components": [
+    {
+      "keyName": "hero",
+      "label": "Hero Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "background_image",
+          "label": "Background Image",
+          "field": "media",
+          "attribute": {
+            "accept": [
+              "image"
+            ],
+            "resolution": {
+              "minWidth": 1200,
+              "maxWidth": 1920,
+              "minHeight": 600,
+              "maxHeight": 1080
+            },
+            "caption": "Recommended resolution: 1920x1080px"
+          }
+        },
+        {
+          "name": "scroll_indicator",
+          "label": "Scroll Indicator",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Show/hide scroll indicator",
+            "defaultValue": true,
+            "value": null
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "about",
+      "label": "About Section",
+      "section": "2",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the about section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "About Us",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "field": "textarea",
+          "multilanguage": true,
+          "attribute": {
+            "rows": 4,
+            "max": 500,
+            "cols": 10,
+            "is_required": false,
+            "caption": "Short description of the our services section",
+            "defaultValue": "",
+            "value": null,
+            "placeholder": "Enter about description"
+          }
+        }
+      ],
+      "block": "About"
+    },
+    {
+      "keyName": "features",
+      "label": "Features Section",
+      "section": "3",
+      "fields": [
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Features section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "features",
+          "label": "Features",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 6,
+            "caption": "Add feature items",
+            "fields": [
+              {
+                "name": "feature_title",
+                "label": "Feature Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 100,
+                  "placeholder": "Feature name",
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "feature_description",
+                "label": "Feature Description",
+                "field": "textarea",
+                "multilanguage": true,
+                "attribute": {
+                  "rows": 3,
+                  "max": 150,
+                  "cols": 50,
+                  "min": 10,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Feature description"
+                }
+              },
+              {
+                "name": "feature_icon",
+                "label": "Feature Icon",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 3,
+                    "maxWidth": 300,
+                    "minHeight": 2.21,
+                    "maxHeight": 221
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Features"
+    }
+  ]
+}

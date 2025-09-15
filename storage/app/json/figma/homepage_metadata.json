@@ -135,7 +135,7 @@
         "background_image": "http://localhost:3845/assets/eefdb68485b4c01bfa5ab7735c3f5ab556561191.png",
         "scroll_text": "Discover the experience"
       },
-      "navigation": {
+        "navigation": {
         "logo": "http://localhost:3845/assets/054675657c46c7feffc16435f2cae7f3199878b1.svg",
         "menu_items": ["About Us", "Our Brands", "Events", "Private Events", "News"],
         "contact_button": "Contact Us"
@@ -416,7 +416,7 @@
       "Create final page"
     ]
   }
-}
+          }
         ]
       },
       "services": {

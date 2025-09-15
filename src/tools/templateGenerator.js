@@ -4432,7 +4432,8 @@ export async function generateTemplate(args) {
     include_cta = false,
     max_features = 6,
     max_gallery_images = 12,
-    figma_metadata_file
+    figma_metadata_file,
+    is_exclude_sections = false
   } = args;
 
   let description = originalDescription;
@@ -4510,10 +4511,12 @@ export async function generateTemplate(args) {
     }
   }
 
-  // Filter out excluded sections
+  // Filter out excluded sections based on is_exclude_sections parameter
   console.log(`[generateTemplate] figma_metadata_file:`, figma_metadata_file);
+  console.log(`[generateTemplate] is_exclude_sections:`, is_exclude_sections);
   console.log(`[generateTemplate] finalSections before filtering:`, finalSections);
-  if (figma_metadata_file) {
+  
+  if (is_exclude_sections) {
     const originalCount = finalSections.length;
     finalSections = finalSections.filter(section => {
       if (excludedSections.includes(section)) {
@@ -4524,7 +4527,7 @@ export async function generateTemplate(args) {
     });
     console.log(`[generateTemplate] Filtered sections: ${originalCount} -> ${finalSections.length} (excluded: ${originalCount - finalSections.length})`);
   } else {
-    console.log(`[generateTemplate] No figma_metadata_file provided, skipping exclusion`);
+    console.log(`[generateTemplate] is_exclude_sections=false, including all sections`);
   }
 
   const components = [];

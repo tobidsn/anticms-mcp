@@ -66,6 +66,7 @@ class AntiCMSServer {
           max_features: z.number().optional().default(6).describe('Maximum number of features'),
           max_gallery_images: z.number().optional().default(12).describe('Maximum number of gallery images'),
           figma_metadata_file: z.string().optional().describe('Path to Figma metadata JSON file for enhanced field detection'),
+          is_exclude_sections: z.boolean().optional().default(true).describe('Whether to exclude navigation, footer, and header sections from template generation'),
         }
       },
       async (args) => {

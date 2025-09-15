@@ -1,0 +1,9 @@
+{
+  "name": "test_figma_exclude",
+  "label": "Test Figma Exclude",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Test template with Figma metadata and exclusion",
+  "components": []
+}
