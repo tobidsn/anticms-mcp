@@ -784,6 +784,164 @@ export class AntiCMSComponentGenerator {
    * @param {Object} fieldTypes - Field types configuration
    * @returns {object} - Custom section component
    */
+  /**
+   * Check if section is a post collection section
+   * @param {string} sectionType - Section type name
+   * @param {object} analysis - Optional analysis data with detected_fields and identified_field_types
+   * @returns {boolean} - True if section is a post collection
+   */
+  static isPostCollectionSection(sectionType, analysis = null) {
+    // First check: Use Figma metadata analysis if available
+    if (analysis && analysis.detected_fields && analysis.identified_field_types) {
+      // Check if arrays have same length
+      if (analysis.detected_fields.length === analysis.identified_field_types.length) {
+        // Check for post_related field type at any index
+        const hasPostRelatedField = analysis.identified_field_types.includes('post_related');
+        
+        // Check for collection keywords in detected_fields
+        const hasCollectionKeywords = analysis.detected_fields.some(field => 
+          ['stories', 'news', 'posts', 'events', 'projects', 'products', 'services', 
+           'testimonials', 'cases', 'studies', 'portfolios', 'galleries', 'members', 
+           'clients', 'partners'].includes(field.toLowerCase())
+        );
+        
+        if (hasPostRelatedField || hasCollectionKeywords) {
+          console.log(`[isPostCollectionSection] Detected post collection via analysis: ${sectionType}`);
+          console.log(`[isPostCollectionSection] detected_fields: [${analysis.detected_fields.join(', ')}]`);
+          console.log(`[isPostCollectionSection] identified_field_types: [${analysis.identified_field_types.join(', ')}]`);
+          return true;
+        }
+      } else {
+        console.warn(`[isPostCollectionSection] Array length mismatch: detected_fields(${analysis.detected_fields.length}) vs identified_field_types(${analysis.identified_field_types.length})`);
+      }
+    }
+    
+    // Second check: Use section name patterns as fallback
+    const postCollectionPatterns = [
+      'stories', 'news', 'blog', 'articles', 'posts', 'events', 'projects', 
+      'products', 'services', 'testimonials', 'cases', 'studies', 'portfolios',
+      'galleries', 'resources', 'downloads', 'features', 'benefits', 
+      'achievements', 'awards', 'certifications', 'teams', 'members', 
+      'staff', 'clients', 'partners', 'sponsors'
+    ];
+    
+    const normalizedType = sectionType.toLowerCase();
+    const hasPatternMatch = postCollectionPatterns.some(pattern => normalizedType.includes(pattern));
+    
+    if (hasPatternMatch) {
+      console.log(`[isPostCollectionSection] Detected post collection via pattern: ${sectionType}`);
+    }
+    
+    return hasPatternMatch;
+  }
+
+  /**
+   * Determine post type based on section name
+   * @param {string} sectionType - Section type name
+   * @returns {string} - Post type name
+   */
+  static determinePostType(sectionType) {
+    const normalizedType = sectionType.toLowerCase();
+    
+    if (normalizedType.includes('stories')) return 'story';
+    if (normalizedType.includes('news')) return 'news';
+    if (normalizedType.includes('blog') || normalizedType.includes('articles')) return 'post';
+    if (normalizedType.includes('events')) return 'event';
+    if (normalizedType.includes('projects')) return 'project';
+    if (normalizedType.includes('products')) return 'product';
+    if (normalizedType.includes('services')) return 'service';
+    if (normalizedType.includes('testimonials')) return 'testimonial';
+    if (normalizedType.includes('cases') || normalizedType.includes('studies')) return 'case_study';
+    if (normalizedType.includes('portfolios')) return 'portfolio';
+    if (normalizedType.includes('galleries')) return 'gallery';
+    if (normalizedType.includes('teams') || normalizedType.includes('members') || normalizedType.includes('staff')) return 'member';
+    if (normalizedType.includes('clients') || normalizedType.includes('partners')) return 'client';
+    
+    // Default fallback
+    return normalizedType.replace(/[^a-z0-9]/g, '_');
+  }
+
+  /**
+   * Get field name and type from analysis data based on index mapping
+   * @param {object} analysis - Analysis data with detected_fields and identified_field_types
+   * @param {string} targetFieldType - Target field type to find (e.g., 'post_related')
+   * @returns {object|null} - Object with fieldName and fieldType, or null if not found
+   */
+  static getFieldFromAnalysis(analysis, targetFieldType) {
+    if (!analysis || !analysis.detected_fields || !analysis.identified_field_types) {
+      return null;
+    }
+    
+    if (analysis.detected_fields.length !== analysis.identified_field_types.length) {
+      console.warn(`[getFieldFromAnalysis] Array length mismatch: detected_fields(${analysis.detected_fields.length}) vs identified_field_types(${analysis.identified_field_types.length})`);
+      return null;
+    }
+    
+    for (let i = 0; i < analysis.identified_field_types.length; i++) {
+      if (analysis.identified_field_types[i] === targetFieldType) {
+        return {
+          fieldName: analysis.detected_fields[i],
+          fieldType: analysis.identified_field_types[i],
+          index: i
+        };
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Determine field name based on section name
+   * @param {string} sectionType - Section type name
+   * @returns {string} - Field name
+   */
+  static determineFieldName(sectionType) {
+    const normalizedType = sectionType.toLowerCase();
+    
+    if (normalizedType.includes('stories')) return 'stories';
+    if (normalizedType.includes('news')) return 'news';
+    if (normalizedType.includes('blog') || normalizedType.includes('articles')) return 'posts';
+    if (normalizedType.includes('events')) return 'events';
+    if (normalizedType.includes('projects')) return 'projects';
+    if (normalizedType.includes('products')) return 'products';
+    if (normalizedType.includes('services')) return 'services';
+    if (normalizedType.includes('testimonials')) return 'testimonials';
+    if (normalizedType.includes('cases') || normalizedType.includes('studies')) return 'case_studies';
+    if (normalizedType.includes('portfolios')) return 'portfolios';
+    if (normalizedType.includes('galleries')) return 'galleries';
+    if (normalizedType.includes('teams') || normalizedType.includes('members') || normalizedType.includes('staff')) return 'members';
+    if (normalizedType.includes('clients') || normalizedType.includes('partners')) return 'clients';
+    
+    // Default fallback - use section name in plural
+    return normalizedType.replace(/[^a-z0-9]/g, '_') + 's';
+  }
+
+  /**
+   * Determine field label based on section name
+   * @param {string} sectionType - Section type name
+   * @returns {string} - Field label
+   */
+  static determineFieldLabel(sectionType) {
+    const normalizedType = sectionType.toLowerCase();
+    
+    if (normalizedType.includes('stories')) return 'Stories';
+    if (normalizedType.includes('news')) return 'News';
+    if (normalizedType.includes('blog') || normalizedType.includes('articles')) return 'Posts';
+    if (normalizedType.includes('events')) return 'Events';
+    if (normalizedType.includes('projects')) return 'Projects';
+    if (normalizedType.includes('products')) return 'Products';
+    if (normalizedType.includes('services')) return 'Services';
+    if (normalizedType.includes('testimonials')) return 'Testimonials';
+    if (normalizedType.includes('cases') || normalizedType.includes('studies')) return 'Case Studies';
+    if (normalizedType.includes('portfolios')) return 'Portfolios';
+    if (normalizedType.includes('galleries')) return 'Galleries';
+    if (normalizedType.includes('teams') || normalizedType.includes('members') || normalizedType.includes('staff')) return 'Members';
+    if (normalizedType.includes('clients') || normalizedType.includes('partners')) return 'Clients';
+    
+    // Default fallback - capitalize section name
+    return sectionType.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+
   static generateCustomSection(sectionType, options = {}, fieldTypes = null) {
     if (!fieldTypes) {
       throw new Error('Field types configuration is required');
@@ -825,6 +983,45 @@ export class AntiCMSComponentGenerator {
           min: 1,
           max: 6,
           fields: this.generateContextualRepeaterFields('testimonials', context, fieldTypes)
+        }, fieldTypes, context)
+      ];
+    } else if (this.isPostCollectionSection(sectionType, options.analysis)) {
+      // Dynamic post collection section handling
+      const postType = this.determinePostType(sectionType);
+      
+      // Try to get field name from analysis data first
+      let fieldName, fieldLabel;
+      if (options.analysis) {
+        const postRelatedField = this.getFieldFromAnalysis(options.analysis, 'post_related');
+        if (postRelatedField) {
+          fieldName = postRelatedField.fieldName;
+          fieldLabel = postRelatedField.fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          console.log(`[generateCustomSection] Using field name from analysis: ${fieldName}`);
+        } else {
+          fieldName = this.determineFieldName(sectionType);
+          fieldLabel = this.determineFieldLabel(sectionType);
+        }
+      } else {
+        fieldName = this.determineFieldName(sectionType);
+        fieldLabel = this.determineFieldLabel(sectionType);
+      }
+      
+      fields = [
+        this.generateField('status', 'Status', 'toggle', {
+          caption: `Enable or disable the ${sectionType} section`,
+          defaultValue: true
+        }, fieldTypes, context),
+        this.generateField('section_title', 'Section Title', 'input', {
+          multilanguage: true,
+          type: 'text',
+          placeholder: `Enter ${sectionType} section title`,
+          defaultValue: ''
+        }, fieldTypes, context),
+        this.generateField(fieldName, fieldLabel, 'post_related', {
+          post_type: postType,
+          max: 12,
+          min: 1,
+          caption: `Select ${sectionType.toLowerCase()} to display in this section`
         }, fieldTypes, context)
       ];
     } else if (sectionType.toLowerCase().includes('team') || sectionType.toLowerCase().includes('about')) {
@@ -3155,14 +3352,20 @@ function analyzeSectionDataForFields(sectionData, analysis, fieldTypes, context)
     }
     
     // Handle special fields (repeaters, post_related)
+    console.log(`[analyzeSectionDataForFields] Processing ${analysis.detected_fields.length} fields for special handling`);
     for (let i = 0; i < analysis.detected_fields.length; i++) {
       const fieldName = analysis.detected_fields[i];
       const fieldType = analysis.identified_field_types[i] || 'input';
+      console.log(`[analyzeSectionDataForFields] Checking field: ${fieldName} (${fieldType})`);
       
-      if (fieldName.includes('(repeater') || fieldName.includes('(post_related')) {
+      if (fieldName.includes('(repeater') || fieldName.includes('(post_related') || fieldType === 'post_related') {
+        console.log(`[analyzeSectionDataForFields] Processing special field: ${fieldName} (${fieldType})`);
         const specialField = generateSpecialFieldFromMetadata(fieldName, fieldType, sectionData, fieldTypes, context);
         if (specialField) {
+          console.log(`[analyzeSectionDataForFields] Generated special field:`, specialField.name, specialField.field);
           fields.push(specialField);
+        } else {
+          console.log(`[analyzeSectionDataForFields] Failed to generate special field for: ${fieldName}`);
         }
       }
     }
@@ -4216,6 +4419,7 @@ function generateFieldLabelFromElement(element) {
  * @returns {object} - Tool response
  */
 export async function generateTemplate(args) {
+  console.log(`[generateTemplate] Received args:`, JSON.stringify(args, null, 2));
   const {
     name: templateName,
     label,
@@ -4242,6 +4446,22 @@ export async function generateTemplate(args) {
   let figmaMetadata = null;
   let figmaSections = [];
   let contentPatterns = {};
+  
+  // Sections to exclude from template generation
+  const excludedSections = [
+    'navigation', 
+    'footer', 
+    'main_menu', 
+    'top_navbar', 
+    'navbar', 
+    'header', 
+    'menu', 
+    'nav',
+    'top_menu',
+    'main_nav',
+    'site_header',
+    'page_header'
+  ];
 
   // Check if we have Figma metadata JSON file path
   if (figma_metadata_file) {
@@ -4290,6 +4510,23 @@ export async function generateTemplate(args) {
     }
   }
 
+  // Filter out excluded sections
+  console.log(`[generateTemplate] figma_metadata_file:`, figma_metadata_file);
+  console.log(`[generateTemplate] finalSections before filtering:`, finalSections);
+  if (figma_metadata_file) {
+    const originalCount = finalSections.length;
+    finalSections = finalSections.filter(section => {
+      if (excludedSections.includes(section)) {
+        console.log(`[generateTemplate] Excluding section: ${section}`);
+        return false;
+      }
+      return true;
+    });
+    console.log(`[generateTemplate] Filtered sections: ${originalCount} -> ${finalSections.length} (excluded: ${originalCount - finalSections.length})`);
+  } else {
+    console.log(`[generateTemplate] No figma_metadata_file provided, skipping exclusion`);
+  }
+
   const components = [];
   let sectionCounter = 1;
 
@@ -4305,7 +4542,7 @@ export async function generateTemplate(args) {
 
     try {
       // Use Figma data for 100% accurate section generation if available
-      if (useFigmaData && figmaMetadata) {
+      if (useFigmaData && figmaMetadata && figmaMetadata.figma_code_response && figmaMetadata.figma_code_response.sections) {
         // Map user section to Figma metadata section
         const figmaSectionName = mapUserSectionToFigmaSection(sectionType, figmaMetadata.figma_code_response.sections);
         
@@ -4328,6 +4565,7 @@ export async function generateTemplate(args) {
       
       // Fallback to standard generation if no Figma data or section not found
       if (!section) {
+        console.log(`[generateTemplate] Generating fallback section for: ${sectionType}`);
         // Normalize section type for comparison
         const normalizedType = sectionType.toLowerCase().trim();
         
@@ -5275,9 +5513,31 @@ export async function generateTemplateFromFigmaMetadata(args) {
 function mapFigmaSectionsToAntiCMS(figmaSections, anticmsAnalysis) {
   const mappedSections = [];
   const identifiedSections = anticmsAnalysis.identified_sections || {};
+  
+  // Sections to exclude from template generation
+  const excludedSections = [
+    'navigation', 
+    'footer', 
+    'main_menu', 
+    'top_navbar', 
+    'navbar', 
+    'header', 
+    'menu', 
+    'nav',
+    'top_menu',
+    'main_nav',
+    'site_header',
+    'page_header'
+  ];
 
   // Process each section based on the analysis
   Object.keys(figmaSections).forEach(sectionKey => {
+    // Skip excluded sections
+    if (excludedSections.includes(sectionKey)) {
+      console.log(`[mapFigmaSectionsToAntiCMS] Excluding section: ${sectionKey}`);
+      return;
+    }
+
     const sectionData = figmaSections[sectionKey];
     const analysis = identifiedSections[sectionKey];
 

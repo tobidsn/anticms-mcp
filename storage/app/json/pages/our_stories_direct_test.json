@@ -1,0 +1,55 @@
+{
+  "name": "our_stories_direct_test",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Template for undefined",
+  "components": [
+    {
+      "keyName": "our_stories",
+      "label": "Our stories Section",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the our_stories section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "section_title",
+          "label": "Section Title",
+          "field": "input",
+          "multilanguage": true,
+          "attribute": {
+            "type": "text",
+            "maxLength": 100,
+            "placeholder": "Enter our_stories section title",
+            "is_required": false,
+            "defaultValue": "",
+            "value": null,
+            "minLength": 1
+          }
+        },
+        {
+          "name": "stories",
+          "label": "Stories",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "story",
+            "max": 12,
+            "min": 1,
+            "caption": "Select our_stories to display in this section"
+          }
+        }
+      ],
+      "block": "OurStories"
+    }
+  ]
+}

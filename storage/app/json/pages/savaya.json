@@ -7,7 +7,7 @@
   "description": "Sophisticated hospitality website template for Savaya Group based on the Figma design analysis:\n\n1. Hero section with \"High above the cliffs, deep within the cities, amidst the nightlife\" tagline\n2. Image gallery/slider section with multiple restaurant images\n3. Brands showcase featuring partner restaurants like The Nineteen steakhouse\n4. Services section highlighting \"Private Events\" with compelling copy\n5. Events listing \"Gather, celebrate & connect at our events\" with event details\n6. Our Stories section showcasing news articles and updates\n7. Closing section with \"Celebrate Life, The Savaya Way\" message\n\nThe template reflects luxury hospitality branding with sophisticated typography and premium imagery.",
   "components": [
     {
-      "keyName": "hero_section",
+      "keyName": "hero",
       "label": "Hero Section",
       "section": "1",
       "fields": [
@@ -52,7 +52,7 @@
       "block": "Hero"
     },
     {
-      "keyName": "slider_section",
+      "keyName": "slider",
       "label": "Slider Section",
       "section": "2",
       "fields": [
@@ -101,7 +101,7 @@
       "block": "Slider"
     },
     {
-      "keyName": "brands_showcase_section",
+      "keyName": "brands_showcase",
       "label": "Brands showcase Section",
       "section": "3",
       "fields": [
@@ -150,7 +150,7 @@
       "block": "BrandsShowcase"
     },
     {
-      "keyName": "private_events_section",
+      "keyName": "private_events",
       "label": "Private events Section",
       "section": "4",
       "fields": [
@@ -199,7 +199,7 @@
       "block": "PrivateEvents"
     },
     {
-      "keyName": "events_listing_section",
+      "keyName": "events_listing",
       "label": "Events listing Section",
       "section": "5",
       "fields": [
@@ -248,7 +248,7 @@
       "block": "EventsListing"
     },
     {
-      "keyName": "our_stories_section",
+      "keyName": "our_stories",
       "label": "Our stories Section",
       "section": "6",
       "fields": [
@@ -297,7 +297,7 @@
       "block": "OurStories"
     },
     {
-      "keyName": "closing_section_section",
+      "keyName": "closing_section",
       "label": "Closing section Section",
       "section": "7",
       "fields": [
@@ -346,7 +346,7 @@
       "block": "ClosingSection"
     },
     {
-      "keyName": "contact_section",
+      "keyName": "contact",
       "label": "Contact Section",
       "section": "8",
       "fields": [

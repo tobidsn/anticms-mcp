@@ -1,46 +1,422 @@
 {
   "figma_code_response": {
-    "nodeId": "2-2",
-    "extractedAt": "2024-12-30T17:10:00Z",
+    "nodeId": "8423-474",
+    "extractedAt": "2025-09-15T10:30:00Z",
+    "assets": [
+      "http://localhost:3845/assets/eefdb68485b4c01bfa5ab7735c3f5ab556561191.png",
+      "http://localhost:3845/assets/0958ea7e40d49c0004bcb1fe567c52d60e101156.png",
+      "http://localhost:3845/assets/108578821a028faef6a39120783a4686390df873.png",
+      "http://localhost:3845/assets/2938a7bd6f230b227c20419789d6cd1b65bcc5da.png",
+      "http://localhost:3845/assets/d4eb4ccb8e06230a2b47c5e1cd5117dbe64fc466.png",
+      "http://localhost:3845/assets/dbd088bc90432c20b7ab22aa79249180619617a1.png",
+      "http://localhost:3845/assets/d50c3ea1c2e156f40a3f3dc8efeb7345c79d46d5.png",
+      "http://localhost:3845/assets/9f15f2ebe898ce6c2f3c7075e86b0f326ac22a98.png",
+      "http://localhost:3845/assets/02f48dc80d22fae63ded72da1029cc495284f48a.png",
+      "http://localhost:3845/assets/6ad7155a7be69ebc48e346eef1eefa6bbb0d5dac.png",
+      "http://localhost:3845/assets/037c014a461acc62c3560304c78a630a865365c3.png",
+      "http://localhost:3845/assets/fd07e81e100e7463c3d420e74de1a0d5c312a16f.png",
+      "http://localhost:3845/assets/83481a91129188590e914dcb22599c285706d89e.png",
+      "http://localhost:3845/assets/6095ea1ed29de50eb524611133df896d12988427.png",
+      "http://localhost:3845/assets/353cf59f8232399a129f7317164b2ae7a9c5d9ab.svg"
+    ],
     "sections": {
       "hero": {
-        "navigation": {
-          "logo": "PEBISNIS ULUNG.",
-          "menu_items": ["Services", "Resources", "Company", "Blog", "Contact Us"],
-          "cta_button": "Let's Talk"
-        },
-        "main_content": {
-          "world_record_badge": "Best Business Platform - World Record 2021",
-          "headline": "Reach Your Business Goals in Record Time",
-          "description": "Support small business and join the nationwide movement to encourage commercial support for the millions of minority owned businesses helping world economy.",
-          "primary_cta": "Get Started",
-          "secondary_cta": "Watch Video"
-        },
-        "rating_display": {
-          "score": "4.9",
-          "stars": 5,
-          "avatars": 4
-        }
+        "title": "",
+        "subtitle": "",
+        "description": "",
+        "background_image": "http://localhost:3845/assets/eefdb68485b4c01bfa5ab7735c3f5ab556561191.png",
+        "scroll_text": "Discover the experience"
       },
-      "partners": {
-        "total_companies": 4,
-        "companies": [
+      "navigation": {
+        "logo": "http://localhost:3845/assets/054675657c46c7feffc16435f2cae7f3199878b1.svg",
+        "menu_items": ["About Us", "Our Brands", "Events", "Private Events", "News"],
+        "contact_button": "Contact Us"
+      },
+      "about": {
+        "title": "High above the cliffs, deep within the cities, amidst the nightlife.",
+        "description": "Savaya Group is a multi-vertical hospitality company rooted in conceptualizing, developing, and operating restaurants, nightlife, wellness, and hotel assets in Asia Pacific.",
+        "link_text": "ABOUT US"
+      },
+      "gallery": {
+        "images": [
+          "http://localhost:3845/assets/037c014a461acc62c3560304c78a630a865365c3.png",
+          "http://localhost:3845/assets/fd07e81e100e7463c3d420e74de1a0d5c312a16f.png",
+          "http://localhost:3845/assets/83481a91129188590e914dcb22599c285706d89e.png",
+          "http://localhost:3845/assets/6095ea1ed29de50eb524611133df896d12988427.png"
+        ]
+      },
+      "brands": {
+        "logo": "http://localhost:3845/assets/353cf59f8232399a129f7317164b2ae7a9c5d9ab.svg",
+        "title": "Timeless, refined steakhouse at the heart of Jakarta",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "background_image": "http://localhost:3845/assets/6ad7155a7be69ebc48e346eef1eefa6bbb0d5dac.png"
+      },
+      "services": {
+        "title": "PRIVATE EVENTS",
+        "subtitle": "Where your special day becomes a lasting story for everyone",
+        "description": "Every event deserves an iconic setting. From intimate gatherings to grand celebrations, our venue reflects your unique style. Let us craft an experience that transforms your special day into unforgettable memories.",
+        "button_text": "Plan Your Moment",
+        "service_image": "http://localhost:3845/assets/02f48dc80d22fae63ded72da1029cc495284f48a.png",
+        "background_image": "http://localhost:3845/assets/9f15f2ebe898ce6c2f3c7075e86b0f326ac22a98.png"
+      },
+      "events": {
+        "title": "Gather, celebrate, & connect at our events",
+        "link_text": "BROWSE ALL",
+        "events_list": [
           {
-            "name": "Slack",
-            "logo_placeholder": "slack-2 1"
+            "date": "2025.01.02",
+            "venue": "Desa Kitsune",
+            "name": "Paella Fiesta"
           },
           {
-            "name": "Prudential",
-            "logo_placeholder": "prudential-7"
+            "date": "2025.01.02",
+            "venue": "The Nineteen",
+            "name": "Valentine"
           },
           {
-            "name": "Company 3",
-            "logo_placeholder": "Group 651"
+            "date": "2025.01.02",
+            "venue": "Ina Re",
+            "name": "Sunday Brunch with Live Music"
           },
           {
-            "name": "Zoover",
-            "logo_placeholder": "zoover 1"
+            "date": "2025.01.02",
+            "venue": "The Nineteen",
+            "name": "Saturday Night's Gala"
           }
+        ],
+        "event_image": "http://localhost:3845/assets/d50c3ea1c2e156f40a3f3dc8efeb7345c79d46d5.png"
+      },
+      "our_stories": {
+        "title": "Our stories unfold",
+        "link_text": "BROWSE ALL",
+        "stories": [
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/108578821a028faef6a39120783a4686390df873.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/2938a7bd6f230b227c20419789d6cd1b65bcc5da.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/d4eb4ccb8e06230a2b47c5e1cd5117dbe64fc466.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/dbd088bc90432c20b7ab22aa79249180619617a1.png"
+          }
+        ]
+      },
+      "call_to_action": {
+        "title": "Celebrate Life, The Savaya Way",
+        "button_text": "Plan Your Moment",
+        "background_image": "http://localhost:3845/assets/0958ea7e40d49c0004bcb1fe567c52d60e101156.png"
+      },
+      "footer": {
+        "logo": "http://localhost:3845/assets/054675657c46c7feffc16435f2cae7f3199878b1.svg",
+        "address": "Jl. Belimbing Sari, Banjar Tambiyak, Pecatu, Uluwatu, Kabupaten Badung, Bali 80364, Indonesia",
+        "phone": "WA +62 8123 456 789",
+        "email_placeholder": "Enter your email",
+        "copyright": "© Savaya Group 2025. All Rights Reserved.",
+        "links": ["Terms & Conditions", "Privacy Policy"]
+      }
+    }
+  },
+  "figma_metadata_response": {
+    "nodeId": "8423-474",
+    "name": "Home",
+    "dimensions": {"width": 1440, "height": 5891},
+    "sections_hierarchy": [
+        "background_image": "http://localhost:3845/assets/eefdb68485b4c01bfa5ab7735c3f5ab556561191.png",
+        "scroll_text": "Discover the experience"
+      },
+      "navigation": {
+        "logo": "http://localhost:3845/assets/054675657c46c7feffc16435f2cae7f3199878b1.svg",
+        "menu_items": ["About Us", "Our Brands", "Events", "Private Events", "News"],
+        "contact_button": "Contact Us"
+      },
+      "about": {
+        "title": "High above the cliffs, deep within the cities, amidst the nightlife.",
+        "description": "Savaya Group is a multi-vertical hospitality company rooted in conceptualizing, developing, and operating restaurants, nightlife, wellness, and hotel assets in Asia Pacific.",
+        "link_text": "ABOUT US"
+      },
+      "gallery": {
+        "images": [
+          "http://localhost:3845/assets/037c014a461acc62c3560304c78a630a865365c3.png",
+          "http://localhost:3845/assets/fd07e81e100e7463c3d420e74de1a0d5c312a16f.png",
+          "http://localhost:3845/assets/83481a91129188590e914dcb22599c285706d89e.png",
+          "http://localhost:3845/assets/6095ea1ed29de50eb524611133df896d12988427.png"
+        ]
+      },
+      "brands": {
+        "logo": "http://localhost:3845/assets/353cf59f8232399a129f7317164b2ae7a9c5d9ab.svg",
+        "title": "Timeless, refined steakhouse at the heart of Jakarta",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "background_image": "http://localhost:3845/assets/6ad7155a7be69ebc48e346eef1eefa6bbb0d5dac.png"
+      },
+      "services": {
+        "title": "PRIVATE EVENTS",
+        "subtitle": "Where your special day becomes a lasting story for everyone",
+        "description": "Every event deserves an iconic setting. From intimate gatherings to grand celebrations, our venue reflects your unique style. Let us craft an experience that transforms your special day into unforgettable memories.",
+        "button_text": "Plan Your Moment",
+        "service_image": "http://localhost:3845/assets/02f48dc80d22fae63ded72da1029cc495284f48a.png",
+        "background_image": "http://localhost:3845/assets/9f15f2ebe898ce6c2f3c7075e86b0f326ac22a98.png"
+      },
+      "events": {
+        "title": "Gather, celebrate, & connect at our events",
+        "link_text": "BROWSE ALL",
+        "events_list": [
+          {
+            "date": "2025.01.02",
+            "venue": "Desa Kitsune",
+            "name": "Paella Fiesta"
+          },
+          {
+            "date": "2025.01.02",
+            "venue": "The Nineteen",
+            "name": "Valentine"
+          },
+          {
+            "date": "2025.01.02",
+            "venue": "Ina Re",
+            "name": "Sunday Brunch with Live Music"
+          },
+          {
+            "date": "2025.01.02",
+            "venue": "The Nineteen",
+            "name": "Saturday Night's Gala"
+          }
+        ],
+        "event_image": "http://localhost:3845/assets/d50c3ea1c2e156f40a3f3dc8efeb7345c79d46d5.png"
+      },
+      "our_stories": {
+        "title": "Our stories unfold",
+        "link_text": "BROWSE ALL",
+        "stories": [
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/108578821a028faef6a39120783a4686390df873.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/2938a7bd6f230b227c20419789d6cd1b65bcc5da.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/d4eb4ccb8e06230a2b47c5e1cd5117dbe64fc466.png"
+          },
+          {
+            "title": "Savaya Group And Chef Cédric Vongerichten To Unveil Jakarta's Premier Dining Destination: The Nineteen",
+            "date": "22 January 2025",
+            "image": "http://localhost:3845/assets/dbd088bc90432c20b7ab22aa79249180619617a1.png"
+          }
+        ]
+      },
+      "call_to_action": {
+        "title": "Celebrate Life, The Savaya Way",
+        "button_text": "Plan Your Moment",
+        "background_image": "http://localhost:3845/assets/0958ea7e40d49c0004bcb1fe567c52d60e101156.png"
+      },
+      "footer": {
+        "logo": "http://localhost:3845/assets/054675657c46c7feffc16435f2cae7f3199878b1.svg",
+        "address": "Jl. Belimbing Sari, Banjar Tambiyak, Pecatu, Uluwatu, Kabupaten Badung, Bali 80364, Indonesia",
+        "phone": "WA +62 8123 456 789",
+        "email_placeholder": "Enter your email",
+        "copyright": "© Savaya Group 2025. All Rights Reserved.",
+        "links": ["Terms & Conditions", "Privacy Policy"]
+      }
+    }
+  },
+  "figma_metadata_response": {
+    "nodeId": "8423-474",
+    "name": "Home",
+    "dimensions": {"width": 1440, "height": 5891},
+    "sections_hierarchy": [
+      {
+        "section_number": 1,
+        "section_name": "Hero",
+        "nodeId": "8423:581",
+        "position": {"x": 0, "y": 0},
+        "dimensions": {"width": 1440, "height": 800},
+        "content_type": "hero_section"
+      },
+      {
+        "section_number": 2,
+        "section_name": "Navigation desktop",
+        "nodeId": "8423:592",
+        "position": {"x": 0, "y": 0},
+        "dimensions": {"width": 1440, "height": 70},
+        "content_type": "navigation"
+      },
+      {
+        "section_number": 3,
+        "section_name": "About",
+        "nodeId": "8423:584",
+        "position": {"x": 0, "y": 800},
+        "dimensions": {"width": 1440, "height": 426},
+        "content_type": "about_section"
+      },
+      {
+        "section_number": 4,
+        "section_name": "Slider",
+        "nodeId": "8423:541",
+        "position": {"x": 0, "y": 1227},
+        "dimensions": {"width": 1440, "height": 456},
+        "content_type": "gallery"
+      },
+      {
+        "section_number": 5,
+        "section_name": "Brands",
+        "nodeId": "8423:517",
+        "position": {"x": 0, "y": 1782},
+        "dimensions": {"width": 1440, "height": 840},
+        "content_type": "brands_section"
+      },
+      {
+        "section_number": 6,
+        "section_name": "Services",
+        "nodeId": "8423:475",
+        "position": {"x": 0, "y": 2622},
+        "dimensions": {"width": 1440, "height": 860},
+        "content_type": "services_section"
+      },
+      {
+        "section_number": 7,
+        "section_name": "Events",
+        "nodeId": "8423:494",
+        "position": {"x": 0, "y": 3482},
+        "dimensions": {"width": 1440, "height": 802},
+        "content_type": "events_section"
+      },
+      {
+        "section_number": 8,
+        "section_name": "Our Stories",
+        "nodeId": "8423:550",
+        "position": {"x": 0, "y": 4248},
+        "dimensions": {"width": 1440, "height": 710},
+        "content_type": "stories_section"
+      },
+      {
+        "section_number": 9,
+        "section_name": "Call to Action",
+        "nodeId": "8423:486",
+        "position": {"x": 0, "y": 4958},
+        "dimensions": {"width": 1440, "height": 636},
+        "content_type": "call_to_action"
+      },
+      {
+        "section_number": 10,
+        "section_name": "Footer",
+        "nodeId": "8423:485",
+        "position": {"x": 0, "y": 5594},
+        "dimensions": {"width": 1440, "height": 297},
+        "content_type": "footer"
+      }
+    ]
+  },
+  "anticms_analysis": {
+    "template_type": "pages",
+    "total_sections": 10,
+    "identified_sections": {
+      "hero": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": ["background_image", "scroll_text"],
+        "identified_field_types": ["media", "input"]
+      },
+      "navigation": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["logo", "menu_items", "contact_button"],
+        "identified_field_types": ["media", "repeater", "input"]
+      },
+      "about": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["title", "description", "link_text"],
+        "identified_field_types": ["textarea", "textarea", "input"]
+      },
+      "gallery": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "built-in",
+        "detected_fields": ["images"],
+        "identified_field_types": ["repeater"]
+      },
+      "brands": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["logo", "title", "description", "background_image"],
+        "identified_field_types": ["media", "input", "textarea", "media"]
+      },
+      "services": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["title", "subtitle", "description", "button_text", "service_image", "background_image"],
+        "identified_field_types": ["input", "textarea", "textarea", "input", "media", "media"]
+      },
+      "events": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["title", "link_text", "events_list", "event_image"],
+        "identified_field_types": ["input", "input", "repeater", "media"]
+      },
+      "our_stories": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["title", "link_text", "stories"],
+        "identified_field_types": ["input", "input", "post_related"]
+      },
+      "call_to_action": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["title", "button_text", "background_image"],
+        "identified_field_types": ["textarea", "input", "media"]
+      },
+      "footer": {
+        "matched": false,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": ["logo", "address", "phone", "email_placeholder", "copyright", "links"],
+        "identified_field_types": ["media", "textarea", "input", "input", "input", "repeater"]
+      }
+    },
+    "complexity_score": "high",
+    "custom_sections_needed": 8,
+    "built_in_sections": 2,
+    "estimated_fields": 45,
+    "multilanguage_recommended": true
+  },
+  "context_for_template_generation": {
+    "page_rules_file": ".cursor/rules/pages/homepage.mdc",
+    "matches_defined_sections": true,
+    "section_mapping_accuracy": "100%",
+    "ready_for_template_generation": true,
+    "next_steps": [
+      "Apply field type override for our_stories.stories to post_related",
+      "Generate template using AntiCMS MCP",
+      "Create mock data with Figma content",
+      "Set up media assets",
+      "Create final page"
+    ]
+  }
+}
         ]
       },
       "services": {
@@ -176,18 +552,18 @@
     }
   },
   "figma_metadata_response": {
-    "nodeId": "2-2",
+    "nodeId": "8423:474",
     "name": "Homepage",
     "dimensions": {
       "width": 1440,
-      "height": 4579
+      "height": 5891
     },
     "sections_hierarchy": [
       {
-        "id": "5:213",
+        "id": "8423:581",
         "name": "Hero",
         "y": 0,
-        "height": 780,
+        "height": 800,
         "components": [
           "navigation",
           "main_content",
@@ -196,85 +572,87 @@
         ]
       },
       {
-        "id": "5:211",
-        "name": "Partners",
-        "y": 780,
-        "height": 140,
+        "id": "8423:584",
+        "name": "About",
+        "y": 800,
+        "height": 426,
         "components": [
-          "company_logos"
+          "section_content"
         ]
       },
       {
-        "id": "5:544",
+        "id": "8423:541",
+        "name": "Slider",
+        "y": 1227,
+        "height": 456,
+        "components": [
+          "slider_items"
+        ]
+      },
+      {
+        "id": "8423:517",
+        "name": "Brands",
+        "y": 1782,
+        "height": 840,
+        "components": [
+          "brand_content",
+          "brand_image"
+        ]
+      },
+      {
+        "id": "8423:475",
         "name": "Services",
-        "y": 920,
-        "height": 441,
+        "y": 2622,
+        "height": 860,
         "components": [
-          "service_cards",
-          "section_header"
+          "service_content",
+          "service_images"
         ]
       },
       {
-        "id": "5:608",
-        "name": "Why Choose Us",
-        "y": 1361,
-        "height": 592,
+        "id": "8423:494",
+        "name": "Events",
+        "y": 3482,
+        "height": 802,
         "components": [
-          "feature_checklist",
-          "background_graphics",
-          "cta_button"
+          "event_list",
+          "event_image"
         ]
       },
       {
-        "id": "5:786",
-        "name": "Work",
-        "y": 1953,
+        "id": "8423:550",
+        "name": "Our Stories",
+        "y": 4248,
         "height": 710,
         "components": [
-          "project_gallery",
-          "section_header",
-          "cta_button"
-        ]
-      },
-      {
-        "id": "5:5248",
-        "name": "Testimonials",
-        "y": 2663,
-        "height": 924,
-        "components": [
-          "testimonial_card",
-          "section_header",
-          "decorative_graphics"
-        ]
-      },
-      {
-        "id": "5:5388",
-        "name": "Contact Us",
-        "y": 3587,
-        "height": 832,
-        "components": [
-          "contact_form",
-          "background_images",
+          "story_slider",
           "section_header"
         ]
       },
       {
-        "id": "5:5449",
-        "name": "Footer",
-        "y": 4419,
-        "height": 160,
+        "id": "8423:486",
+        "name": "Call to Action",
+        "y": 4958,
+        "height": 636,
         "components": [
-          "logo",
-          "social_links",
-          "footer_links",
-          "copyright"
+          "cta_content",
+          "background_images"
+        ]
+      },
+      {
+        "id": "8423:485",
+        "name": "Footer",
+        "y": 5594,
+        "height": 297,
+        "components": [
+          "footer_content"
         ]
       }
     ]
   },
   "anticms_analysis": {
     "template_type": "pages",
-    "total_sections": 8,
+    "total_sections": 9,
     "identified_sections": {
       "hero": {
         "matched": true,
@@ -291,24 +669,59 @@
           "rating_score",
           "rating_avatars"
         ],
-        "identified_field_types" : [
+        "identified_field_types": [
           "input",
           "input",
           "input",
           "input",
-          "input",
+          "textarea",
           "input",
           "input",
           "input",
           "input"
         ]
       },
-      "partners": {
+      "about": {
         "matched": true,
         "confidence": "high",
         "anticms_mapping": "custom",
         "detected_fields": [
-          "company_logos (repeater, max 4)"
+          "section_title",
+          "section_description",
+          "section_links"
+        ],
+        "identified_field_types": [
+          "input",
+          "textarea",
+          "input"
+        ]
+      },
+      "slider": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "slider_items (repeater, max 4)"
+        ],
+        "identified_field_types": [
+          "repeater"
+        ]
+      },
+      "brands": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "brand_logo",
+          "brand_title",
+          "brand_details",
+          "brand_background_image"
+        ],
+        "identified_field_types": [
+          "media",
+          "input",
+          "textarea",
+          "media"
         ]
       },
       "services": {
@@ -316,66 +729,61 @@
         "confidence": "high",
         "anticms_mapping": "built-in",
         "detected_fields": [
-          "section_label",
-          "section_title",
-          "section_description",
-          "service_cards (repeater, max 3)",
-          "service_icon",
           "service_title",
-          "service_description"
+          "service_subtitle",
+          "service_description",
+          "service_button",
+          "service_images"
+        ],
+        "identified_field_types": [
+          "input",
+          "input",
+          "textarea",
+          "input",
+          "media"
         ]
       },
-      "why_choose_us": {
+      "events": {
         "matched": true,
         "confidence": "high",
         "anticms_mapping": "custom",
         "detected_fields": [
-          "section_label",
+          "event_section_title",
+          "events (repeater, max 4)",
+          "event_image"
+        ],
+        "identified_field_types": [
+          "input",
+          "repeater",
+          "media"
+        ]
+      },
+      "our_stories": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
           "section_title",
-          "feature_checklist (repeater, max 3)",
-          "feature_text",
+          "stories (repeater, max 4)"
+        ],
+        "identified_field_types": [
+          "input",
+          "repeater"
+        ]
+      },
+      "call_to_action": {
+        "matched": true,
+        "confidence": "high",
+        "anticms_mapping": "custom",
+        "detected_fields": [
+          "closing_title",
           "cta_button",
-          "background_graphics"
-        ]
-      },
-      "work": {
-        "matched": true,
-        "confidence": "high",
-        "anticms_mapping": "custom",
-        "detected_fields": [
-          "section_label",
-          "section_title",
-          "projects (repeater, max 5)",
-          "project_title",
-          "project_image",
-          "cta_button"
-        ]
-      },
-      "testimonials": {
-        "matched": true,
-        "confidence": "high",
-        "anticms_mapping": "built-in",
-        "detected_fields": [
-          "section_label",
-          "section_title",
-          "testimonial_quote",
-          "testimonial_author",
-          "testimonial_avatar"
-        ]
-      },
-      "contact": {
-        "matched": true,
-        "confidence": "high",
-        "anticms_mapping": "built-in",
-        "detected_fields": [
-          "section_label",
-          "section_title",
-          "form_fields (repeater, max 4)",
-          "field_type",
-          "field_label",
-          "field_placeholder",
-          "submit_button",
           "background_images"
+        ],
+        "identified_field_types": [
+          "input",
+          "input",
+          "media"
         ]
       },
       "footer": {
@@ -383,17 +791,17 @@
         "confidence": "high",
         "anticms_mapping": "built-in",
         "detected_fields": [
-          "logo",
-          "social_links (repeater, max 3)",
-          "footer_links (repeater, max 3)",
-          "copyright_text"
+          "footer_content"
+        ],
+        "identified_field_types": [
+          "group"
         ]
       }
     },
     "complexity_score": "high",
-    "custom_sections_needed": 3,
-    "built_in_sections": 5,
-    "estimated_fields": 45,
+    "custom_sections_needed": 6,
+    "built_in_sections": 3,
+    "estimated_fields": 35,
     "multilanguage_recommended": true
   },
   "context_for_template_generation": {
@@ -403,7 +811,7 @@
     "ready_for_template_generation": true,
     "next_steps": [
       "Generate AntiCMS template using mcp_anticms-mcp_generate_template",
-      "Create mock data for all 8 sections",
+      "Create mock data for all 9 sections",
       "Generate final page structure"
     ]
   }
