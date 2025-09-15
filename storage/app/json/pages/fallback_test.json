@@ -1,13 +1,13 @@
 {
-  "name": "test_clean",
-  "label": "Test Clean Template",
+  "name": "fallback_test",
+  "label": "Fallback Test",
   "is_content": false,
   "multilanguage": true,
   "is_multiple": false,
-  "description": "Test template to verify clean section naming",
+  "description": "Test homepage with hero, features, and contact sections",
   "components": [
     {
-      "keyName": "hero",
+      "keyName": "hero_section",
       "label": "Hero Section",
       "section": "1",
       "fields": [
@@ -52,7 +52,7 @@
       "block": "Hero"
     },
     {
-      "keyName": "features",
+      "keyName": "features_section",
       "label": "Features Section",
       "section": "2",
       "fields": [
@@ -134,7 +134,7 @@
       "block": "Features"
     },
     {
-      "keyName": "contact",
+      "keyName": "contact_section",
       "label": "Contact Section",
       "section": "3",
       "fields": [

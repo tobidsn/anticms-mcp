@@ -180,7 +180,7 @@ function getProjectExamples() {
       is_multiple: false,
       components: [
         {
-          keyName: "hero_section",
+          keyName: "hero",
           label: "Hero Section",
           section: "1",
           fields: [
@@ -342,7 +342,7 @@ function getProjectExamples() {
       is_multiple: false,
       components: [
         {
-          keyName: "hero_section",
+          keyName: "hero",
           label: "Hero Section",
           section: "1",
           fields: [
@@ -406,7 +406,7 @@ function getProjectExamples() {
           ]
         },
         {
-          keyName: "menu_section",
+          keyName: "menu",
           label: "Menu Section",
           section: "2",
           fields: [
@@ -646,10 +646,10 @@ function getBestPractices() {
         },
         component_names: {
           pattern: "snake_case",
-          examples: ["hero_section", "features_section", "contact_form"],
+          examples: ["hero", "features", "contact_form"],
           rules: [
             "Use descriptive names that indicate purpose",
-            "End with '_section' for page sections",
+            "Use descriptive names for page sections",
             "End with '_form' for form components"
           ]
         },

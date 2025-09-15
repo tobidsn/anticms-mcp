@@ -22,37 +22,6 @@
           }
         },
         {
-          "name": "title",
-          "label": "Title",
-          "field": "input",
-          "multilanguage": true,
-          "attribute": {
-            "type": "text",
-            "maxLength": 100,
-            "placeholder": "Enter main title",
-            "is_required": true,
-            "defaultValue": "",
-            "value": null,
-            "minLength": 1
-          }
-        },
-        {
-          "name": "subtitle",
-          "label": "Subtitle",
-          "field": "textarea",
-          "multilanguage": true,
-          "attribute": {
-            "rows": 3,
-            "placeholder": "Enter subtitle",
-            "cols": 50,
-            "max": 200,
-            "min": 10,
-            "is_required": true,
-            "defaultValue": "",
-            "value": null
-          }
-        },
-        {
           "name": "background_image",
           "label": "Background Image",
           "field": "media",
@@ -70,39 +39,13 @@
           }
         },
         {
-          "name": "cta_button",
-          "label": "Call to Action",
-          "field": "group",
+          "name": "scroll_indicator",
+          "label": "Scroll Indicator",
+          "field": "toggle",
           "attribute": {
-            "fields": [
-              {
-                "name": "label",
-                "label": "Button Label",
-                "field": "input",
-                "multilanguage": true,
-                "attribute": {
-                  "type": "text",
-                  "placeholder": "Button text",
-                  "is_required": false,
-                  "defaultValue": "",
-                  "value": null,
-                  "maxLength": 50,
-                  "minLength": 1
-                }
-              },
-              {
-                "name": "url",
-                "label": "URL",
-                "field": "input",
-                "attribute": {
-                  "type": "url",
-                  "placeholder": "https://example.com",
-                  "is_required": false,
-                  "defaultValue": "",
-                  "value": null
-                }
-              }
-            ]
+            "caption": "Show/hide scroll indicator",
+            "defaultValue": true,
+            "value": null
           }
         }
       ],
@@ -204,7 +147,7 @@
           }
         }
       ],
-      "block": "Brands showcase"
+      "block": "BrandsShowcase"
     },
     {
       "keyName": "private_events_section",
@@ -253,7 +196,7 @@
           }
         }
       ],
-      "block": "Private events"
+      "block": "PrivateEvents"
     },
     {
       "keyName": "events_listing_section",
@@ -302,7 +245,7 @@
           }
         }
       ],
-      "block": "Events listing"
+      "block": "EventsListing"
     },
     {
       "keyName": "our_stories_section",
@@ -351,7 +294,7 @@
           }
         }
       ],
-      "block": "Our stories"
+      "block": "OurStories"
     },
     {
       "keyName": "closing_section_section",
@@ -400,7 +343,7 @@
           }
         }
       ],
-      "block": "Closing section"
+      "block": "ClosingSection"
     },
     {
       "keyName": "contact_section",

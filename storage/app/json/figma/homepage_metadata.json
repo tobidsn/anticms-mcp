@@ -290,6 +290,17 @@
           "secondary_cta",
           "rating_score",
           "rating_avatars"
+        ],
+        "identified_field_types" : [
+          "input",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input",
+          "input"
         ]
       },
       "partners": {

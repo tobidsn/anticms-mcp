@@ -498,7 +498,7 @@ export class AntiCMSComponentGenerator {
       }, fieldTypes, context)
     ];
 
-    return this.generateComponent('hero_section', 'Hero Section', sectionNumber, fields, {
+    return this.generateComponent('hero', 'Hero Section', sectionNumber, fields, {
       block: 'Hero'
     });
   }
@@ -547,7 +547,7 @@ export class AntiCMSComponentGenerator {
       }, fieldTypes, context)
     ];
 
-    return this.generateComponent('features_section', 'Features Section', sectionNumber, fields, {
+    return this.generateComponent('features', 'Features Section', sectionNumber, fields, {
       block: 'Features'
     });
   }
@@ -591,7 +591,7 @@ export class AntiCMSComponentGenerator {
       }, fieldTypes, context)
     ];
 
-    return this.generateComponent('contact_section', 'Contact Section', sectionNumber, fields, {
+    return this.generateComponent('contact', 'Contact Section', sectionNumber, fields, {
       block: 'Contact'
     });
   }
@@ -639,7 +639,7 @@ export class AntiCMSComponentGenerator {
       }, fieldTypes, context)
     ];
 
-    return this.generateComponent('gallery_section', 'Gallery Section', sectionNumber, fields, {
+    return this.generateComponent('gallery', 'Gallery Section', sectionNumber, fields, {
       block: 'Gallery'
     });
   }
@@ -1043,7 +1043,7 @@ export class AntiCMSComponentGenerator {
     }
 
     return this.generateComponent(
-      `${toSnakeCase(sectionType)}_section`, 
+      toSnakeCase(sectionType), 
       `${label} Section`, 
       sectionNumber, 
       fields, 
@@ -1436,33 +1436,6 @@ export class AntiCMSComponentGenerator {
  * @param {object} figmaData - Figma MCP dev tools data
  * @returns {object} - Parsed Figma structure
  */
-function parseFigmaData(figmaData) {
-  if (!figmaData) {
-    return { sections: [], contentPatterns: {} };
-  }
-
-  const { code, metadata, sections: figmaSections, content_patterns } = figmaData;
-  
-  // If sections are already parsed, use them
-  if (figmaSections && Array.isArray(figmaSections)) {
-    return {
-      sections: figmaSections,
-      contentPatterns: content_patterns || {}
-    };
-  }
-
-  // Parse from code and metadata for 100% accuracy
-  if (code && metadata) {
-    return parseFigmaCodeWithMetadata(code, metadata);
-  }
-
-  // Fallback to basic parsing
-  if (code) {
-    return parseFigmaCode(code, metadata);
-  }
-
-  return { sections: [], contentPatterns: {} };
-}
 
 /**
  * Parse Figma HTML/CSS code with metadata for 100% accuracy
@@ -2209,7 +2182,7 @@ function generateSectionFromFigma(figmaSection, contentPatterns, options, fieldT
       'Related Posts', 
       'post_related', 
       {
-        post_type: sectionName.replace(/_section$/, ''),
+        post_type: sectionName,
         max: 12,
         min: 1,
         caption: `Select ${originalName || sectionName} to display in this section`
@@ -2253,7 +2226,7 @@ function generateSectionFromFigma(figmaSection, contentPatterns, options, fieldT
   }
 
   return AntiCMSComponentGenerator.generateComponent(
-    `${toSnakeCase(sectionName)}_section`,
+    toSnakeCase(sectionName),
     originalName || sectionName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Section',
     sectionCounter,
     fields,
@@ -3104,7 +3077,7 @@ function generateEnhancedSingleFields(elements, sectionAnalysis, fieldTypes, con
  * @param {Object} fieldTypes - Field types configuration
  * @returns {object} - Generated AntiCMS section
  */
-function generateSectionFromFigmaMetadata(sectionType, figmaMetadata, options, fieldTypes) {
+function generateSectionFromFigmaMetadata(sectionType, figmaMetadata, options, fieldTypes, originalSectionName = null) {
   const { anticms_analysis, figma_code_response } = figmaMetadata;
   const sections = figma_code_response?.sections || {};
   const sectionData = sections[sectionType];
@@ -3132,9 +3105,14 @@ function generateSectionFromFigmaMetadata(sectionType, figmaMetadata, options, f
   const ctaFields = detectAndGenerateCTAFields(sectionData, fieldTypes, context);
   fields.push(...ctaFields);
 
+  // Use original section name for keyName if provided, otherwise use sectionType
+  const baseSectionName = originalSectionName || sectionType;
+  const keyName = toSnakeCase(baseSectionName);
+  const label = baseSectionName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Section';
+  
   return AntiCMSComponentGenerator.generateComponent(
-    `${toSnakeCase(sectionType)}_section`,
-    sectionType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Section',
+    keyName,
+    label,
     options.sectionNumber,
     fields,
     { block: toPascalCase(sectionType) }
@@ -3152,12 +3130,48 @@ function generateSectionFromFigmaMetadata(sectionType, figmaMetadata, options, f
 function analyzeSectionDataForFields(sectionData, analysis, fieldTypes, context) {
   const fields = [];
   
-  // First, analyze the actual section data structure for arrays and objects
-  const dataStructureFields = analyzeDataStructure(sectionData, fieldTypes, context);
-  fields.push(...dataStructureFields);
-  
-  // Skip analysis metadata processing to avoid hallucination
-  // The data structure analysis above is sufficient and accurate
+  // Use identified_field_types from anticms_analysis if available for enhanced accuracy
+  if (analysis && analysis.detected_fields && analysis.identified_field_types) {
+    console.log(`[analyzeSectionDataForFields] Using identified_field_types for enhanced accuracy`);
+    
+    // Generate fields based on detected_fields and identified_field_types
+    for (let i = 0; i < analysis.detected_fields.length; i++) {
+      const fieldName = analysis.detected_fields[i];
+      const fieldType = analysis.identified_field_types[i] || 'input';
+      
+      // Skip fields that are part of repeater (handled separately)
+      if (fieldName.includes('(repeater') || fieldName.includes('(post_related')) {
+        continue;
+      }
+      
+      const field = generateFieldFromMetadata({
+        name: fieldName,
+        type: fieldType
+      }, sectionData, fieldTypes, context);
+      
+      if (field) {
+        fields.push(field);
+      }
+    }
+    
+    // Handle special fields (repeaters, post_related)
+    for (let i = 0; i < analysis.detected_fields.length; i++) {
+      const fieldName = analysis.detected_fields[i];
+      const fieldType = analysis.identified_field_types[i] || 'input';
+      
+      if (fieldName.includes('(repeater') || fieldName.includes('(post_related')) {
+        const specialField = generateSpecialFieldFromMetadata(fieldName, fieldType, sectionData, fieldTypes, context);
+        if (specialField) {
+          fields.push(specialField);
+        }
+      }
+    }
+  } else {
+    // Fallback to data structure analysis
+    console.log(`[analyzeSectionDataForFields] Using data structure analysis as fallback`);
+    const dataStructureFields = analyzeDataStructure(sectionData, fieldTypes, context);
+    fields.push(...dataStructureFields);
+  }
 
   // If no fields detected, add basic section fields
   if (fields.length === 0) {
@@ -3166,6 +3180,59 @@ function analyzeSectionDataForFields(sectionData, analysis, fieldTypes, context)
   }
 
   return fields;
+}
+
+
+/**
+ * Generate special field (repeater, post_related) from metadata
+ * @param {string} fieldName - Field name with metadata
+ * @param {string} fieldType - Field type
+ * @param {object} sectionData - Section data from Figma metadata
+ * @param {Object} fieldTypes - Field types configuration
+ * @param {string} context - Section context
+ * @returns {object} - Generated special field
+ */
+function generateSpecialFieldFromMetadata(fieldName, fieldType, sectionData, fieldTypes, context) {
+  // Extract field name and metadata
+  const cleanFieldName = fieldName.split(' (')[0];
+  const fieldLabel = cleanFieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  
+  if (fieldType === 'post_related') {
+    // Generate post_related field
+    return AntiCMSComponentGenerator.generateField(
+      'posts',
+      'Related Posts',
+      'post_related',
+      {
+        post_type: context,
+        max: 12,
+        min: 1,
+        caption: `Select ${fieldLabel} to display in this section`
+      },
+      fieldTypes,
+      context
+    );
+  } else if (fieldType === 'repeater') {
+    // Generate repeater field
+    const maxMatch = fieldName.match(/max (\d+)/);
+    const max = maxMatch ? parseInt(maxMatch[1]) : 10;
+    
+    return AntiCMSComponentGenerator.generateField(
+      toSnakeCase(cleanFieldName),
+      fieldLabel,
+      'repeater',
+      {
+        min: 1,
+        max: max,
+        caption: `Add ${fieldLabel} items`,
+        fields: getDefaultRepeaterFields(fieldTypes, context)
+      },
+      fieldTypes,
+      context
+    );
+  }
+  
+  return null;
 }
 
 /**
@@ -3516,21 +3583,40 @@ function generateFieldFromPrimitive(fieldName, value, fieldTypes, context) {
  * @returns {object|null} - Generated field or null
  */
 function generateFieldFromMetadata(fieldInfo, sectionData, fieldTypes, context) {
-  // Parse field information (e.g., "service_cards (repeater, max 3)")
-  const fieldMatch = fieldInfo.match(/^(.+?)\s*(?:\((.+?)\))?$/);
-  if (!fieldMatch) return null;
-
-  const fieldName = fieldMatch[1];
-  const fieldConfig = fieldMatch[2] || '';
+  // Handle both old format (string) and new format (object with name and type)
+  let fieldName, fieldType;
   
-  // Determine field type based on configuration
-  let fieldType = 'input';
-  let fieldOptions = {};
+  if (typeof fieldInfo === 'object' && fieldInfo.name && fieldInfo.type) {
+    // New format with identified field type
+    fieldName = fieldInfo.name;
+    fieldType = fieldInfo.type;
+  } else {
+    // Old format - parse field information (e.g., "service_cards (repeater, max 3)")
+    const fieldMatch = fieldInfo.match(/^(.+?)\s*(?:\((.+?)\))?$/);
+    if (!fieldMatch) return null;
 
-  if (fieldConfig.includes('repeater')) {
-    fieldType = 'repeater';
-    const maxMatch = fieldConfig.match(/max\s+(\d+)/);
-    const minMatch = fieldConfig.match(/min\s+(\d+)/);
+    fieldName = fieldMatch[1];
+    const fieldConfig = fieldMatch[2] || '';
+    
+    // Determine field type based on configuration
+    fieldType = 'input';
+    
+    if (fieldConfig.includes('repeater')) {
+      fieldType = 'repeater';
+    } else if (fieldConfig.includes('group')) {
+      fieldType = 'group';
+    } else {
+      // Determine field type based on field name and content
+      fieldType = determineFieldTypeFromName(fieldName, sectionData);
+    }
+  }
+  
+  // Generate field options based on type
+  let fieldOptions = {};
+  
+  if (fieldType === 'repeater') {
+    const maxMatch = fieldName.match(/max\s+(\d+)/);
+    const minMatch = fieldName.match(/min\s+(\d+)/);
     
     fieldOptions = {
       min: minMatch ? parseInt(minMatch[1]) : 1,
@@ -3538,19 +3624,17 @@ function generateFieldFromMetadata(fieldInfo, sectionData, fieldTypes, context) 
       caption: `Add ${fieldName.replace(/_/g, ' ')} items`,
       fields: generateRepeaterFieldsFromSectionData(fieldName, sectionData, fieldTypes, context)
     };
-  } else if (fieldConfig.includes('group')) {
-    fieldType = 'group';
+  } else if (fieldType === 'group') {
     fieldOptions = {
       fields: generateGroupFieldsFromSectionData(fieldName, sectionData, fieldTypes, context)
     };
   } else {
-    // Determine field type based on field name and content
-    fieldType = determineFieldTypeFromName(fieldName, sectionData);
+    // Generate options for other field types
     fieldOptions = generateFieldOptionsFromName(fieldName, sectionData, fieldType);
   }
 
   return AntiCMSComponentGenerator.generateField(
-    fieldName,
+    toSnakeCase(fieldName),
     fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
     fieldType,
     fieldOptions,
@@ -4144,7 +4228,7 @@ export async function generateTemplate(args) {
     include_cta = false,
     max_features = 6,
     max_gallery_images = 12,
-    figma_data
+    figma_metadata_file
   } = args;
 
   let description = originalDescription;
@@ -4152,34 +4236,15 @@ export async function generateTemplate(args) {
   // Load field types for generation
   const fieldTypes = await loadFieldTypes();
 
-  // Parse Figma data if available
-  const { sections: figmaSections, contentPatterns } = parseFigmaData(figma_data);
-
-  // If Figma data is available, use it for 100% accurate section generation
+  // Initialize variables
   let finalSections = sections;
   let useFigmaData = false;
   let figmaMetadata = null;
-  
-  if (figmaSections && figmaSections.length > 0) {
-    finalSections = figmaSections.map(section => section.name);
-    useFigmaData = true;
-    console.log(`[generateTemplate] Using Figma data for ${figmaSections.length} sections`);
-  } else if (description) {
-    // Fallback to natural language parsing if no Figma data
-    const parsed = parseNaturalLanguageTemplate(description, fieldTypes);
-    
-    // If parsed sections are different from provided sections, and parsed has more content, use parsed
-    const condition1 = parsed.sections.length > 0;
-    const condition2 = sections.length === 0;
-    const condition3 = sections.length === 1 && ['hero', 'features', 'contact'].includes(sections[0]);
-    
-    if (condition1 && (condition2 || condition3)) {
-      finalSections = parsed.sections;
-    }
-  }
+  let figmaSections = [];
+  let contentPatterns = {};
 
   // Check if we have Figma metadata JSON file path
-  if (args.figma_metadata_file) {
+  if (figma_metadata_file) {
     try {
       const fs = await import('fs/promises');
       const path = await import('path');
@@ -4193,14 +4258,35 @@ export async function generateTemplate(args) {
       
       // Use metadata for enhanced section generation
       if (figmaMetadata.anticms_analysis && figmaMetadata.figma_code_response) {
-        finalSections = Object.keys(figmaMetadata.figma_code_response.sections || {});
+        // Don't override user sections - use them as-is and map to Figma metadata
+        // finalSections = Object.keys(figmaMetadata.figma_code_response.sections || {});
         useFigmaData = true;
-        console.log(`[generateTemplate] Using Figma metadata for ${finalSections.length} sections:`, finalSections);
+        
+        // Convert figma_metadata to figmaSections format for generateSectionFromFigma support
+        const convertedData = convertFigmaMetadataToSections(figmaMetadata);
+        figmaSections = convertedData.sections;
+        contentPatterns = convertedData.contentPatterns;
+        
+        console.log(`[generateTemplate] Using Figma metadata for ${finalSections.length} user sections:`, finalSections);
+        console.log(`[generateTemplate] Available Figma sections:`, Object.keys(figmaMetadata.figma_code_response.sections || {}));
+        console.log(`[generateTemplate] Converted to ${figmaSections.length} figmaSections for generateSectionFromFigma support`);
       } else {
         console.log(`[generateTemplate] Metadata missing required fields. anticms_analysis:`, !!figmaMetadata.anticms_analysis, 'figma_code_response:', !!figmaMetadata.figma_code_response);
       }
     } catch (error) {
       console.warn(`[generateTemplate] Failed to load Figma metadata: ${error.message}`);
+    }
+  } else if (description) {
+    // Fallback to natural language parsing if no Figma metadata
+    const parsed = parseNaturalLanguageTemplate(description, fieldTypes);
+    
+    // If parsed sections are different from provided sections, and parsed has more content, use parsed
+    const condition1 = parsed.sections.length > 0;
+    const condition2 = sections.length === 0;
+    const condition3 = sections.length === 1 && ['hero', 'features', 'contact'].includes(sections[0]);
+    
+    if (condition1 && (condition2 || condition3)) {
+      finalSections = parsed.sections;
     }
   }
 
@@ -4220,17 +4306,23 @@ export async function generateTemplate(args) {
     try {
       // Use Figma data for 100% accurate section generation if available
       if (useFigmaData && figmaMetadata) {
-        // Use Figma metadata for enhanced field detection
-        console.log(`[generateTemplate] Using Figma metadata for section: ${sectionType}`);
-        section = generateSectionFromFigmaMetadata(sectionType, figmaMetadata, sectionOptions, fieldTypes);
-        console.log(`[generateTemplate] Generated section from Figma metadata: ${sectionType}`);
+        // Map user section to Figma metadata section
+        const figmaSectionName = mapUserSectionToFigmaSection(sectionType, figmaMetadata.figma_code_response.sections);
+        
+        if (figmaSectionName) {
+          console.log(`[generateTemplate] Using Figma metadata with identified_field_types for section: ${sectionType} -> ${figmaSectionName}`);
+          section = generateSectionFromFigmaMetadata(figmaSectionName, figmaMetadata, sectionOptions, fieldTypes, sectionType);
+          console.log(`[generateTemplate] Generated section from Figma metadata: ${sectionType} -> ${figmaSectionName}`);
+        } else {
+          console.log(`[generateTemplate] No Figma metadata found for section: ${sectionType}, falling back to standard generation`);
+        }
       } else if (useFigmaData && figmaSections) {
+        // Fallback to generateSectionFromFigma (supports post collection detection)
         const figmaSection = figmaSections.find(s => s.name === sectionType);
         if (figmaSection) {
+          console.log(`[generateTemplate] Using generateSectionFromFigma for section: ${sectionType}`);
           section = generateSectionFromFigma(figmaSection, contentPatterns, sectionOptions, fieldTypes);
           console.log(`[generateTemplate] Generated section from Figma data: ${sectionType}`);
-        } else {
-          console.warn(`[generateTemplate] Figma section not found for: ${sectionType}, falling back to standard generation`);
         }
       }
       
@@ -4776,7 +4868,7 @@ function isPostCollectionSection(sectionText, sectionData = {}) {
   // Only detect as post collection if it's a specific match for the section name
   const hasPostCollectionSectionName = postCollectionSectionNames.some(name => {
     const words = text.toLowerCase().split(/\s+/);
-    return words.includes(name) || text.includes(`${name}_section`) || text.includes(`${name} section`);
+    return words.includes(name) || text.includes(`${name} section`);
   });
   
   // Check section structure for collection indicators
@@ -4861,6 +4953,168 @@ function convertToCollectionReference(section, postTypeName) {
       })
     ]
   };
+}
+
+/**
+ * Convert figma_metadata to figmaSections format for generateSectionFromFigma
+ * @param {object} figmaMetadata - Figma metadata from file
+ * @returns {object} - Converted figmaSections and contentPatterns
+ */
+function convertFigmaMetadataToSections(figmaMetadata) {
+  const { figma_code_response, anticms_analysis } = figmaMetadata;
+  
+  if (!figma_code_response || !figma_code_response.sections) {
+    return { sections: [], contentPatterns: {} };
+  }
+
+  const sections = [];
+  const contentPatterns = {
+    repeaters: [],
+    groups: [],
+    single_fields: []
+  };
+
+  // Convert each section from metadata to figmaSection format
+  Object.entries(figma_code_response.sections).forEach(([sectionName, sectionData]) => {
+    const elements = [];
+    
+    // Convert section data to elements format
+    Object.entries(sectionData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // Array data - create elements for each item
+        value.forEach((item, index) => {
+          if (typeof item === 'object' && item !== null) {
+            // Object item - create multiple elements
+            Object.entries(item).forEach(([itemKey, itemValue]) => {
+              elements.push({
+                type: determineElementType(itemKey, itemValue),
+                content: String(itemValue), // Ensure content is always a string
+                role: determineElementRole(itemKey, itemValue),
+                name: `${key}_${index}_${itemKey}`,
+                originalName: itemKey
+              });
+            });
+          } else {
+            // Primitive item - create single element
+            elements.push({
+              type: determineElementType(key, item),
+              content: String(item), // Ensure content is always a string
+              role: determineElementRole(key, item),
+              name: `${key}_${index}`,
+              originalName: key
+            });
+          }
+        });
+        
+        // Add to content patterns
+        if (value.length > 1) {
+          contentPatterns.repeaters.push(sectionName);
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        // Object data - create group elements
+        Object.entries(value).forEach(([objKey, objValue]) => {
+          elements.push({
+            type: determineElementType(objKey, objValue),
+            content: String(objValue), // Ensure content is always a string
+            role: determineElementRole(objKey, objValue),
+            name: `${key}_${objKey}`,
+            originalName: objKey
+          });
+        });
+        
+        contentPatterns.groups.push(sectionName);
+      } else {
+        // Primitive data - create single element
+        elements.push({
+          type: determineElementType(key, value),
+          content: String(value), // Ensure content is always a string
+          role: determineElementRole(key, value),
+          name: key,
+          originalName: key
+        });
+        
+        contentPatterns.single_fields.push(sectionName);
+      }
+    });
+
+    // Create figmaSection object
+    sections.push({
+      name: sectionName,
+      originalName: sectionName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      type: 'section',
+      elements: elements
+    });
+  });
+
+  return { sections, contentPatterns };
+}
+
+/**
+ * Determine element type based on key and value
+ * @param {string} key - Element key
+ * @param {any} value - Element value
+ * @returns {string} - Element type
+ */
+function determineElementType(key, value) {
+  const keyLower = key.toLowerCase();
+  
+  if (keyLower.includes('image') || keyLower.includes('avatar') || keyLower.includes('logo')) {
+    return 'image';
+  }
+  if (keyLower.includes('button') || keyLower.includes('cta') || keyLower.includes('link')) {
+    return 'button';
+  }
+  if (keyLower.includes('input') || keyLower.includes('field') || keyLower.includes('form')) {
+    return 'input';
+  }
+  if (keyLower.includes('textarea') || keyLower.includes('message') || keyLower.includes('description')) {
+    return 'textarea';
+  }
+  if (typeof value === 'string' && value.length > 50) {
+    return 'textarea';
+  }
+  if (typeof value === 'string') {
+    return 'text';
+  }
+  if (typeof value === 'number') {
+    return 'number';
+  }
+  if (typeof value === 'boolean') {
+    return 'toggle';
+  }
+  
+  return 'text';
+}
+
+/**
+ * Determine element role based on key and value
+ * @param {string} key - Element key
+ * @param {any} value - Element value
+ * @returns {string} - Element role
+ */
+function determineElementRole(key, value) {
+  const keyLower = key.toLowerCase();
+  const valueStr = String(value).toLowerCase();
+  
+  if (keyLower.includes('cta') || keyLower.includes('button') || 
+      valueStr.includes('see more') || valueStr.includes('view more') || 
+      valueStr.includes('browse all')) {
+    return 'see_more';
+  }
+  if (keyLower.includes('title') || keyLower.includes('headline')) {
+    return 'title';
+  }
+  if (keyLower.includes('description') || keyLower.includes('subtitle')) {
+    return 'description';
+  }
+  if (keyLower.includes('icon')) {
+    return 'icon';
+  }
+  if (keyLower.includes('image') || keyLower.includes('avatar')) {
+    return 'image';
+  }
+  
+  return 'content';
 }
 
 /**
@@ -5070,6 +5324,39 @@ function mapSectionKeyToAntiCMS(sectionKey) {
 }
 
 /**
+ * Map user section name to Figma metadata section name
+ * @param {string} userSection - User section name (e.g., 'hero')
+ * @param {object} figmaSections - Available Figma sections (clean names)
+ * @returns {string|null} - Mapped Figma section name (e.g., 'hero')
+ * 
+ * Note: Both user sections and Figma metadata now use clean names without _section suffix.
+ */
+function mapUserSectionToFigmaSection(userSection, figmaSections) {
+  const availableSections = Object.keys(figmaSections);
+  
+  // Direct match (both use clean names now)
+  if (availableSections.includes(userSection)) {
+    return userSection;
+  }
+  
+  // Try common variations for backward compatibility
+  const variations = [
+    userSection,
+    `${userSection}_section`,  // fallback for old metadata format
+    userSection.replace(/_/g, '-'),  // kebab-case variation
+    userSection.replace(/_/g, ' ')   // space-separated variation
+  ];
+  
+  for (const variation of variations) {
+    if (availableSections.includes(variation)) {
+      return variation;
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Check if any section has a CTA button
  * @param {object} figmaSections - Figma sections data
  * @returns {boolean} - True if CTA button found
@@ -5133,16 +5420,16 @@ export async function getFieldTypeExamples(args) {
 
   if (show_usage_patterns) {
     result.usage_patterns = {
-      hero_sections: {
+      hero: {
         common_fields: ['status', 'title', 'subtitle', 'background_image', 'cta_button'],
         field_types: ['toggle', 'input', 'textarea', 'media', 'group']
       },
-      features_sections: {
+      features: {
         common_fields: ['section_title', 'features'],
         repeater_fields: ['feature_title', 'feature_description', 'feature_icon'],
         field_types: ['input', 'repeater', 'textarea', 'media']
       },
-      contact_sections: {
+      contact: {
         common_fields: ['section_title', 'contact_info'],
         group_fields: ['email', 'phone', 'address'],
         field_types: ['input', 'group', 'textarea']
@@ -5159,7 +5446,7 @@ export async function getFieldTypeExamples(args) {
     result.best_practices = {
       naming_conventions: {
         fields: 'Use snake_case for field names (e.g., section_title, feature_icon)',
-        sections: 'Use descriptive section names (e.g., hero_section, features_section)',
+        sections: 'Use descriptive section names (e.g., hero, features)',
         labels: 'Use human-readable labels (e.g., "Section Title", "Feature Icon")'
       },
       multilanguage: {

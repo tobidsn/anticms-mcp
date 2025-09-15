@@ -1,0 +1,751 @@
+{
+  "name": "homepage_test",
+  "label": "Homepage Test",
+  "is_content": false,
+  "multilanguage": true,
+  "is_multiple": false,
+  "description": "Test homepage with services section using post_related",
+  "components": [
+    {
+      "keyName": "hero_section",
+      "label": "Hero",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Hero section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "hero",
+          "label": "Hero",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "navigation_logo",
+                "label": "Navigation Logo",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              },
+              {
+                "name": "navigation_menu_items",
+                "label": "Navigation Menu Items",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Services,Resources,Company,Blog,Contact Us",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 84,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "main_content_world_record_badge",
+                "label": "Main Content World Record Badge",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Best Business Platform - World Record 2021",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 84,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "main_content_headline",
+                "label": "Main Content Headline",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Reach Your Business Goals in Record Time",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 80,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "main_content_description",
+                "label": "Main Content Description",
+                "field": "textarea",
+                "attribute": {
+                  "rows": 4,
+                  "max": 500,
+                  "cols": 50,
+                  "min": 10,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null,
+                  "placeholder": "Support small business and join the nationwide movement to encourage commercial support for the millions of minority owned businesses helping world economy."
+                }
+              },
+              {
+                "name": "rating_display_score",
+                "label": "Rating Display Score",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "4.9",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "rating_display_stars",
+                "label": "Rating Display Stars",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter rating display stars",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "rating_display_avatars",
+                "label": "Rating Display Avatars",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Hero"
+    },
+    {
+      "keyName": "partners_section",
+      "label": "Partners",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Partners section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "partners",
+          "label": "Partners",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 8,
+            "caption": "Add Partners items",
+            "fields": [
+              {
+                "name": "total_companies",
+                "label": "Total Companies",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Enter total companies",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "companies_0_name",
+                "label": "Companies 0 Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Slack",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "companies_0_logo_placeholder",
+                "label": "Companies 0 Logo Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              },
+              {
+                "name": "companies_1_name",
+                "label": "Companies 1 Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Prudential",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "companies_1_logo_placeholder",
+                "label": "Companies 1 Logo Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              },
+              {
+                "name": "companies_2_name",
+                "label": "Companies 2 Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Company 3",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "companies_2_logo_placeholder",
+                "label": "Companies 2 Logo Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              },
+              {
+                "name": "companies_3_name",
+                "label": "Companies 3 Name",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "Zoover",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "companies_3_logo_placeholder",
+                "label": "Companies 3 Logo Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Partners"
+    },
+    {
+      "keyName": "services_section",
+      "label": "Services",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Services section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "services",
+            "max": 12,
+            "min": 1,
+            "caption": "Select Services to display in this section"
+          }
+        }
+      ],
+      "block": "Services"
+    },
+    {
+      "keyName": "why_choose_us_section",
+      "label": "Why Choose Us",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Why Choose Us section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "why_choose_us",
+            "max": 12,
+            "min": 1,
+            "caption": "Select Why Choose Us to display in this section"
+          }
+        }
+      ],
+      "block": "WhyChooseUs"
+    },
+    {
+      "keyName": "work_section",
+      "label": "Work",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Work section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "work",
+            "max": 12,
+            "min": 1,
+            "caption": "Select Work to display in this section"
+          }
+        }
+      ],
+      "block": "Work"
+    },
+    {
+      "keyName": "testimonials_section",
+      "label": "Testimonials",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Testimonials section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "testimonials",
+          "label": "Testimonials",
+          "field": "group",
+          "attribute": {
+            "fields": [
+              {
+                "name": "section_label",
+                "label": "Section Label",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "TESTIMONIAL",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "title",
+                "label": "Title",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "maxLength": 50,
+                  "placeholder": "What Our Customer's Say",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "testimonial_quote",
+                "label": "Testimonial Quote",
+                "field": "textarea",
+                "attribute": {
+                  "rows": 4,
+                  "placeholder": "I really like the team for example, a relationship-focused performance expectation might be that the employee sustain collegial working relationships with her peers, subordinates and customers.",
+                  "cols": 50,
+                  "max": 1000,
+                  "min": 10,
+                  "is_required": true,
+                  "defaultValue": "",
+                  "value": null
+                }
+              },
+              {
+                "name": "testimonial_author",
+                "label": "Testimonial Author",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Gloria Jessica",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "testimonial_avatar_placeholder",
+                "label": "Testimonial Avatar Placeholder",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Testimonials"
+    },
+    {
+      "keyName": "contact_section",
+      "label": "Contact",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Contact section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "posts",
+          "label": "Related Posts",
+          "field": "post_related",
+          "attribute": {
+            "is_required": false,
+            "api_prefix": "/api/v1/",
+            "post_type": "contact",
+            "max": 12,
+            "min": 1,
+            "caption": "Select Contact to display in this section"
+          }
+        }
+      ],
+      "block": "Contact"
+    },
+    {
+      "keyName": "footer_section",
+      "label": "Footer",
+      "section": "1",
+      "fields": [
+        {
+          "name": "status",
+          "label": "Status",
+          "field": "toggle",
+          "attribute": {
+            "caption": "Enable or disable the Footer section",
+            "defaultValue": true,
+            "value": null
+          }
+        },
+        {
+          "name": "footer",
+          "label": "Footer",
+          "field": "repeater",
+          "attribute": {
+            "min": 1,
+            "max": 8,
+            "caption": "Add Footer items",
+            "fields": [
+              {
+                "name": "logo",
+                "label": "Logo",
+                "field": "media",
+                "attribute": {
+                  "accept": [
+                    "image"
+                  ],
+                  "resolution": {
+                    "minWidth": 100,
+                    "maxWidth": 1920,
+                    "minHeight": 100,
+                    "maxHeight": 1080
+                  },
+                  "caption": "Upload image"
+                }
+              },
+              {
+                "name": "social_links_0_platform",
+                "label": "Social Links 0 Platform",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "facebook",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "social_links_0_icon",
+                "label": "Social Links 0 Icon",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "facebook (2)",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "social_links_1_platform",
+                "label": "Social Links 1 Platform",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "twitter",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "social_links_1_icon",
+                "label": "Social Links 1 Icon",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "linkedin 1",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "social_links_2_platform",
+                "label": "Social Links 2 Platform",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "instagram",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "social_links_2_icon",
+                "label": "Social Links 2 Icon",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "instagram",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "links_0",
+                "label": "Links 0",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Privacy Policy",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "links_1",
+                "label": "Links 1",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Terms",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "links_2",
+                "label": "Links 2",
+                "field": "input",
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Deskripsi",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 50,
+                  "minLength": 1
+                }
+              },
+              {
+                "name": "copyright",
+                "label": "Copyright",
+                "field": "input",
+                "multilanguage": true,
+                "attribute": {
+                  "type": "text",
+                  "placeholder": "Copyright Pebisnis Ulung. All right reserved",
+                  "is_required": false,
+                  "defaultValue": "",
+                  "value": null,
+                  "maxLength": 88,
+                  "minLength": 1
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "block": "Footer"
+    }
+  ]
+}
